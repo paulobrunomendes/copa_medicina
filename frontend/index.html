@@ -1117,12 +1117,17 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
 }
 
+// Registrar SW sempre (necessário para PWA instalável, independente de push)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/public/sw.js').catch(() => {});
+}
+
 async function initPush() {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
 
   try {
-    // Registrar service worker
-    const reg = await navigator.serviceWorker.register('/public/sw.js');
+    // Reutilizar SW já registrado
+    const reg = await navigator.serviceWorker.ready;
 
     // Se já tem permissão concedida, assinar silenciosamente
     if (Notification.permission === 'granted') {
