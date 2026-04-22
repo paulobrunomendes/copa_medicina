@@ -1,9 +1,9 @@
-/* Service Worker — Copa Universitária */
+/* Service Worker — Copa Med Horus */
 const CACHE = 'copa-medicina-v1';
 
 // Recebe push notification do servidor
 self.addEventListener('push', (event) => {
-  let data = { title: '⚽ Copa Universitária', body: 'Atualização do jogo!' };
+  let data = { title: '⚽ Copa Med Horus', body: 'Atualização do jogo!' };
   try {
     if (event.data) data = event.data.json();
   } catch (_) {}

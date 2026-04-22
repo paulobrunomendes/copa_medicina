@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Placar ao Vivo — Admin · Copa Universitária</title>
+  <title>Placar ao Vivo — Admin · Copa Med Horus</title>
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
   <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
   <link rel="manifest" href="/public/manifest.json">
@@ -610,7 +610,7 @@
 
 <!-- TOPBAR MOBILE -->
 <div class="admin-topbar">
-  <div class="admin-topbar-title"><img src="/public/logo.png" alt="Copa" style="height:28px;width:28px;object-fit:contain;vertical-align:middle;margin-right:6px"> Copa Universitária</div>
+  <div class="admin-topbar-title"><img src="/public/logo.png" alt="Copa" style="height:28px;width:28px;object-fit:contain;vertical-align:middle;margin-right:6px"> Copa Med Horus</div>
   <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
@@ -624,7 +624,7 @@
 
   <!-- SIDEBAR -->
   <aside class="admin-sidebar" id="adminSidebar">
-    <div class="admin-sidebar-title"><img src="/public/logo.png" alt="Copa" style="height:36px;width:36px;object-fit:contain;vertical-align:middle;margin-right:8px"> Copa Universitária</div>
+    <div class="admin-sidebar-title"><img src="/public/logo.png" alt="Copa" style="height:36px;width:36px;object-fit:contain;vertical-align:middle;margin-right:8px"> Copa Med Horus</div>
     <nav class="sidebar-nav">
       <div class="sidebar-section-label">Operações</div>
       <div class="sidebar-item active" onclick="mostrarPainel('placar', this)">
@@ -685,7 +685,7 @@
         <div class="content-topbar-icon"><img src="/public/logo.png" alt="Copa" style="height:32px;width:32px;object-fit:contain"></div>
         <div>
           <div class="content-topbar-title" id="topbarTitle">Placar ao Vivo</div>
-          <div class="content-topbar-sub">Copa Universitária — Painel Admin</div>
+          <div class="content-topbar-sub">Copa Med Horus — Painel Admin</div>
         </div>
       </div>
       <div class="content-topbar-right">
@@ -1132,7 +1132,7 @@ function mostrarPainel(nome, el) {
   el.classList.add('active');
   const titulo = _panelTitles[nome] || nome;
   const tt = document.getElementById('topbarTitle'); if (tt) tt.textContent = titulo;
-  document.title = `${titulo} — Admin · Copa Universitária`;
+  document.title = `${titulo} — Admin · Copa Med Horus`;
   fecharSidebar();
   if (nome === 'jogos') carregarJogosAdmin();
   if (nome === 'times') carregarTimes();

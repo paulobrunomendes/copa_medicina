@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogos — Copa Universitária</title>
+  <title>Jogos — Copa Med Horus</title>
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
   <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
   <link rel="manifest" href="/public/manifest.json">
@@ -351,8 +351,8 @@
 <header class="header">
   <div class="header-inner">
     <div class="logo">
-      <img src="/public/logo.png" alt="Copa Universitária 2026" class="logo-badge" style="background:none;border-radius:0;object-fit:contain">
-      <span class="logo-title">Copa Universitária</span>
+      <img src="/public/logo.png" alt="Copa Med Horus 2026" class="logo-badge" style="background:none;border-radius:0;object-fit:contain">
+      <span class="logo-title">Copa Med Horus</span>
     </div>
     <nav class="nav">
       <button class="nav-btn active" onclick="mostrarSecao('jogos', this)">Jogos</button>
@@ -490,20 +490,20 @@
 
   // ===== NAVEGAÇÃO =====
   const _secaoTitulos = {
-    jogos: 'Jogos — Copa Universitária',
-    artilheiros: 'Artilheiros — Copa Universitária',
-    stats: 'Estatísticas — Copa Universitária',
-    encerrados: 'Resultados — Copa Universitária',
-    classificacao: 'Classificação — Copa Universitária',
-    chaveamento: 'Mata-mata — Copa Universitária',
-    historico: 'Por Time — Copa Universitária',
+    jogos: 'Jogos — Copa Med Horus',
+    artilheiros: 'Artilheiros — Copa Med Horus',
+    stats: 'Estatísticas — Copa Med Horus',
+    encerrados: 'Resultados — Copa Med Horus',
+    classificacao: 'Classificação — Copa Med Horus',
+    chaveamento: 'Mata-mata — Copa Med Horus',
+    historico: 'Por Time — Copa Med Horus',
   };
   function mostrarSecao(secao, btn) {
     document.querySelectorAll('[id^="secao-"]').forEach(s => s.style.display = 'none');
     document.getElementById(`secao-${secao}`).style.display = '';
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.title = _secaoTitulos[secao] || 'Copa Universitária';
+    document.title = _secaoTitulos[secao] || 'Copa Med Horus';
     if (secao === 'jogos') carregarJogos();
     if (secao === 'artilheiros') carregarArtilheiros();
     if (secao === 'stats') carregarStats();

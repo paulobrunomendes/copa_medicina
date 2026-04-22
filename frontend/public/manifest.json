@@ -1,7 +1,7 @@
 {
-  "name": "Copa Universitária",
+  "name": "Copa Med Horus",
   "short_name": "Copa",
-  "description": "Acompanhe os placares da Copa Universitária em tempo real",
+  "description": "Acompanhe os placares da Copa Med Horus em tempo real",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
