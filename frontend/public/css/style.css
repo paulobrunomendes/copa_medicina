@@ -1031,8 +1031,11 @@ a { text-decoration: none; color: inherit; }
   .header-inner { height: 60px; }
   .logo span:last-child { display: none; }   /* esconde texto longo, mantém ícone */
   .logo { gap: 0; }
-  .logo::after { content: 'Copa Medicina'; font-weight: 800; font-size: 1rem; }
-  .nav-btn { padding: 0.45rem 0.55rem; font-size: 0.78rem; }
+  .logo::after { content: 'Copa Universitária'; font-weight: 800; font-size: 1rem; }
+  /* Nav rolável — 5 abas não cabem em telas pequenas */
+  .nav { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; min-width: 0; flex-shrink: 1; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-btn { padding: 0 0.65rem; font-size: 0.78rem; flex-shrink: 0; }
   .nav-btn.active::after { display: none; }
 
   /* --- Container --- */
@@ -1049,7 +1052,9 @@ a { text-decoration: none; color: inherit; }
 
   /* --- Classificação --- */
   .grupos-grid { grid-template-columns: 1fr; }
-  .classificacao-table { font-size: 0.8rem; }
+  .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .table-scroll::-webkit-scrollbar { display: none; }
+  .classificacao-table { font-size: 0.8rem; min-width: 460px; }
   .classificacao-table th,
   .classificacao-table td { padding: 0.55rem 0.5rem; }
   .classificacao-table th:first-child,
@@ -1119,7 +1124,7 @@ a { text-decoration: none; color: inherit; }
 @media (max-width: 480px) {
   .nav-label { display: none; }
   .header-inner { gap: 0.5rem; }
-  .nav-btn { padding: 0.4rem 0.55rem; font-size: 1.1rem; }
+  .nav-btn { padding: 0 0.45rem; font-size: 0.72rem; flex-shrink: 0; }
 
   .jogo-card-header { font-size: 0.7rem; }
   .time-nome { font-size: 0.76rem; max-width: 80px; }

@@ -1,0 +1,22 @@
+{
+  "name": "Copa Universitária",
+  "short_name": "Copa",
+  "description": "Acompanhe os placares da Copa Universitária em tempo real",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e40af",
+  "icons": [
+    {
+      "src": "/public/favicon.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/public/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

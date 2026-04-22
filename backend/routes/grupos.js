@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
         FROM grupos_times gt
         JOIN times t ON gt.time_id = t.id
         WHERE gt.grupo_id = ?
-        ORDER BY gt.pontos DESC, gt.saldo_gols DESC, gt.gols_pro DESC
+        ORDER BY gt.pontos DESC, gt.vitorias DESC, gt.saldo_gols DESC, gt.gols_pro DESC
       `, [grupo.id]);
       grupo.classificacao = classificacao;
     }
@@ -114,6 +114,34 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     res.json({ mensagem: 'Grupo removido' });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao remover grupo' });
+  }
+});
+
+// Retorna 1º e 2º de cada grupo (para gerar mata-mata)
+router.get('/classificados', authMiddleware, async (req, res) => {
+  const { modalidade_id } = req.query;
+  try {
+    let q = `SELECT g.id as grupo_id, g.nome as grupo_nome, m.id as modalidade_id, m.nome as modalidade_nome
+             FROM grupos g JOIN modalidades m ON g.modalidade_id = m.id`;
+    const params = [];
+    if (modalidade_id) { q += ' WHERE g.modalidade_id = ?'; params.push(modalidade_id); }
+    q += ' ORDER BY m.nome, g.nome';
+    const [grupos] = await pool.query(q, params);
+
+    const resultado = [];
+    for (const g of grupos) {
+      const [times] = await pool.query(
+        `SELECT gt.*, t.nome, t.sigla, t.cor, t.logo
+         FROM grupos_times gt JOIN times t ON gt.time_id = t.id
+         WHERE gt.grupo_id = ?
+         ORDER BY gt.pontos DESC, gt.vitorias DESC, gt.saldo_gols DESC, gt.gols_pro DESC
+         LIMIT 2`, [g.grupo_id]
+      );
+      resultado.push({ ...g, classificados: times });
+    }
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar classificados' });
   }
 });
 

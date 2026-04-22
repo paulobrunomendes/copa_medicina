@@ -150,6 +150,17 @@ async function initDB() {
       )
     `);
 
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS push_subscriptions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        endpoint TEXT NOT NULL,
+        p256dh TEXT NOT NULL,
+        auth TEXT NOT NULL,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_endpoint (endpoint(500))
+      )
+    `);
+
     // Inserir modalidades padrão se não existirem
     const [mods] = await conn.query('SELECT COUNT(*) as total FROM modalidades');
     if (mods[0].total === 0) {
@@ -161,6 +172,22 @@ async function initDB() {
         ('Basquete', '🏀'),
         ('Outros', '🏆')
       `);
+    }
+
+    // Adicionar colunas de pênaltis/prorrogação ao jogos
+    const penaltiCols = [
+      { name: 'gols_prorrogacao_casa',      sql: 'ALTER TABLE jogos ADD COLUMN gols_prorrogacao_casa INT DEFAULT 0' },
+      { name: 'gols_prorrogacao_visitante', sql: 'ALTER TABLE jogos ADD COLUMN gols_prorrogacao_visitante INT DEFAULT 0' },
+      { name: 'gols_penaltis_casa',         sql: 'ALTER TABLE jogos ADD COLUMN gols_penaltis_casa INT DEFAULT 0' },
+      { name: 'gols_penaltis_visitante',    sql: 'ALTER TABLE jogos ADD COLUMN gols_penaltis_visitante INT DEFAULT 0' },
+    ];
+    for (const col of penaltiCols) {
+      const [existing] = await conn.query(
+        `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'jogos' AND COLUMN_NAME = ?`,
+        [col.name]
+      );
+      if (existing.length === 0) await conn.query(col.sql);
     }
 
     console.log('✅ Banco de dados inicializado com sucesso!');

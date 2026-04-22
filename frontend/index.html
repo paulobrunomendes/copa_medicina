@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogos — Copa Medicina</title>
-  <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+  <title>Jogos — Copa Universitária</title>
+  <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/public/favicon.png">
+  <link rel="manifest" href="/public/manifest.json">
+  <meta name="theme-color" content="#1e40af">
   <link rel="stylesheet" href="/public/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -251,6 +254,62 @@
     }
     .artilheiro-gols span { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; }
 
+    /* ===== CAMPEÃO BANNER ===== */
+    .campeao-banner {
+      background: linear-gradient(135deg, #92400e 0%, #d97706 50%, #f59e0b 100%);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: white;
+      box-shadow: 0 8px 32px rgba(217,119,6,0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .campeao-banner::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .campeao-titulo { font-size: 0.75rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-bottom: 0.5rem; }
+    .campeao-escudo { width: 80px; height: 80px; border-radius: 50%; margin: 0.75rem auto; border: 4px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: white; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .campeao-nome { font-size: 2rem; font-weight: 900; letter-spacing: -1px; text-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .campeao-sub { font-size: 0.82rem; opacity: 0.75; margin-top: 0.35rem; }
+
+    /* ===== STATS ===== */
+    .stats-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      margin-bottom: 1.5rem;
+    }
+    .stats-header {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--primary);
+      color: white;
+    }
+    .stats-row {
+      display: grid;
+      grid-template-columns: 2rem 36px 1fr repeat(5,40px);
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.83rem;
+    }
+    .stats-row:last-child { border-bottom: none; }
+    .stats-row:hover { background: var(--bg); }
+    .stats-pos { font-weight: 800; color: var(--text-muted); text-align: center; font-size: 0.75rem; }
+    .stats-num { font-weight: 700; text-align: center; color: var(--text-muted); font-size: 0.8rem; }
+    .stats-num.highlight { color: var(--primary-light); font-weight: 800; }
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1.5rem 30px 1fr repeat(3,34px); }
+      .stats-row .stats-col-hide { display: none; }
+    }
+
     /* ===== BOTÃO COMPARTILHAR ===== */
     .btn-share {
       background: rgba(255,255,255,0.12);
@@ -292,15 +351,17 @@
 <header class="header">
   <div class="header-inner">
     <div class="logo">
-      <div class="logo-badge">🏆</div>
-      <span class="logo-title">Copa Medicina</span>
+      <img src="/public/logo.png" alt="Copa Universitária 2026" class="logo-badge" style="background:none;border-radius:0;object-fit:contain">
+      <span class="logo-title">Copa Universitária</span>
     </div>
     <nav class="nav">
       <button class="nav-btn active" onclick="mostrarSecao('jogos', this)">Jogos</button>
       <button class="nav-btn" onclick="mostrarSecao('classificacao', this)">Classificação</button>
       <button class="nav-btn" onclick="mostrarSecao('chaveamento', this)">Mata-mata</button>
       <button class="nav-btn" onclick="mostrarSecao('artilheiros', this)">Artilheiros</button>
+      <button class="nav-btn" onclick="mostrarSecao('stats', this)">Estatísticas</button>
       <button class="nav-btn" onclick="mostrarSecao('encerrados', this)">Encerrados</button>
+      <button class="nav-btn" onclick="mostrarSecao('historico', this)">Por Time</button>
     </nav>
   </div>
 </header>
@@ -347,6 +408,19 @@
     </div>
   </section>
 
+  <!-- SEÇÃO: ESTATÍSTICAS -->
+  <section id="secao-stats" style="display:none">
+    <div class="modalidade-tabs" id="statsTabs"></div>
+    <!-- Banner campeão (aparece se houver final encerrada) -->
+    <div id="campeaoBanner" style="display:none;margin-bottom:1.5rem"></div>
+    <div id="statsContainer"></div>
+    <div id="stats-empty" class="empty-state" style="display:none">
+      <div class="empty-state-icon">📊</div>
+      <h3>Sem dados ainda</h3>
+      <p>As estatísticas aparecerão conforme os jogos forem encerrados.</p>
+    </div>
+  </section>
+
   <!-- SEÇÃO: ENCERRADOS -->
   <section id="secao-encerrados" style="display:none">
     <div class="modalidade-tabs" id="encerradosTabs"></div>
@@ -358,6 +432,24 @@
       <div class="empty-state-icon">🏁</div>
       <h3>Nenhum jogo encerrado</h3>
       <p>Os resultados aparecerão aqui quando os jogos forem encerrados.</p>
+    </div>
+  </section>
+
+  <!-- SEÇÃO: HISTÓRICO POR TIME -->
+  <section id="secao-historico" style="display:none">
+    <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:flex-end">
+      <div style="flex:1;min-width:200px">
+        <label style="display:block;font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem">Time</label>
+        <select id="historicoTimeSelect" style="width:100%;padding:0.6rem 0.8rem;background:white;border:1px solid var(--border);border-radius:6px;font-size:0.9rem;font-family:inherit;color:var(--text)" onchange="carregarHistorico()">
+          <option value="">Selecione um time...</option>
+        </select>
+      </div>
+    </div>
+    <div id="historicoContainer"></div>
+    <div id="historico-empty" class="empty-state" style="display:none">
+      <div class="empty-state-icon">📋</div>
+      <h3>Nenhum jogo encontrado</h3>
+      <p>Este time ainda não tem jogos cadastrados.</p>
     </div>
   </section>
 
@@ -398,23 +490,27 @@
 
   // ===== NAVEGAÇÃO =====
   const _secaoTitulos = {
-    jogos: 'Jogos — Copa Medicina',
-    artilheiros: 'Artilheiros — Copa Medicina',
-    encerrados: 'Resultados — Copa Medicina',
-    classificacao: 'Classificação — Copa Medicina',
-    chaveamento: 'Mata-mata — Copa Medicina',
+    jogos: 'Jogos — Copa Universitária',
+    artilheiros: 'Artilheiros — Copa Universitária',
+    stats: 'Estatísticas — Copa Universitária',
+    encerrados: 'Resultados — Copa Universitária',
+    classificacao: 'Classificação — Copa Universitária',
+    chaveamento: 'Mata-mata — Copa Universitária',
+    historico: 'Por Time — Copa Universitária',
   };
   function mostrarSecao(secao, btn) {
     document.querySelectorAll('[id^="secao-"]').forEach(s => s.style.display = 'none');
     document.getElementById(`secao-${secao}`).style.display = '';
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.title = _secaoTitulos[secao] || 'Copa Medicina';
+    document.title = _secaoTitulos[secao] || 'Copa Universitária';
     if (secao === 'jogos') carregarJogos();
     if (secao === 'artilheiros') carregarArtilheiros();
+    if (secao === 'stats') carregarStats();
     if (secao === 'encerrados') carregarEncerrados();
     if (secao === 'classificacao') carregarClassificacao();
     if (secao === 'chaveamento') carregarChaveamento();
+    if (secao === 'historico') iniciarHistorico();
   }
 
   // ===== TABS DE MODALIDADE =====
@@ -532,6 +628,8 @@
               <span class="placar-sep">×</span>
               <span class="placar-num" id="placar-vis-${j.id}">${j.status === 'agendado' ? '—' : j.gols_visitante}</span>
             </div>
+            <div id="card-prorro-${j.id}" style="font-size:0.65rem;color:var(--text-muted);font-weight:600;text-align:center${(j.gols_prorrogacao_casa || j.gols_prorrogacao_visitante) ? '' : ';display:none'}">${'Prorr. ' + j.gols_prorrogacao_casa + '×' + j.gols_prorrogacao_visitante}</div>
+            <div id="card-pen-${j.id}" style="font-size:0.65rem;color:var(--text-muted);font-weight:600;text-align:center${(j.gols_penaltis_casa || j.gols_penaltis_visitante) ? '' : ';display:none'}">${'Pên. ' + j.gols_penaltis_casa + '×' + j.gols_penaltis_visitante}</div>
             ${scoreLabel}
           </div>
           <div class="time-info">
@@ -631,6 +729,86 @@
     }
   }
 
+  // ===== ESTATÍSTICAS & CAMPEÃO =====
+  async function carregarStats() {
+    try {
+      let url = '/stats';
+      if (modalidadeAtiva) url += `?modalidade_id=${modalidadeAtiva}`;
+      const [stats, campeoes] = await Promise.all([
+        api.get(url),
+        api.get(`/stats/campeao${modalidadeAtiva ? '?modalidade_id=' + modalidadeAtiva : ''}`)
+      ]);
+
+      // Campeão
+      const bannerEl = document.getElementById('campeaoBanner');
+      if (campeoes.length > 0) {
+        bannerEl.style.display = '';
+        bannerEl.innerHTML = campeoes.map(c => `
+          <div class="campeao-banner" style="margin-bottom:0.75rem">
+            <div class="campeao-titulo">🏆 Campeão ${c.modalidade_icone} ${c.modalidade_nome}</div>
+            <div class="campeao-escudo" style="background:${c.campeao_cor}">
+              ${c.campeao_logo
+                ? `<img src="${c.campeao_logo}" style="width:72px;height:72px;object-fit:contain;border-radius:50%">`
+                : c.campeao_sigla}
+            </div>
+            <div class="campeao-nome">🥇 ${c.campeao_nome}</div>
+            <div class="campeao-sub">Vice-campeão: ${c.vice_nome} · Placar: ${c.placar}</div>
+          </div>
+        `).join('');
+      } else {
+        bannerEl.style.display = 'none';
+      }
+
+      // Stats
+      const container = document.getElementById('statsContainer');
+      const emptyEl   = document.getElementById('stats-empty');
+      emptyEl.style.display = stats.length === 0 ? '' : 'none';
+      container.style.display = stats.length === 0 ? 'none' : '';
+
+      if (stats.length > 0) {
+        container.innerHTML = `
+          <div class="stats-card">
+            <div class="stats-header">Desempenho por Time</div>
+            <div class="stats-row" style="font-size:0.7rem;font-weight:700;color:var(--text-muted);background:var(--bg-alt);text-transform:uppercase;letter-spacing:0.5px">
+              <span></span><span></span>
+              <span>Time</span>
+              <span class="stats-num">J</span>
+              <span class="stats-num">V</span>
+              <span class="stats-num stats-col-hide">E</span>
+              <span class="stats-num stats-col-hide">D</span>
+              <span class="stats-num">SG</span>
+              <span class="stats-num highlight">⚽</span>
+            </div>
+            ${stats.map((t, i) => `
+              <div class="stats-row">
+                <span class="stats-pos">${i < 3 ? ['🥇','🥈','🥉'][i] : i+1}</span>
+                <div style="width:28px;height:28px;border-radius:50%;background:${t.cor};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:white">
+                  ${t.logo ? `<img src="${t.logo}" style="width:28px;height:28px;object-fit:contain;border-radius:50%">` : t.sigla}
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:0.85rem">${t.nome}</div>
+                  ${t.amarelos || t.vermelhos ? `<div style="font-size:0.7rem;color:var(--text-muted)">
+                    ${t.amarelos ? `🟨${t.amarelos}` : ''} ${t.vermelhos ? `🟥${t.vermelhos}` : ''}
+                  </div>` : ''}
+                </div>
+                <span class="stats-num">${t.jogos}</span>
+                <span class="stats-num">${t.vitorias}</span>
+                <span class="stats-num stats-col-hide">${t.empates}</span>
+                <span class="stats-num stats-col-hide">${t.derrotas}</span>
+                <span class="stats-num">${t.saldo_gols > 0 ? '+' : ''}${t.saldo_gols}</span>
+                <span class="stats-num highlight">${t.gols_marcados}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      renderTabs('statsTabs', carregarStats);
+    } catch(err) {
+      console.error('Erro ao carregar stats:', err);
+    }
+  }
+
   // ===== ENCERRADOS =====
   async function carregarEncerrados() {
     try {
@@ -649,6 +827,53 @@
     }
   }
 
+  // ===== HISTÓRICO POR TIME =====
+  let todosTimesHistorico = [];
+
+  async function iniciarHistorico() {
+    if (todosTimesHistorico.length === 0) {
+      try { todosTimesHistorico = await api.get('/times'); } catch { return; }
+    }
+    const sel = document.getElementById('historicoTimeSelect');
+    if (!sel) return;
+    const val = sel.value;
+    sel.innerHTML = '<option value="">Selecione um time...</option>' +
+      todosTimesHistorico.map(t => `<option value="${t.id}" ${String(t.id) === val ? 'selected' : ''}>${t.sigla} — ${t.nome}${t.curso ? ' (' + t.curso + ')' : ''}</option>`).join('');
+    if (val) carregarHistorico();
+  }
+
+  async function carregarHistorico() {
+    const timeId = document.getElementById('historicoTimeSelect')?.value;
+    const container = document.getElementById('historicoContainer');
+    const emptyEl  = document.getElementById('historico-empty');
+    if (!container) return;
+    container.innerHTML = '';
+    emptyEl.style.display = 'none';
+    if (!timeId) return;
+
+    try {
+      const jogos = await api.get(`/jogos?time_id=${timeId}`);
+      if (jogos.length === 0) { emptyEl.style.display = ''; return; }
+
+      // Agrupar por modalidade
+      const porModal = {};
+      for (const j of jogos) {
+        const key = j.modalidade_nome;
+        if (!porModal[key]) porModal[key] = { icone: j.modalidade_icone, jogos: [] };
+        porModal[key].jogos.push(j);
+      }
+
+      container.innerHTML = Object.entries(porModal).map(([mod, data]) => `
+        <div style="margin-bottom:1.5rem">
+          <h3 style="font-size:0.85rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem">${data.icone} ${mod}</h3>
+          <div class="jogos-grid">
+            ${data.jogos.map(j => jogoCardHTML(j)).join('')}
+          </div>
+        </div>
+      `).join('');
+    } catch { emptyEl.style.display = ''; }
+  }
+
   // ===== CLASSIFICAÇÃO =====
   async function carregarClassificacao() {
     try {
@@ -665,6 +890,7 @@
           <div class="grupo-card-header">
             ${g.modalidade_icone} ${g.modalidade_nome} — Grupo ${g.nome}
           </div>
+          <div class="table-scroll">
           <table class="classificacao-table">
             <thead>
               <tr>
@@ -704,6 +930,7 @@
               }
             </tbody>
           </table>
+          </div>
         </div>
       `).join('');
 
@@ -803,6 +1030,20 @@
     if (casaEl) casaEl.textContent = jogo.gols_casa;
     if (visEl)  visEl.textContent  = jogo.gols_visitante;
 
+    // Atualizar prorrogação/pênaltis em tempo real
+    const prorrEl = document.getElementById(`card-prorro-${jogo.id}`);
+    if (prorrEl) {
+      const temProrr = jogo.gols_prorrogacao_casa || jogo.gols_prorrogacao_visitante;
+      prorrEl.textContent = `Prorr. ${jogo.gols_prorrogacao_casa || 0}×${jogo.gols_prorrogacao_visitante || 0}`;
+      prorrEl.style.display = temProrr ? '' : 'none';
+    }
+    const penEl = document.getElementById(`card-pen-${jogo.id}`);
+    if (penEl) {
+      const temPen = jogo.gols_penaltis_casa || jogo.gols_penaltis_visitante;
+      penEl.textContent = `Pên. ${jogo.gols_penaltis_casa || 0}×${jogo.gols_penaltis_visitante || 0}`;
+      penEl.style.display = temPen ? '' : 'none';
+    }
+
     // Notificação de gol
     if (golCasa) mostrarNotifGol(`GOL! ${jogo.time_casa_nome || jogo.time_casa_sigla} — ${jogo.gols_casa} × ${jogo.gols_visitante}`);
     if (golVis)  mostrarNotifGol(`GOL! ${jogo.time_visitante_nome || jogo.time_visitante_sigla} — ${jogo.gols_casa} × ${jogo.gols_visitante}`);
@@ -832,6 +1073,11 @@
   const _encerradoTimers = {}; // jogoId → setTimeout handle
 
   socket.on('jogo_atualizado', (jogo) => {
+    // Se uma final foi encerrada, recarregar stats para mostrar campeão
+    if (jogo?.fase === 'final' && jogo?.status === 'encerrado') {
+      const secaoStats = document.getElementById('secao-stats');
+      if (secaoStats && secaoStats.style.display !== 'none') carregarStats();
+    }
     const secaoAtiva = document.querySelector('[id^="secao-"]:not([style*="display: none"])');
     if (secaoAtiva?.id === 'secao-jogos') {
       if (jogo && jogo.status === 'encerrado') {
@@ -860,6 +1106,96 @@
   }
 
   init();
+</script>
+
+<script>
+// ===== PUSH NOTIFICATIONS =====
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+}
+
+async function initPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+  try {
+    // Registrar service worker
+    const reg = await navigator.serviceWorker.register('/public/sw.js');
+
+    // Se já tem permissão concedida, assinar silenciosamente
+    if (Notification.permission === 'granted') {
+      await assinarPush(reg);
+      return;
+    }
+
+    // Se bloqueado, não pedir de novo
+    if (Notification.permission === 'denied') return;
+
+    // Mostrar banner de convite (não pede permissão imediatamente)
+    mostrarBannerPush(reg);
+  } catch (err) {
+    console.warn('Push init erro:', err);
+  }
+}
+
+function mostrarBannerPush(reg) {
+  if (document.getElementById('pushBanner')) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'pushBanner';
+  banner.innerHTML = `
+    <div style="
+      position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+      background:#1e40af;color:white;
+      padding:0.75rem 1.25rem;border-radius:50px;
+      display:flex;align-items:center;gap:0.75rem;
+      box-shadow:0 8px 32px rgba(0,0,0,0.35);
+      font-family:inherit;font-size:0.85rem;font-weight:600;
+      z-index:9998;white-space:nowrap;
+      animation:golEntrar 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    ">
+      <span>🔔 Ativar notificações de gol?</span>
+      <button id="pushSim" style="background:white;color:#1e40af;border:none;border-radius:50px;padding:0.3rem 0.85rem;font-weight:800;cursor:pointer;font-size:0.82rem;font-family:inherit">Sim</button>
+      <button id="pushNao" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:50px;padding:0.3rem 0.7rem;cursor:pointer;font-size:0.82rem;font-family:inherit">Não</button>
+    </div>
+  `;
+  document.body.appendChild(banner);
+
+  document.getElementById('pushSim').onclick = async () => {
+    banner.remove();
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') await assinarPush(reg);
+  };
+  document.getElementById('pushNao').onclick = () => banner.remove();
+
+  // Some sozinho após 12 segundos
+  setTimeout(() => banner?.remove(), 12000);
+}
+
+async function assinarPush(reg) {
+  try {
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      const { publicKey } = await fetch('/api/push/vapid-public-key').then(r => r.json());
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+    }
+    await fetch('/api/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sub),
+    });
+  } catch (err) {
+    console.warn('Erro ao assinar push:', err);
+  }
+}
+
+// Inicia push após pequeno delay para não bloquear o carregamento
+setTimeout(initPush, 2500);
 </script>
 </body>
 </html>

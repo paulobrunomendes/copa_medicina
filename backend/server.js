@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -33,6 +33,9 @@ app.use('/api/grupos', require('./routes/grupos'));
 app.use('/api/jogos', require('./routes/jogos'));
 app.use('/api/modalidades', require('./routes/modalidades'));
 app.use('/api/artilheiros', require('./routes/artilheiros'));
+app.use('/api/push', require('./routes/push'));
+app.use('/api/stats', require('./routes/stats'));
+app.use('/api/exportar', require('./routes/exportar'));
 
 // Health check
 app.get('/api/health', (req, res) => {

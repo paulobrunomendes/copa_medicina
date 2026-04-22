@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Placar ao Vivo — Copa Medicina</title>
-  <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+  <title>Placar ao Vivo — Copa Universitária</title>
+  <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/public/favicon.png">
+  <link rel="manifest" href="/public/manifest.json">
+  <meta name="theme-color" content="#1e40af">
   <link rel="stylesheet" href="/public/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -251,7 +254,7 @@
   }
 
   function renderHero(j) {
-    document.title = `${j.time_casa_sigla} × ${j.time_visitante_sigla} — Copa Medicina`;
+    document.title = `${j.time_casa_sigla} × ${j.time_visitante_sigla} — Copa Universitária`;
 
     const statusBadge = j.status === 'ao_vivo'
       ? `<div class="status-live-badge"><span class="live-dot"></span> AO VIVO</div>`
@@ -268,10 +271,14 @@
           <div class="hero-escudo" style="background:${j.time_casa_cor}">${j.time_casa_sigla}</div>
           <div class="hero-nome">${j.time_casa_nome}</div>
         </div>
-        <div class="hero-placar">
-          <div class="hero-gol" id="heroGolCasa">${j.status === 'agendado' ? '—' : j.gols_casa}</div>
-          <div class="hero-sep">×</div>
-          <div class="hero-gol" id="heroGolVis">${j.status === 'agendado' ? '—' : j.gols_visitante}</div>
+        <div class="hero-placar" style="flex-direction:column;align-items:center;gap:0.2rem">
+          <div style="display:flex;align-items:center;gap:1rem">
+            <div class="hero-gol" id="heroGolCasa">${j.status === 'agendado' ? '—' : j.gols_casa}</div>
+            <div class="hero-sep">×</div>
+            <div class="hero-gol" id="heroGolVis">${j.status === 'agendado' ? '—' : j.gols_visitante}</div>
+          </div>
+          ${(j.gols_prorrogacao_casa || j.gols_prorrogacao_visitante) ? `<div id="heroProrr" style="font-size:0.72rem;opacity:0.8;font-weight:600">Prorr. ${j.gols_prorrogacao_casa} × ${j.gols_prorrogacao_visitante}</div>` : '<div id="heroProrr"></div>'}
+          ${(j.gols_penaltis_casa || j.gols_penaltis_visitante) ? `<div id="heroPen" style="font-size:0.72rem;opacity:0.8;font-weight:600">Pên. ${j.gols_penaltis_casa} × ${j.gols_penaltis_visitante}</div>` : '<div id="heroPen"></div>'}
         </div>
         <div class="hero-time">
           <div class="hero-escudo" style="background:${j.time_visitante_cor}">${j.time_visitante_sigla}</div>

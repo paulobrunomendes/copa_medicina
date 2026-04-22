@@ -121,4 +121,22 @@ router.delete('/admins/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// Trocar senha (admin logado)
+router.put('/senha', authMiddleware, async (req, res) => {
+  const { senhaAtual, novaSenha } = req.body;
+  if (!senhaAtual || !novaSenha) return res.status(400).json({ erro: 'Campos obrigatórios' });
+  if (novaSenha.length < 6) return res.status(400).json({ erro: 'Nova senha deve ter pelo menos 6 caracteres' });
+  try {
+    const [rows] = await pool.query('SELECT * FROM admins WHERE id=?', [req.admin.id]);
+    if (rows.length === 0) return res.status(404).json({ erro: 'Admin não encontrado' });
+    const ok = await bcrypt.compare(senhaAtual, rows[0].senha);
+    if (!ok) return res.status(401).json({ erro: 'Senha atual incorreta' });
+    const hash = await bcrypt.hash(novaSenha, 10);
+    await pool.query('UPDATE admins SET senha=? WHERE id=?', [hash, req.admin.id]);
+    res.json({ mensagem: 'Senha alterada com sucesso' });
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao alterar senha' });
+  }
+});
+
 module.exports = router;

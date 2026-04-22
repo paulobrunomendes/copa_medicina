@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Placar ao Vivo — Admin · Copa Medicina</title>
-  <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+  <title>Placar ao Vivo — Admin · Copa Universitária</title>
+  <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/public/favicon.png">
+  <link rel="manifest" href="/public/manifest.json">
+  <meta name="theme-color" content="#1e40af">
   <link rel="stylesheet" href="/public/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -329,7 +332,7 @@
     }
 
     @media (max-width: 768px) {
-      .content-topbar { padding: 0.75rem 1rem; margin: -1.5rem -1.5rem 1.5rem; }
+      .content-topbar { padding: 0.75rem 1rem; margin: -1.25rem -1rem 1.25rem; }
       .content-topbar-right .admin-nome-text { display: none; }
       .match-card { padding: 1.5rem 1rem; gap: 0.5rem; border-radius: 16px; }
       .match-team-badge { width: 50px; height: 50px; font-size: 0.82rem; }
@@ -337,6 +340,21 @@
       .score-btn { width: 40px; height: 40px; font-size: 1.2rem; }
       .match-team-name { font-size: 0.8rem; max-width: 90px; }
       .match-controls { gap: 0.5rem; }
+    }
+
+    @media (max-width: 480px) {
+      /* Score card compacto em telas muito pequenas */
+      .match-card { gap: 0.2rem !important; padding: 1.25rem 0.5rem !important; }
+      .match-team-badge { width: 40px !important; height: 40px !important; font-size: 0.7rem !important; }
+      .match-team-name { font-size: 0.7rem !important; max-width: 68px !important; }
+      .score-digit { font-size: 2.4rem !important; min-width: 42px !important; letter-spacing: -2px !important; }
+      .score-btn { width: 34px !important; height: 34px !important; font-size: 1rem !important; }
+      .match-score-controls { gap: 0.3rem !important; }
+      /* Inputs de gol/cartão empilhados */
+      .artilheiros-add { flex-direction: column; }
+      .artilheiros-add .form-input,
+      .artilheiros-add .form-select,
+      .artilheiros-add .btn { width: 100% !important; min-width: 0 !important; }
     }
 
     /* ===== ARTILHEIROS ===== */
@@ -504,6 +522,12 @@
             <input type="number" class="form-input" id="jogoDuracaoPeriodo" min="1" max="120" value="45">
           </div>
         </div>
+        <div class="form-group" id="jogoIdaVoltaField" style="display:flex">
+          <label style="display:flex;align-items:center;gap:0.6rem;cursor:pointer;user-select:none">
+            <input type="checkbox" id="jogoIdaVolta" style="width:16px;height:16px;cursor:pointer">
+            <span style="font-size:0.875rem;font-weight:500">Jogo de ida e volta <span style="color:var(--text-muted);font-weight:400">(cria 2 jogos: ida e volta com mando invertido)</span></span>
+          </label>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -586,7 +610,7 @@
 
 <!-- TOPBAR MOBILE -->
 <div class="admin-topbar">
-  <div class="admin-topbar-title">🏆 Copa Medicina</div>
+  <div class="admin-topbar-title"><img src="/public/logo.png" alt="Copa" style="height:28px;width:28px;object-fit:contain;vertical-align:middle;margin-right:6px"> Copa Universitária</div>
   <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
@@ -600,7 +624,7 @@
 
   <!-- SIDEBAR -->
   <aside class="admin-sidebar" id="adminSidebar">
-    <div class="admin-sidebar-title"><span>🏆</span> Copa Medicina</div>
+    <div class="admin-sidebar-title"><img src="/public/logo.png" alt="Copa" style="height:36px;width:36px;object-fit:contain;vertical-align:middle;margin-right:8px"> Copa Universitária</div>
     <nav class="sidebar-nav">
       <div class="sidebar-section-label">Operações</div>
       <div class="sidebar-item active" onclick="mostrarPainel('placar', this)">
@@ -625,10 +649,22 @@
         <div class="s-icon">🏅</div>
         Modalidades
       </div>
+      <div class="sidebar-item" onclick="mostrarPainel('matamata', this)">
+        <div class="s-icon">🏆</div>
+        Mata-mata
+      </div>
+      <div class="sidebar-item" onclick="mostrarPainel('exportar', this)">
+        <div class="s-icon">📥</div>
+        Exportar CSV
+      </div>
       <div class="sidebar-section-label">Sistema</div>
       <div class="sidebar-item" onclick="mostrarPainel('admins', this)">
         <div class="s-icon">👤</div>
         Administradores
+      </div>
+      <div class="sidebar-item" onclick="mostrarPainel('senha', this)">
+        <div class="s-icon">🔑</div>
+        Trocar Senha
       </div>
     </nav>
     <div style="padding: 1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08)">
@@ -646,10 +682,10 @@
     <!-- TOPBAR CONTEÚDO -->
     <div class="content-topbar">
       <div class="content-topbar-left">
-        <div class="content-topbar-icon">🏆</div>
+        <div class="content-topbar-icon"><img src="/public/logo.png" alt="Copa" style="height:32px;width:32px;object-fit:contain"></div>
         <div>
           <div class="content-topbar-title" id="topbarTitle">Placar ao Vivo</div>
-          <div class="content-topbar-sub">Copa Medicina — Painel Admin</div>
+          <div class="content-topbar-sub">Copa Universitária — Painel Admin</div>
         </div>
       </div>
       <div class="content-topbar-right">
@@ -722,6 +758,35 @@
             </div>
           </div>
         </div>
+
+        <!-- Prorrogação / Pênaltis (expandir manualmente) -->
+        <details id="penaltiDetails" style="margin-bottom:0.75rem">
+          <summary style="cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--text-muted);padding:0.4rem 0;list-style:none;display:flex;align-items:center;gap:0.4rem">
+            ⏱ Prorrogação / 🥅 Pênaltis <span style="font-size:0.7rem;opacity:0.7">(clique para expandir)</span>
+          </summary>
+          <div style="margin-top:0.6rem;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem">Prorrogação</div>
+              <div style="display:flex;align-items:center;gap:0.4rem">
+                <span id="penProrroCasaNome" style="font-size:0.75rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
+                <input type="number" id="penProrroCasa" min="0" max="30" value="0" style="width:54px;text-align:center;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#f1f5f9;padding:0.3rem;font-size:0.85rem">
+                <span style="font-size:0.75rem;color:var(--text-muted)">×</span>
+                <input type="number" id="penProrroVis" min="0" max="30" value="0" style="width:54px;text-align:center;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#f1f5f9;padding:0.3rem;font-size:0.85rem">
+                <span id="penProrroVisNome" style="font-size:0.75rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right">—</span>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:0.7rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.2rem">Pênaltis</div>
+              <div style="display:flex;align-items:center;gap:0.4rem">
+                <span id="penPenaltiCasaNome" style="font-size:0.75rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
+                <input type="number" id="penPenaltiCasa" min="0" max="20" value="0" style="width:54px;text-align:center;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#f1f5f9;padding:0.3rem;font-size:0.85rem">
+                <span style="font-size:0.75rem;color:var(--text-muted)">×</span>
+                <input type="number" id="penPenaltiVis" min="0" max="20" value="0" style="width:54px;text-align:center;background:#1e293b;border:1px solid #334155;border-radius:4px;color:#f1f5f9;padding:0.3rem;font-size:0.85rem">
+                <span id="penPenaltiVisNome" style="font-size:0.75rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right">—</span>
+              </div>
+            </div>
+          </div>
+        </details>
 
         <!-- Cronômetro -->
         <div id="timerInlineBlock" style="display:none;flex-direction:column;align-items:center;gap:0.1rem;margin-bottom:1rem">
@@ -840,7 +905,7 @@
       <div class="admin-card">
         <div class="admin-card-title">
           🏆 Gerar Mata-mata
-          <select class="form-select" id="matamataModalidade" style="font-size:0.85rem;max-width:200px" onchange="renderGerador()"></select>
+          <select class="form-select" id="geradorModalidade" style="font-size:0.85rem;max-width:200px" onchange="renderGerador()"></select>
         </div>
         <div id="geradorMatamata">
           <p style="color:var(--text-muted);font-size:0.875rem">Selecione uma modalidade acima para ver os classificados e gerar os confrontos.</p>
@@ -931,6 +996,83 @@
       </div>
     </div>
 
+    <!-- PAINEL: MATA-MATA -->
+    <div id="painel-matamata" style="display:none">
+      <div class="section-header"><h2>🏆 Mata-mata</h2></div>
+      <div class="admin-card">
+        <div class="admin-card-title">Classificados por Grupo</div>
+        <div class="form-group" style="max-width:280px;margin-bottom:1rem">
+          <label class="form-label">Modalidade</label>
+          <select class="form-select" id="matamataModalidade" onchange="carregarClassificados()"></select>
+        </div>
+        <div id="classificadosContainer"></div>
+      </div>
+      <div class="admin-card" style="margin-top:1rem">
+        <div class="admin-card-title">Gerar Confrontos</div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">
+          Selecione as duplas de confronto abaixo e clique em Gerar para criar os jogos de mata-mata automaticamente.
+        </p>
+        <div id="confrontosList"></div>
+        <div id="btnGerarWrapper" style="display:none;margin-top:1rem">
+          <label style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.75rem;cursor:pointer;user-select:none">
+            <input type="checkbox" id="matamataIdaVolta" style="width:16px;height:16px;cursor:pointer">
+            <span style="font-size:0.875rem;font-weight:500">Jogo de ida e volta <span style="color:var(--text-muted);font-weight:400">(cria 2 jogos por confronto, alternando mando de campo)</span></span>
+          </label>
+          <button class="btn btn-primary" id="btnGerarMatamata" onclick="gerarConfrontos()">⚡ Gerar Jogos de Mata-mata</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL: EXPORTAR CSV -->
+    <div id="painel-exportar" style="display:none">
+      <div class="section-header"><h2>📥 Exportar Dados (CSV)</h2></div>
+      <div class="admin-card" style="margin-bottom:1rem">
+        <div class="admin-card-title">Filtrar por Modalidade (opcional)</div>
+        <div class="form-group" style="max-width:280px">
+          <select class="form-select" id="exportarModalidade">
+            <option value="">Todas as modalidades</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem">
+        <div class="admin-card" style="display:flex;flex-direction:column;gap:0.5rem">
+          <div style="font-weight:700;font-size:0.95rem">📊 Classificação</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">Tabela de classificação de todos os grupos com pontos, vitórias, saldo de gols etc.</div>
+          <button class="btn btn-primary btn-outline" onclick="exportarCSV('classificacao')" style="margin-top:auto">⬇ Baixar CSV</button>
+        </div>
+        <div class="admin-card" style="display:flex;flex-direction:column;gap:0.5rem">
+          <div style="font-weight:700;font-size:0.95rem">⚽ Artilheiros</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">Ranking de artilheiros com nome, time e total de gols marcados.</div>
+          <button class="btn btn-primary btn-outline" onclick="exportarCSV('artilheiros')" style="margin-top:auto">⬇ Baixar CSV</button>
+        </div>
+        <div class="admin-card" style="display:flex;flex-direction:column;gap:0.5rem">
+          <div style="font-weight:700;font-size:0.95rem">📅 Jogos</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">Todos os jogos com placar, prorrogação, pênaltis, data e local.</div>
+          <button class="btn btn-primary btn-outline" onclick="exportarCSV('jogos')" style="margin-top:auto">⬇ Baixar CSV</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL: TROCAR SENHA -->
+    <div id="painel-senha" style="display:none">
+      <div class="section-header"><h2>🔑 Trocar Senha</h2></div>
+      <div class="admin-card" style="max-width:480px">
+        <div class="form-group">
+          <label class="form-label">Senha atual</label>
+          <input type="password" class="form-input" id="senhaAtual" placeholder="Digite sua senha atual">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nova senha</label>
+          <input type="password" class="form-input" id="novaSenha" placeholder="Mínimo 6 caracteres">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar nova senha</label>
+          <input type="password" class="form-input" id="confirmarSenha" placeholder="Repita a nova senha">
+        </div>
+        <button class="btn btn-primary" id="btnTrocarSenha" onclick="trocarSenha()">Alterar Senha</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -980,7 +1122,8 @@ function fecharSidebar() {
 // ===== NAVEGAÇÃO =====
 const _panelTitles = {
   placar: 'Placar ao Vivo', jogos: 'Gerenciar Jogos', times: 'Times',
-  grupos: 'Grupos', modalidades: 'Modalidades', admins: 'Administradores'
+  grupos: 'Grupos', modalidades: 'Modalidades', admins: 'Administradores',
+  matamata: 'Mata-mata', senha: 'Trocar Senha', exportar: 'Exportar CSV'
 };
 function mostrarPainel(nome, el) {
   document.querySelectorAll('[id^="painel-"]').forEach(p => p.style.display = 'none');
@@ -989,12 +1132,12 @@ function mostrarPainel(nome, el) {
   el.classList.add('active');
   const titulo = _panelTitles[nome] || nome;
   const tt = document.getElementById('topbarTitle'); if (tt) tt.textContent = titulo;
-  document.title = `${titulo} — Admin · Copa Medicina`;
+  document.title = `${titulo} — Admin · Copa Universitária`;
   fecharSidebar();
   if (nome === 'jogos') carregarJogosAdmin();
   if (nome === 'times') carregarTimes();
   if (nome === 'grupos') carregarGruposAdmin().then(() => {
-    const sel = document.getElementById('matamataModalidade');
+    const sel = document.getElementById('geradorModalidade');
     if (sel) {
       sel.innerHTML = '<option value="">Selecionar modalidade...</option>' +
         modalidades.map(m => `<option value="${m.id}">${m.icone} ${m.nome}</option>`).join('');
@@ -1003,6 +1146,8 @@ function mostrarPainel(nome, el) {
   if (nome === 'modalidades') carregarModalidades();
   if (nome === 'placar') carregarSeletorPlacar();
   if (nome === 'admins') carregarAdmins();
+  if (nome === 'matamata') iniciarMatamata();
+  if (nome === 'exportar') iniciarExportar();
   carregarDashboard();
 }
 
@@ -1059,6 +1204,17 @@ async function selecionarJogoLive() {
     periodo_atual: j.periodo_atual || 0, timer_ativo: j.timer_ativo || 0,
     timer_inicio: j.timer_inicio || null, timer_decorrido: j.timer_decorrido || 0,
     duracao_periodo: j.duracao_periodo || 45, num_periodos: j.num_periodos || 2 };
+
+  // Preencher campos de prorrogação/pênaltis
+  const sigCasa = j.time_casa_sigla;
+  const sigVis  = j.time_visitante_sigla;
+  ['penProrroCasaNome','penPenaltiCasaNome'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = sigCasa; });
+  ['penProrroVisNome','penPenaltiVisNome'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = sigVis; });
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || 0; };
+  setVal('penProrroCasa', j.gols_prorrogacao_casa);
+  setVal('penProrroVis',  j.gols_prorrogacao_visitante);
+  setVal('penPenaltiCasa', j.gols_penaltis_casa);
+  setVal('penPenaltiVis',  j.gols_penaltis_visitante);
 
   document.getElementById('placarCasaNome').textContent = j.time_casa_nome;
   document.getElementById('placarVisNome').textContent = j.time_visitante_nome;
@@ -1149,6 +1305,11 @@ function atualizarUITimer(td) {
     const s  = Math.min(calcularSegundos(placarAtual), dur);
     const el = document.getElementById('timerDisplay');
     if (el) el.textContent = formatarTempo(s);
+    // Para automaticamente ao fim do período
+    if (s >= dur && placarAtual.timer_ativo) {
+      clearInterval(timerInterval); timerInterval = null;
+      controlarTimer('pausar');
+    }
   }
   tick();
   if (ativo) timerInterval = setInterval(tick, 1000);
@@ -1201,10 +1362,15 @@ async function salvarPlacar() {
   const btn = document.querySelector('#placarControlArea .btn-primary.btn-outline');
   btnLoading(btn, true, 'Salvando...');
   try {
+    const getN = (id) => { const el = document.getElementById(id); return el ? parseInt(el.value) || 0 : 0; };
     await api.put(`/jogos/${placarAtual.id}/placar`, {
       gols_casa: placarAtual.gols_casa,
       gols_visitante: placarAtual.gols_visitante,
-      status: placarAtual.status
+      status: placarAtual.status,
+      gols_prorrogacao_casa:      getN('penProrroCasa'),
+      gols_prorrogacao_visitante: getN('penProrroVis'),
+      gols_penaltis_casa:         getN('penPenaltiCasa'),
+      gols_penaltis_visitante:    getN('penPenaltiVis'),
     });
     toast('Placar atualizado!', 'success');
   } catch (err) {
@@ -1248,6 +1414,8 @@ async function abrirModalJogo() {
   document.getElementById('jogoObs').value = '';
   document.getElementById('jogoNumPeriodos').value = '2';
   document.getElementById('jogoDuracaoPeriodo').value = '45';
+  document.getElementById('jogoIdaVolta').checked = false;
+  document.getElementById('jogoIdaVoltaField').style.display = 'flex';
   abrirModal('modalJogo');
 }
 
@@ -1270,6 +1438,7 @@ async function editarJogo(id) {
   document.getElementById('jogoObs').value = j.observacoes || '';
   document.getElementById('jogoNumPeriodos').value = j.num_periodos || 2;
   document.getElementById('jogoDuracaoPeriodo').value = j.duracao_periodo || 45;
+  document.getElementById('jogoIdaVoltaField').style.display = 'none';
   abrirModal('modalJogo');
 }
 
@@ -1293,8 +1462,19 @@ async function salvarJogo() {
       await api.put(`/jogos/${jogoEditandoId}`, data);
       toast('Jogo atualizado!', 'success');
     } else {
-      await api.post('/jogos', data);
-      toast('Jogo criado!', 'success');
+      const idaVolta = document.getElementById('jogoIdaVolta').checked;
+      await api.post('/jogos', { ...data, observacoes: idaVolta ? (data.observacoes ? data.observacoes + ' (Ida)' : 'Ida') : data.observacoes });
+      if (idaVolta) {
+        await api.post('/jogos', {
+          ...data,
+          time_casa_id: data.time_visitante_id,
+          time_visitante_id: data.time_casa_id,
+          observacoes: data.observacoes ? data.observacoes + ' (Volta)' : 'Volta'
+        });
+        toast('2 jogos criados (ida e volta)!', 'success');
+      } else {
+        toast('Jogo criado!', 'success');
+      }
     }
     fecharModal('modalJogo');
     await carregarJogosAdmin();
@@ -1629,7 +1809,7 @@ socket.on('timer_atualizado', (td) => {
 
 // ===== GERADOR MATA-MATA =====
 async function renderGerador() {
-  const modalidadeId = document.getElementById('matamataModalidade').value;
+  const modalidadeId = document.getElementById('geradorModalidade').value;
   const container = document.getElementById('geradorMatamata');
   if (!modalidadeId) {
     container.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Selecione uma modalidade.</p>';
@@ -1763,6 +1943,39 @@ async function carregarDashboard() {
   } catch(e) { /* silencioso */ }
 }
 
+// ===== EXPORTAR CSV =====
+function iniciarExportar() {
+  carregarBase().then(() => {
+    const sel = document.getElementById('exportarModalidade');
+    if (sel) {
+      sel.innerHTML = '<option value="">Todas as modalidades</option>' +
+        modalidades.map(m => `<option value="${m.id}">${m.icone} ${m.nome}</option>`).join('');
+    }
+  });
+}
+
+function exportarCSV(tipo) {
+  const modId = document.getElementById('exportarModalidade')?.value || '';
+  const qs = modId ? `?modalidade_id=${modId}` : '';
+  const token = localStorage.getItem('copa_token') || '';
+  // Cria um link temporário para download autenticado
+  fetch(`/api/exportar/${tipo}${qs}`, { headers: { 'Authorization': `Bearer ${token}` } })
+    .then(r => {
+      if (!r.ok) throw new Error('Erro ao exportar');
+      return r.blob();
+    })
+    .then(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tipo}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    })
+    .catch(() => toast('Erro ao exportar', 'error'));
+}
+
 // ===== ADMINS =====
 async function carregarAdmins() {
   const tbody = document.getElementById('adminsTbody');
@@ -1810,6 +2023,201 @@ async function removerAdmin(id, nome) {
     toast('Admin removido', 'info');
     carregarAdmins();
   } catch(e) { toast(e.erro || 'Erro', 'error'); }
+}
+
+// ===== TROCAR SENHA =====
+async function trocarSenha() {
+  const senhaAtual   = document.getElementById('senhaAtual').value;
+  const novaSenha    = document.getElementById('novaSenha').value;
+  const confirmar    = document.getElementById('confirmarSenha').value;
+  if (!senhaAtual || !novaSenha) return toast('Preencha todos os campos', 'warning');
+  if (novaSenha !== confirmar)   return toast('As senhas não coincidem', 'warning');
+  if (novaSenha.length < 6)      return toast('Nova senha deve ter pelo menos 6 caracteres', 'warning');
+  const btn = document.getElementById('btnTrocarSenha');
+  btnLoading(btn, true, 'Alterando...');
+  try {
+    await api.put('/auth/senha', { senhaAtual, novaSenha });
+    toast('Senha alterada com sucesso!', 'success');
+    document.getElementById('senhaAtual').value = '';
+    document.getElementById('novaSenha').value = '';
+    document.getElementById('confirmarSenha').value = '';
+  } catch(e) {
+    toast(e.erro || 'Erro ao alterar senha', 'error');
+  } finally {
+    btnLoading(btn, false);
+  }
+}
+
+// ===== MATA-MATA AUTOMÁTICO =====
+let classificadosData = [];
+
+async function iniciarMatamata() {
+  const sel = document.getElementById('matamataModalidade');
+  if (sel) {
+    sel.innerHTML = '<option value="">Todas as modalidades</option>' +
+      modalidades.map(m => `<option value="${m.id}">${m.icone} ${m.nome}</option>`).join('');
+  }
+  await carregarClassificados();
+}
+
+async function carregarClassificados() {
+  const modalidade_id = document.getElementById('matamataModalidade')?.value || '';
+  try {
+    let url = '/grupos/classificados';
+    if (modalidade_id) url += `?modalidade_id=${modalidade_id}`;
+    classificadosData = await api.get(url);
+    renderClassificados();
+  } catch(e) { toast('Erro ao carregar classificados', 'error'); }
+}
+
+function renderClassificados() {
+  const el = document.getElementById('classificadosContainer');
+  if (!el) return;
+  if (classificadosData.length === 0) {
+    el.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">Nenhum grupo encontrado.</p>';
+    document.getElementById('confrontosList').innerHTML = '';
+    document.getElementById('btnGerarWrapper').style.display = 'none';
+    return;
+  }
+
+  el.innerHTML = classificadosData.map(g => `
+    <div style="margin-bottom:1rem;padding:1rem;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border)">
+      <div style="font-weight:700;font-size:0.82rem;margin-bottom:0.6rem;color:var(--text-muted)">
+        ${g.modalidade_nome} — Grupo ${g.grupo_nome}
+      </div>
+      ${g.classificados.length === 0
+        ? '<span style="font-size:0.8rem;color:var(--text-muted)">Nenhum time classificado ainda</span>'
+        : g.classificados.map((t, i) => `
+          <div style="display:flex;align-items:center;gap:0.6rem;padding:0.35rem 0;font-size:0.85rem">
+            <span style="font-weight:800;color:${i===0?'#f59e0b':'#94a3b8'};min-width:20px">${i+1}º</span>
+            <div style="width:24px;height:24px;border-radius:50%;background:${t.cor};flex-shrink:0"></div>
+            <span style="font-weight:600">${t.sigla}</span>
+            <span style="color:var(--text-muted)">${t.nome}</span>
+            <span style="margin-left:auto;font-size:0.78rem;font-weight:700;color:var(--primary)">${t.pontos} pts</span>
+          </div>
+        `).join('')
+      }
+    </div>
+  `).join('');
+
+  // Gerar confrontos sugeridos: 1º A vs 2º B, 1º B vs 2º A
+  renderConfrontosSugeridos();
+}
+
+function renderConfrontosSugeridos() {
+  const container = document.getElementById('confrontosList');
+  const btnWrapper = document.getElementById('btnGerarWrapper');
+  if (!container) return;
+
+  // Agrupar por modalidade
+  const porModalidade = {};
+  classificadosData.forEach(g => {
+    if (!porModalidade[g.modalidade_id]) porModalidade[g.modalidade_id] = { nome: g.modalidade_nome, icone: g.modalidade_icone || '⚽', grupos: [] };
+    porModalidade[g.modalidade_id].grupos.push(g);
+  });
+
+  let html = '';
+  let temConfronto = false;
+  const confrontosArray = [];
+
+  Object.values(porModalidade).forEach(m => {
+    const gs = m.grupos.filter(g => g.classificados.length >= 2);
+    if (gs.length < 2) return;
+
+    html += `<div style="margin-bottom:1.25rem"><div style="font-weight:700;margin-bottom:0.5rem">${m.icone} ${m.nome}</div>`;
+
+    // Gerar pares: 1A×2B, 1B×2A, etc.
+    const fase = gs.length >= 4 ? 'quartas' : gs.length >= 2 ? 'semifinal' : 'final';
+    for (let i = 0; i < Math.floor(gs.length / 2); i++) {
+      const gA = gs[i];
+      const gB = gs[gs.length - 1 - i];
+      if (!gA || !gB || !gA.classificados[0] || !gB.classificados[1]) continue;
+      const t1 = gA.classificados[0]; // 1º do grupo A
+      const t2 = gB.classificados[1]; // 2º do grupo B
+      const t3 = gB.classificados[0]; // 1º do grupo B
+      const t4 = gA.classificados[1]; // 2º do grupo A
+
+      temConfronto = true;
+      html += `
+        <div style="display:flex;flex-direction:column;gap:0.5rem;padding:0.75rem;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:0.5rem">
+          <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">${faseLabel(fase)} — Jogo ${2*i+1}</div>
+          <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem">
+            <div style="width:20px;height:20px;border-radius:50%;background:${t1.cor}"></div>
+            <span><strong>1º ${gA.grupo_nome}</strong>: ${t1.sigla} — ${t1.nome}</span>
+            <span style="margin:0 0.5rem;color:var(--text-muted)">vs</span>
+            <div style="width:20px;height:20px;border-radius:50%;background:${t2.cor}"></div>
+            <span><strong>2º ${gB.grupo_nome}</strong>: ${t2.sigla} — ${t2.nome}</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;padding:0.75rem;background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border);margin-bottom:0.75rem">
+          <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px">${faseLabel(fase)} — Jogo ${2*i+2}</div>
+          <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem">
+            <div style="width:20px;height:20px;border-radius:50%;background:${t3.cor}"></div>
+            <span><strong>1º ${gB.grupo_nome}</strong>: ${t3.sigla} — ${t3.nome}</span>
+            <span style="margin:0 0.5rem;color:var(--text-muted)">vs</span>
+            <div style="width:20px;height:20px;border-radius:50%;background:${t4.cor}"></div>
+            <span><strong>2º ${gA.grupo_nome}</strong>: ${t4.sigla} — ${t4.nome}</span>
+          </div>
+        </div>
+      `;
+      confrontosArray.push(
+        { modalidade_id: m.id || gA.modalidade_id, fase, casa_id: t1.time_id, vis_id: t2.time_id },
+        { modalidade_id: m.id || gA.modalidade_id, fase, casa_id: t3.time_id, vis_id: t4.time_id }
+      );
+    }
+    html += '</div>';
+  });
+
+  container.dataset.confrontos = JSON.stringify(confrontosArray);
+
+  container.innerHTML = html || '<p style="color:var(--text-muted);font-size:0.85rem">Precisa de pelo menos 2 grupos com 2 times classificados cada para gerar os confrontos.</p>';
+  btnWrapper.style.display = temConfronto ? '' : 'none';
+}
+
+async function gerarConfrontos() {
+  const container = document.getElementById('confrontosList');
+  const confrontos = JSON.parse(container.dataset.confrontos || '[]');
+  if (confrontos.length === 0) return toast('Nenhum confronto para gerar', 'warning');
+
+  // Limpar dataset imediatamente para evitar duplo-envio
+  container.dataset.confrontos = '[]';
+
+  const btn = document.getElementById('btnGerarMatamata');
+  const btnWrapper = document.getElementById('btnGerarWrapper');
+  btnLoading(btn, true, 'Gerando...');
+  try {
+    const idaVolta = document.getElementById('matamataIdaVolta').checked;
+    let criados = 0;
+    for (const c of confrontos) {
+      await api.post('/jogos', {
+        modalidade_id: c.modalidade_id,
+        fase: c.fase,
+        time_casa_id: c.casa_id,
+        time_visitante_id: c.vis_id,
+        observacoes: idaVolta ? 'Ida' : undefined,
+      });
+      if (idaVolta) {
+        await api.post('/jogos', {
+          modalidade_id: c.modalidade_id,
+          fase: c.fase,
+          time_casa_id: c.vis_id,
+          time_visitante_id: c.casa_id,
+          observacoes: 'Volta',
+        });
+        criados++;
+      }
+      criados++;
+    }
+    toast(`${criados} jogo(s) de mata-mata criado(s)!`, 'success');
+    container.innerHTML = `<p style="color:var(--primary);font-weight:600;padding:0.5rem">✅ ${criados} jogo(s) criado(s)! Acesse "Gerenciar Jogos" para ver.</p>`;
+    btnWrapper.style.display = 'none';
+    await carregarBase();
+  } catch(e) {
+    // Restaurar dataset em caso de erro para permitir nova tentativa
+    container.dataset.confrontos = JSON.stringify(confrontos);
+    toast(e.erro || 'Erro ao gerar confrontos', 'error');
+  }
+  finally { btnLoading(btn, false); }
 }
 
 // Retorna o minuto atual do cronômetro (para pré-preencher gols/cartões)
