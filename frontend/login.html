@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso Admin — Copa Medicina</title>
+  <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #475569;
+      font-size: 0.8rem;
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: #94a3b8; }
+
+    .label-top {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #334155;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 2rem;
+      letter-spacing: -0.4px;
+    }
+
+    /* setup notice */
+    .setup-notice {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: #fbbf24;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .field { margin-bottom: 1rem; }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 0.4rem;
+    }
+
+    input {
+      width: 100%;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: #f1f5f9;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input::placeholder { color: #475569; }
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+    }
+
+    .erro {
+      font-size: 0.78rem;
+      color: #f87171;
+      margin-bottom: 0.75rem;
+      display: none;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      margin-top: 0.5rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.8rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button[type="submit"]:hover { background: #1d4ed8; }
+    button[type="submit"]:active { transform: scale(0.99); }
+    button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="/" class="back-link">← Ver placares</a>
+
+  <div id="setupBox" style="display:none">
+    <p class="label-top">Copa Medicina</p>
+    <h1>Criar administrador</h1>
+    <div class="setup-notice">Primeiro acesso — configure a conta admin para continuar.</div>
+    <form id="setupForm">
+      <div class="field">
+        <label>Nome</label>
+        <input type="text" id="setupNome" placeholder="Seu nome" required>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="setupEmail" placeholder="admin@exemplo.com" required>
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="setupSenha" placeholder="Mínimo 6 caracteres" required>
+      </div>
+      <button type="submit" id="setupBtn">Criar e entrar</button>
+    </form>
+  </div>
+
+  <div id="loginBox" style="display:none">
+    <p class="label-top">Copa Medicina</p>
+    <h1>Acesso admin</h1>
+    <form id="loginForm">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@exemplo.com" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label>Senha</label>
+        <input type="password" id="loginSenha" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <div class="erro" id="loginErro"></div>
+      <button type="submit" id="loginBtn">Entrar</button>
+    </form>
+  </div>
+
+</div>
+<div id="toastContainer" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:999;display:flex;flex-direction:column;gap:0.5rem"></div>
+<script src="/public/js/app.js"></script>
+<script>
+  async function init() {
+    const { precisaSetup } = await api.get('/auth/setup-status');
+    document.getElementById(precisaSetup ? 'setupBox' : 'loginBox').style.display = '';
+    if (!precisaSetup) document.getElementById('loginEmail').focus();
+  }
+
+  document.getElementById('setupForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('setupBtn');
+    btn.disabled = true; btn.textContent = 'Criando...';
+    try {
+      await api.post('/auth/setup', {
+        nome: document.getElementById('setupNome').value,
+        email: document.getElementById('setupEmail').value,
+        senha: document.getElementById('setupSenha').value
+      });
+      const data = await api.post('/auth/login', {
+        email: document.getElementById('setupEmail').value,
+        senha: document.getElementById('setupSenha').value
+      });
+      localStorage.setItem('copa_token', data.token);
+      localStorage.setItem('copa_admin', JSON.stringify(data.admin));
+      window.location.href = '/admin/';
+    } catch (err) {
+      toast(err.erro || 'Erro ao criar conta', 'error');
+      btn.disabled = false; btn.textContent = 'Criar e entrar';
+    }
+  };
+
+  document.getElementById('loginForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const erroEl = document.getElementById('loginErro');
+    const btn = document.getElementById('loginBtn');
+    erroEl.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Entrando...';
+    try {
+      const data = await api.post('/auth/login', {
+        email: document.getElementById('loginEmail').value,
+        senha: document.getElementById('loginSenha').value
+      });
+      localStorage.setItem('copa_token', data.token);
+      localStorage.setItem('copa_admin', JSON.stringify(data.admin));
+      window.location.href = '/admin/';
+    } catch (err) {
+      erroEl.textContent = err.erro || 'Email ou senha incorretos';
+      erroEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Entrar';
+      document.getElementById('loginSenha').select();
+    }
+  };
+
+  init();
+</script>
+</body>
+</html>

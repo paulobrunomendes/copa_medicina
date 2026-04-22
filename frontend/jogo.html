@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placar ao Vivo — Copa Medicina</title>
+  <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { background: var(--bg); }
+
+    .jogo-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 2.5rem 1.5rem 3rem;
+      text-align: center;
+    }
+
+    .jogo-hero-modal {
+      font-size: 0.85rem;
+      opacity: 0.75;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .jogo-hero-times {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .hero-time {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 110px;
+      flex: 1;
+      max-width: 160px;
+    }
+
+    .hero-escudo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: white;
+      border: 3px solid rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+
+    .hero-nome {
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .hero-placar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .hero-gol {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1;
+      min-width: 72px;
+      text-align: center;
+      transition: transform 0.2s, opacity 0.2s;
+      letter-spacing: -2px;
+    }
+
+    .hero-gol.animando {
+      transform: scale(1.3);
+      opacity: 0.7;
+    }
+
+    .hero-sep {
+      font-size: 2.5rem;
+      opacity: 0.4;
+      font-weight: 300;
+    }
+
+    .status-live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 0.3rem 0.9rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--text-muted); font-size: 0.82rem; min-width: 80px; flex-shrink: 0; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      padding: 0.5rem 0;
+      min-height: 44px;
+    }
+
+    .back-btn:hover { color: white; }
+
+    @media (max-width: 520px) {
+      .jogo-hero { padding: 1.75rem 1rem 2rem; }
+      .jogo-hero-times { gap: 0.75rem; margin: 1rem 0; }
+      .hero-escudo { width: 54px; height: 54px; font-size: 0.95rem; border-width: 2px; }
+      .hero-nome { font-size: 0.85rem; }
+      .hero-gol { font-size: 3.5rem; min-width: 52px; }
+      .hero-sep { font-size: 1.8rem; }
+      .hero-placar { gap: 0.5rem; }
+      .hero-time { min-width: 80px; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="jogo-hero" id="jogoHero">
+  <button class="back-btn" onclick="history.back()">← Voltar</button>
+  <div id="heroContent">
+    <div style="opacity:0.6">Carregando jogo...</div>
+  </div>
+</div>
+
+<div class="container" style="max-width:600px">
+  <div class="info-card" id="infoCard" style="display:none">
+    <div class="info-row">
+      <span class="info-label">📅 Data</span>
+      <span id="infoData">—</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">📍 Local</span>
+      <span id="infoLocal">—</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">🏅 Fase</span>
+      <span id="infoFase">—</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">⚽ Modalidade</span>
+      <span id="infoModalidade">—</span>
+    </div>
+  </div>
+
+  <div class="info-card" id="cartoesCard" style="display:none">
+    <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.75rem">🟨 Cartões</div>
+    <div id="cartoesListPublic"></div>
+  </div>
+
+  <div class="info-card" id="golsCard" style="display:none">
+    <div style="font-weight:700;font-size:0.85rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem">
+      ⚽ Artilheiros
+    </div>
+    <div id="golsListPublic"></div>
+  </div>
+
+  <div style="text-align:center;padding:1rem 0">
+    <a href="/" style="color:var(--text-muted);font-size:0.875rem">🏆 Ver todos os jogos</a>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+<script src="/public/js/app.js"></script>
+<script>
+  const socket = io();
+  let jogo = null;
+  let jogoTimerInterval = null;
+
+  // Pegar ID do jogo da URL: /jogo.html?id=5
+  const jogoId = new URLSearchParams(window.location.search).get('id');
+
+  function calcularSegundosJogo(j) {
+    let s = j.timer_decorrido || 0;
+    if (j.timer_ativo && j.timer_inicio) s += Math.floor((Date.now() - Number(j.timer_inicio)) / 1000);
+    return s;
+  }
+
+  function formatarTempoJogo(segundos) {
+    const m = Math.floor(segundos / 60).toString().padStart(2, '0');
+    const s = (segundos % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
+
+  function iniciarTickJogo(j) {
+    if (jogoTimerInterval) { clearInterval(jogoTimerInterval); jogoTimerInterval = null; }
+    if (!j.timer_ativo) return;
+    const dur = (j.duracao_periodo || 45) * 60;
+    function tick() {
+      const s = Math.min(calcularSegundosJogo(j), dur);
+      const el = document.getElementById('heroTimerDisplay');
+      if (el) el.textContent = formatarTempoJogo(s);
+    }
+    tick();
+    jogoTimerInterval = setInterval(tick, 1000);
+  }
+
+  function timerBadgeHTML(j) {
+    if (j.status === 'encerrado') return `<div class="status-live-badge">⏱ FT</div>`;
+    if (j.status !== 'ao_vivo' || !j.periodo_atual) return '';
+    const p = `${j.periodo_atual}T`;
+    const dur = (j.duracao_periodo || 45) * 60;
+    const s = Math.min(calcularSegundosJogo(j), dur);
+    return `<div class="status-live-badge" style="font-size:1rem;padding:0.4rem 1.2rem">
+      ${p} <span id="heroTimerDisplay" style="font-variant-numeric:tabular-nums">${formatarTempoJogo(s)}</span>
+    </div>`;
+  }
+
+  function renderHero(j) {
+    document.title = `${j.time_casa_sigla} × ${j.time_visitante_sigla} — Copa Medicina`;
+
+    const statusBadge = j.status === 'ao_vivo'
+      ? `<div class="status-live-badge"><span class="live-dot"></span> AO VIVO</div>`
+      : j.status === 'encerrado'
+      ? `<div class="status-live-badge">✅ ENCERRADO</div>`
+      : `<div class="status-live-badge">📅 AGENDADO</div>`;
+
+    document.getElementById('heroContent').innerHTML = `
+      <div>${statusBadge}</div>
+      ${timerBadgeHTML(j)}
+      <div class="jogo-hero-modal">${j.modalidade_icone} ${j.modalidade_nome} — ${j.grupo_nome ? 'Grupo ' + j.grupo_nome : faseLabel(j.fase)}</div>
+      <div class="jogo-hero-times">
+        <div class="hero-time">
+          <div class="hero-escudo" style="background:${j.time_casa_cor}">${j.time_casa_sigla}</div>
+          <div class="hero-nome">${j.time_casa_nome}</div>
+        </div>
+        <div class="hero-placar">
+          <div class="hero-gol" id="heroGolCasa">${j.status === 'agendado' ? '—' : j.gols_casa}</div>
+          <div class="hero-sep">×</div>
+          <div class="hero-gol" id="heroGolVis">${j.status === 'agendado' ? '—' : j.gols_visitante}</div>
+        </div>
+        <div class="hero-time">
+          <div class="hero-escudo" style="background:${j.time_visitante_cor}">${j.time_visitante_sigla}</div>
+          <div class="hero-nome">${j.time_visitante_nome}</div>
+        </div>
+      </div>
+    `;
+    iniciarTickJogo(j);
+
+    // Info card
+    document.getElementById('infoCard').style.display = '';
+    document.getElementById('infoData').textContent = j.data_jogo ? formatarData(j.data_jogo) : 'A definir';
+    document.getElementById('infoLocal').textContent = j.local_jogo || 'A definir';
+    document.getElementById('infoFase').textContent = faseLabel(j.fase);
+    document.getElementById('infoModalidade').textContent = `${j.modalidade_icone} ${j.modalidade_nome}`;
+  }
+
+  function animarGol(elId) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    el.classList.add('animando');
+    setTimeout(() => el.classList.remove('animando'), 400);
+  }
+
+  socket.on('placar_atualizado', (j) => {
+    if (String(j.id) !== String(jogoId)) return;
+
+    const casaEl = document.getElementById('heroGolCasa');
+    const visEl  = document.getElementById('heroGolVis');
+
+    if (casaEl && casaEl.textContent != j.gols_casa) { animarGol('heroGolCasa'); casaEl.textContent = j.gols_casa; }
+    if (visEl  && visEl.textContent  != j.gols_visitante) { animarGol('heroGolVis'); visEl.textContent = j.gols_visitante; }
+
+    jogo = j;
+    renderHero(j);
+  });
+
+  socket.on('timer_atualizado', (td) => {
+    if (String(td.id) !== String(jogoId) || !jogo) return;
+    jogo.periodo_atual   = td.periodo_atual;
+    jogo.timer_ativo     = td.timer_ativo;
+    jogo.timer_inicio    = td.timer_inicio;
+    jogo.timer_decorrido = td.timer_decorrido;
+    jogo.duracao_periodo = td.duracao_periodo || jogo.duracao_periodo;
+    renderHero(jogo);
+  });
+
+  // ===== CARTÕES =====
+  function renderCartoesPublic(cartoes) {
+    const card = document.getElementById('cartoesCard');
+    const list = document.getElementById('cartoesListPublic');
+    if (!card || !list) return;
+    card.style.display = cartoes.length > 0 ? '' : 'none';
+    list.innerHTML = cartoes.map((c, i) => `
+      <div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0;${i < cartoes.length - 1 ? 'border-bottom:1px solid var(--border)' : ''}">
+        <div style="width:12px;height:16px;border-radius:2px;background:${c.tipo === 'vermelho' ? '#dc2626' : '#f59e0b'};flex-shrink:0"></div>
+        <span style="font-weight:700;font-size:0.75rem;color:var(--text-muted);min-width:32px">${c.time_sigla}</span>
+        <span style="font-weight:500;flex:1">${c.jogador}</span>
+        ${c.minuto ? `<span style="color:var(--text-muted);font-size:0.78rem;font-weight:600">${c.minuto}'</span>` : ''}
+      </div>
+    `).join('');
+  }
+
+  socket.on('cartoes_atualizados', (data) => {
+    if (String(data.jogo_id) !== String(jogoId)) return;
+    renderCartoesPublic(data.cartoes);
+  });
+
+  // ===== ARTILHEIROS =====
+  function renderGolsPublic(gols) {
+    const card = document.getElementById('golsCard');
+    const list = document.getElementById('golsListPublic');
+    if (!card || !list) return;
+    card.style.display = gols.length > 0 ? '' : 'none';
+    list.innerHTML = gols.map((g, i) => `
+      <div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0;${i < gols.length - 1 ? 'border-bottom:1px solid var(--border)' : ''}">
+        <div style="width:8px;height:8px;border-radius:50%;background:${g.time_cor};flex-shrink:0"></div>
+        <span style="font-weight:700;font-size:0.75rem;color:var(--text-muted);min-width:32px">${g.time_sigla}</span>
+        <span style="font-weight:500;flex:1">${g.jogador}</span>
+        ${g.minuto ? `<span style="color:var(--text-muted);font-size:0.78rem;font-weight:600">${g.minuto}'</span>` : ''}
+      </div>
+    `).join('');
+  }
+
+  socket.on('gols_atualizados', (data) => {
+    if (String(data.jogo_id) !== String(jogoId)) return;
+    renderGolsPublic(data.gols);
+  });
+
+  async function init() {
+    if (!jogoId) {
+      document.getElementById('heroContent').innerHTML = '<div>Jogo não encontrado.</div>';
+      return;
+    }
+    try {
+      jogo = await api.get(`/jogos/${jogoId}`);
+      renderHero(jogo);
+      socket.emit('entrar_sala', jogoId);
+      // Carregar artilheiros e cartões
+      const [gols, cartoes] = await Promise.all([
+        api.get(`/jogos/${jogoId}/gols`),
+        api.get(`/jogos/${jogoId}/cartoes`)
+      ]);
+      renderGolsPublic(gols);
+      renderCartoesPublic(cartoes);
+    } catch (err) {
+      document.getElementById('heroContent').innerHTML = '<div>Erro ao carregar o jogo.</div>';
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>

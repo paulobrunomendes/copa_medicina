@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placar ao Vivo — Admin · Copa Medicina</title>
+  <link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/public/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== SIDEBAR MELHORADA ===== */
+    .admin-sidebar { background: linear-gradient(180deg, #0f1f4a 0%, #0a1530 100%); }
+    .admin-sidebar-title { font-size: 1.05rem; letter-spacing: -0.5px; padding: 1.25rem 1.5rem; }
+    .admin-sidebar-title span { font-size: 1.3rem; }
+
+    .sidebar-section-label {
+      padding: 1.25rem 1.5rem 0.35rem;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    .sidebar-item {
+      padding: 0.7rem 1.25rem;
+      border-radius: 0;
+      border-left: 3px solid transparent;
+      font-size: 0.85rem;
+      gap: 0.65rem;
+    }
+
+    .sidebar-item .s-icon {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.07);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .sidebar-item:hover .s-icon { background: rgba(255,255,255,0.14); }
+    .sidebar-item.active .s-icon { background: rgba(255,215,0,0.18); }
+    .sidebar-item.active { border-left-color: #f59e0b; color: white; background: rgba(245,158,11,0.08); }
+
+    .sidebar-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #ef4444; margin-left: auto; flex-shrink: 0;
+      box-shadow: 0 0 6px #ef4444;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* ===== CONTENT HEADER ===== */
+    .content-topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: -2rem -2.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .content-topbar-left {
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+
+    .content-topbar-icon {
+      width: 36px; height: 36px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      flex-shrink: 0;
+    }
+
+    .content-topbar-title { font-size: 1rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+    .content-topbar-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+
+    .content-topbar-right {
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+
+    .admin-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white; font-weight: 800; font-size: 0.8rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ===== STAT CARDS ===== */
+    .stat-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1.1rem 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      display: flex; align-items: center; gap: 0.9rem;
+      overflow: hidden; position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .stat-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: var(--accent-color, #2563eb);
+    }
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; flex-shrink: 0;
+      background: var(--icon-bg, #eff6ff);
+    }
+    .stat-value { font-size: 1.75rem; font-weight: 900; line-height: 1; letter-spacing: -1px; color: var(--accent-color, #2563eb); }
+    .stat-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+    /* ===== PLACAR CARD MELHORADO ===== */
+    .placar-live-header {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.6rem 1rem;
+      background: linear-gradient(135deg, #fee2e2, #fef2f2);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      border: 1px solid #fecaca;
+    }
+    .placar-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc2626; animation: pulse 1.5s infinite; }
+    .placar-live-header span { font-size: 0.8rem; font-weight: 700; color: #dc2626; }
+
+    .placar-info-bar {
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      margin-bottom: 1.25rem;
+      padding: 0.5rem;
+      background: var(--bg);
+      border-radius: 8px;
+    }
+
+    /* ===== SECTION HEADER ===== */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .section-header h2 {
+      font-size: 1.25rem; font-weight: 900; color: var(--text);
+      letter-spacing: -0.4px; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .section-header-badge {
+      font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.65rem;
+      border-radius: 50px; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ===== ADMIN CARD MELHORIA ===== */
+    .admin-card { border-radius: 14px; border: 1px solid #e8edf4; }
+    .admin-card-title { font-size: 0.9rem; letter-spacing: 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; }
+
+    /* Timer display */
+    #timerInlineBlock { background: linear-gradient(135deg, #f8faff, #eff6ff); border-radius: 14px; padding: 1rem; border: 1px solid #dbeafe; margin: 0.75rem 0; }
+    #timerDisplay { color: var(--primary); }
+
+    /* Data table melhorada */
+    .data-table tbody tr:hover { background: #f8faff; }
+    .data-table th { background: #f1f5f9; font-size: 0.7rem; letter-spacing: 0.8px; }
+
+    /* ===== FIND MATCH CARD ===== */
+    .find-match-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1.25rem; padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .find-match-icon {
+      width: 48px; height: 48px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 13px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+    .find-match-title { font-weight: 800; font-size: 1rem; color: var(--text); }
+    .find-match-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ===== MATCH CARD (dark stadium) ===== */
+    .match-card {
+      background: linear-gradient(135deg, #0c1830 0%, #162850 60%, #0f1f4a 100%);
+      border-radius: 20px;
+      padding: 2rem 1.5rem 1.75rem;
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1rem;
+      position: relative; overflow: hidden;
+      box-shadow: 0 10px 40px rgba(10,20,60,0.4);
+    }
+    .match-card::before {
+      content: ''; position: absolute;
+      top: -70px; right: -50px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: rgba(255,255,255,0.03);
+    }
+    .match-card::after {
+      content: ''; position: absolute;
+      bottom: -70px; left: -50px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(255,255,255,0.025);
+    }
+
+    .match-team { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; position: relative; z-index: 1; }
+
+    .match-team-badge {
+      width: 66px; height: 66px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1rem; color: white;
+      border: 3px solid rgba(255,255,255,0.22);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+      letter-spacing: -0.5px;
+    }
+
+    .match-team-name {
+      font-weight: 700; font-size: 0.9rem;
+      color: rgba(255,255,255,0.85); max-width: 130px;
+      line-height: 1.3; text-align: center;
+    }
+
+    .match-score-controls { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.2rem; }
+
+    .score-btn {
+      width: 50px; height: 50px; border-radius: 50%; border: none;
+      font-size: 1.5rem; font-weight: 700; cursor: pointer;
+      transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center; line-height: 1;
+    }
+    .score-btn-plus {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white; box-shadow: 0 4px 16px rgba(34,197,94,0.5);
+    }
+    .score-btn-plus:hover { transform: scale(1.15); box-shadow: 0 6px 22px rgba(34,197,94,0.65); }
+    .score-btn-minus {
+      background: rgba(239,68,68,0.15); color: #fca5a5;
+      border: 1.5px solid rgba(239,68,68,0.3);
+    }
+    .score-btn-minus:hover { background: rgba(239,68,68,0.28); transform: scale(1.15); }
+
+    .score-digit {
+      font-size: 4.2rem; font-weight: 900; color: white;
+      min-width: 68px; text-align: center;
+      letter-spacing: -3px; line-height: 1;
+      text-shadow: 0 2px 24px rgba(0,0,0,0.5);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .match-center { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; position: relative; z-index: 1; }
+    .match-vs { font-size: 2.4rem; color: rgba(255,255,255,0.18); font-weight: 300; }
+
+    /* ===== TIMER ===== */
+    #timerInlineBlock {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
+      border-radius: 14px; border: none !important;
+      padding: 1.1rem 2rem; box-shadow: 0 4px 20px rgba(37,99,235,0.35);
+    }
+    #timerPeriodoLabel {
+      font-size: 0.62rem; font-weight: 800; color: rgba(255,255,255,0.45);
+      text-transform: uppercase; letter-spacing: 2.5px;
+    }
+    #timerDisplay {
+      font-size: 3.4rem !important; font-weight: 900;
+      color: white !important; font-variant-numeric: tabular-nums;
+      letter-spacing: 4px; line-height: 1;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.25);
+    }
+    #timerLimite { font-size: 0.68rem; color: rgba(255,255,255,0.32); letter-spacing: 1px; }
+
+    /* ===== MATCH CONTROLS ===== */
+    .match-controls {
+      display: flex; gap: 0.75rem; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 0.75rem;
+    }
+    .timer-controls-row {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 0.5rem;
+    }
+
+    /* ===== ADMIN CARD REFINADO ===== */
+    .admin-card {
+      transition: box-shadow 0.2s;
+    }
+    .admin-card:hover {
+      box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    }
+
+    /* ===== DATA TABLE REFINADA ===== */
+    .data-table th {
+      background: linear-gradient(180deg, #f8faff 0%, #f1f5f9 100%);
+      color: #475569;
+      font-size: 0.7rem;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 0.8rem 1rem;
+    }
+    .data-table td { vertical-align: middle; }
+    .data-table tbody tr { transition: background 0.15s; }
+    .data-table tbody tr:hover td { background: #f0f6ff; }
+
+    /* ===== STATUS BADGES ADMIN ===== */
+    .status-badge {
+      font-size: 0.72rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.3px;
+    }
+
+    /* ===== SECTION HEADER MELHORADO ===== */
+    .section-header { margin-bottom: 1.25rem; }
+    .section-header h2 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.4px;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+
+    /* ===== SECTION DIVIDER ===== */
+    .admin-divider {
+      height: 1px; background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .content-topbar { padding: 0.75rem 1rem; margin: -1.5rem -1.5rem 1.5rem; }
+      .content-topbar-right .admin-nome-text { display: none; }
+      .match-card { padding: 1.5rem 1rem; gap: 0.5rem; border-radius: 16px; }
+      .match-team-badge { width: 50px; height: 50px; font-size: 0.82rem; }
+      .score-digit { font-size: 3rem; min-width: 52px; }
+      .score-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+      .match-team-name { font-size: 0.8rem; max-width: 90px; }
+      .match-controls { gap: 0.5rem; }
+    }
+
+    /* ===== ARTILHEIROS ===== */
+    .artilheiros-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-top: 1.25rem;
+    }
+    .artilheiros-header {
+      padding: 0.65rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--bg-alt);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .artilheiros-add {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .artilheiros-add .form-input { height: 36px; font-size: 0.82rem; }
+    .artilheiros-add .form-select { height: 36px; font-size: 0.82rem; }
+    .artilheiros-add .btn { height: 36px; padding: 0 0.9rem; font-size: 0.82rem; white-space: nowrap; }
+    .gols-list {
+      padding: 0.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      min-height: 44px;
+    }
+    .gol-item {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.4rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      background: var(--bg);
+    }
+    .gol-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .gol-sigla {
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      min-width: 32px;
+    }
+    .gol-jogador { flex: 1; font-weight: 500; }
+    .gol-min {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .gol-del {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 2px 5px;
+      font-size: 1rem;
+      line-height: 1;
+      border-radius: 4px;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .gol-del:hover { color: var(--accent); background: rgba(220,38,38,0.08); }
+    .gols-empty {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      padding: 0.4rem 0;
+      text-align: center;
+    }
+
+    /* ===== CARTÕES ===== */
+    .cartao-icon {
+      width: 14px; height: 18px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .cartao-icon.amarelo { background: #f59e0b; }
+    .cartao-icon.vermelho { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+<!-- MODAL: NOVO JOGO -->
+<div class="modal-overlay" id="modalJogo">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="modalJogoTitulo">Novo Jogo</span>
+      <button class="modal-close" onclick="fecharModal('modalJogo')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Modalidade *</label>
+            <select class="form-select" id="jogoModalidade" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fase *</label>
+            <select class="form-select" id="jogoFase">
+              <option value="grupos">Fase de Grupos</option>
+              <option value="oitavas">Oitavas de Final</option>
+              <option value="quartas">Quartas de Final</option>
+              <option value="semifinal">Semifinal</option>
+              <option value="terceiro_lugar">3º Lugar</option>
+              <option value="final">Final</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" id="grupoField">
+          <label class="form-label">Grupo (fase de grupos)</label>
+          <select class="form-select" id="jogoGrupo">
+            <option value="">Sem grupo</option>
+          </select>
+        </div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Time Casa *</label>
+            <select class="form-select" id="jogoTimeCasa" required></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Time Visitante *</label>
+            <select class="form-select" id="jogoTimeVisitante" required></select>
+          </div>
+        </div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Data e Hora</label>
+            <input type="datetime-local" class="form-input" id="jogoData">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Local</label>
+            <input type="text" class="form-input" id="jogoLocal" placeholder="Ex: Quadra Principal">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observações</label>
+          <input type="text" class="form-input" id="jogoObs" placeholder="Opcional">
+        </div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">⏱ Nº de períodos</label>
+            <select class="form-select" id="jogoNumPeriodos">
+              <option value="1">1 período</option>
+              <option value="2" selected>2 períodos</option>
+              <option value="3">3 períodos</option>
+              <option value="4">4 períodos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duração por período (min)</label>
+            <input type="number" class="form-input" id="jogoDuracaoPeriodo" min="1" max="120" value="45">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modalJogo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarJogo()">Salvar Jogo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOVO TIME -->
+<div class="modal-overlay" id="modalTime">
+  <div class="modal">
+    <div class="modal-header">
+      <span id="modalTimeTitulo">Novo Time</span>
+      <button class="modal-close" onclick="fecharModal('modalTime')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Nome do Time *</label>
+          <input type="text" class="form-input" id="timeNome" placeholder="Ex: Medicina UERJ" required>
+        </div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Sigla *</label>
+            <input type="text" class="form-input" id="timeSigla" placeholder="Ex: UERJ" maxlength="6" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cor do time</label>
+            <input type="color" class="form-input" id="timeCor" value="#1a73e8" style="height:42px;padding:4px">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Curso / Instituição</label>
+          <input type="text" class="form-input" id="timeCurso" placeholder="Ex: Medicina - UERJ">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Logo do Time</label>
+          <div style="display:flex;align-items:center;gap:0.75rem">
+            <img id="timeLogoPreview" src="" alt="" style="display:none;width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid var(--border)">
+            <input type="file" class="form-input" id="timeLogo" accept="image/*" style="padding:6px" onchange="previewLogo(this)">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modalTime')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarTime()">Salvar Time</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: NOVO GRUPO -->
+<div class="modal-overlay" id="modalGrupo">
+  <div class="modal">
+    <div class="modal-header">
+      <span>Novo Grupo</span>
+      <button class="modal-close" onclick="fecharModal('modalGrupo')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Nome do Grupo *</label>
+            <input type="text" class="form-input" id="grupoNome" placeholder="Ex: A, B, C...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Modalidade *</label>
+            <select class="form-select" id="grupoModalidade"></select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="fecharModal('modalGrupo')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarGrupo()">Salvar Grupo</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOPBAR MOBILE -->
+<div class="admin-topbar">
+  <div class="admin-topbar-title">🏆 Copa Medicina</div>
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</div>
+
+<!-- OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="fecharSidebar()"></div>
+
+<!-- LAYOUT ADMIN -->
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-title"><span>🏆</span> Copa Medicina</div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Operações</div>
+      <div class="sidebar-item active" onclick="mostrarPainel('placar', this)">
+        <div class="s-icon">🔴</div>
+        Placar ao Vivo
+        <span class="sidebar-live-dot" id="sidebarLiveDot" style="display:none"></span>
+      </div>
+      <div class="sidebar-section-label">Gerenciamento</div>
+      <div class="sidebar-item" onclick="mostrarPainel('jogos', this)">
+        <div class="s-icon">⚽</div>
+        Jogos
+      </div>
+      <div class="sidebar-item" onclick="mostrarPainel('times', this)">
+        <div class="s-icon">👕</div>
+        Times
+      </div>
+      <div class="sidebar-item" onclick="mostrarPainel('grupos', this)">
+        <div class="s-icon">📊</div>
+        Grupos
+      </div>
+      <div class="sidebar-item" onclick="mostrarPainel('modalidades', this)">
+        <div class="s-icon">🏅</div>
+        Modalidades
+      </div>
+      <div class="sidebar-section-label">Sistema</div>
+      <div class="sidebar-item" onclick="mostrarPainel('admins', this)">
+        <div class="s-icon">👤</div>
+        Administradores
+      </div>
+    </nav>
+    <div style="padding: 1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08)">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem">
+        <div class="admin-avatar" style="width:28px;height:28px;font-size:0.7rem" id="sidebarAvatar">A</div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.55);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="adminNome"></div>
+      </div>
+      <button class="btn btn-outline btn-sm" style="color:white;border-color:rgba(255,255,255,0.3);width:100%" onclick="logout()">Sair</button>
+    </div>
+  </aside>
+
+  <!-- CONTEÚDO -->
+  <div class="admin-content">
+
+    <!-- TOPBAR CONTEÚDO -->
+    <div class="content-topbar">
+      <div class="content-topbar-left">
+        <div class="content-topbar-icon">🏆</div>
+        <div>
+          <div class="content-topbar-title" id="topbarTitle">Placar ao Vivo</div>
+          <div class="content-topbar-sub">Copa Medicina — Painel Admin</div>
+        </div>
+      </div>
+      <div class="content-topbar-right">
+        <span class="admin-nome-text" style="font-size:0.8rem;color:var(--text-muted);font-weight:500" id="adminNomeTopbar"></span>
+        <div class="admin-avatar" id="topbarAvatar">A</div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD: RESUMO FIXO NO TOPO -->
+    <div id="dashboardResumo" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem"></div>
+
+    <!-- PAINEL: PLACAR AO VIVO -->
+    <div id="painel-placar">
+      <div class="section-header">
+        <h2>🔴 Controle de Placar ao Vivo</h2>
+      </div>
+
+      <!-- Card: Selecionar jogo -->
+      <div class="admin-card" style="margin-bottom:1.5rem">
+        <div class="find-match-header">
+          <div class="find-match-icon">🎯</div>
+          <div>
+            <div class="find-match-title">Selecionar Partida</div>
+            <div class="find-match-sub">Escolha a modalidade e o jogo para controlar o placar</div>
+          </div>
+        </div>
+        <div class="form-grid form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Modalidade</label>
+            <select class="form-select" id="placarFiltroModalidade" onchange="filtrarJogosLive()"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jogo</label>
+            <select class="form-select" id="placarJogoSelect" onchange="selecionarJogoLive()"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Área de controle (aparece ao selecionar jogo) -->
+      <div id="placarControlArea" style="display:none">
+
+        <!-- Header: partida em controle -->
+        <div class="placar-live-header" style="margin-bottom:1rem">
+          <div class="placar-live-dot"></div>
+          <span>Partida em Controle</span>
+          <span id="placarJogoInfo" style="margin-left:auto;color:var(--text);font-size:0.82rem;font-weight:600">—</span>
+        </div>
+
+        <!-- Placar estilo estádio (dark) -->
+        <div class="match-card">
+          <div class="match-team">
+            <div class="match-team-badge" id="placarCasaBadge">—</div>
+            <div class="match-team-name" id="placarCasaNome">—</div>
+            <div class="match-score-controls">
+              <button class="score-btn score-btn-minus" onclick="ajustarGol('casa', -1)">−</button>
+              <span class="score-digit" id="placarCasaNum">0</span>
+              <button class="score-btn score-btn-plus" onclick="ajustarGol('casa', 1)">+</button>
+            </div>
+          </div>
+          <div class="match-center">
+            <span class="match-vs">×</span>
+          </div>
+          <div class="match-team">
+            <div class="match-team-badge" id="placarVisBadge">—</div>
+            <div class="match-team-name" id="placarVisNome">—</div>
+            <div class="match-score-controls">
+              <button class="score-btn score-btn-minus" onclick="ajustarGol('visitante', -1)">−</button>
+              <span class="score-digit" id="placarVisNum">0</span>
+              <button class="score-btn score-btn-plus" onclick="ajustarGol('visitante', 1)">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cronômetro -->
+        <div id="timerInlineBlock" style="display:none;flex-direction:column;align-items:center;gap:0.1rem;margin-bottom:1rem">
+          <span id="timerPeriodoLabel"></span>
+          <span id="timerDisplay">00:00</span>
+          <span id="timerLimite"></span>
+        </div>
+
+        <!-- Botões de ação do jogo -->
+        <div class="match-controls">
+          <button class="btn btn-success" onclick="setStatus('ao_vivo')" id="btnAoVivo">▶ Iniciar / Ao Vivo</button>
+          <button class="btn btn-primary btn-outline" onclick="salvarPlacar()">💾 Salvar Placar</button>
+          <button class="btn btn-danger" onclick="setStatus('encerrado')">🏁 Encerrar Jogo</button>
+        </div>
+
+        <!-- Controles do timer (gerados dinamicamente) -->
+        <div id="timerBotoesWrapper" class="timer-controls-row"></div>
+
+        <!-- Cartões -->
+        <div class="artilheiros-section">
+          <div class="artilheiros-header">🟨 Cartões</div>
+          <div class="artilheiros-add">
+            <input class="form-input" id="cartaoJogador" placeholder="Nome do jogador" style="flex:1;min-width:120px">
+            <select class="form-select" id="cartaoTime" style="width:120px;flex-shrink:0">
+              <option value="">Time...</option>
+            </select>
+            <select class="form-select" id="cartaoTipo" style="width:100px;flex-shrink:0">
+              <option value="amarelo">🟨 Amarelo</option>
+              <option value="vermelho">🟥 Vermelho</option>
+            </select>
+            <input class="form-input" id="cartaoMinuto" type="number" placeholder="Minuto" min="0" max="200" style="width:90px;flex-shrink:0">
+            <button class="btn btn-primary" onclick="adicionarCartao()">+ Cartão</button>
+          </div>
+          <div id="cartoesList" class="gols-list">
+            <div class="gols-empty">Nenhum cartão registrado</div>
+          </div>
+        </div>
+
+        <!-- Artilheiros -->
+        <div class="artilheiros-section">
+          <div class="artilheiros-header">⚽ Artilheiros</div>
+          <div class="artilheiros-add">
+            <input class="form-input" id="golJogador" placeholder="Nome do jogador" style="flex:1;min-width:120px">
+            <select class="form-select" id="golTime" style="width:120px;flex-shrink:0">
+              <option value="">Time...</option>
+            </select>
+            <input class="form-input" id="golMinuto" type="number" placeholder="Minuto" min="0" max="200" style="width:90px;flex-shrink:0">
+            <button class="btn btn-primary" onclick="adicionarGol()">+ Gol</button>
+          </div>
+          <div id="golsList" class="gols-list">
+            <div class="gols-empty">Nenhum gol registrado</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PAINEL: JOGOS -->
+    <div id="painel-jogos" style="display:none">
+      <div class="section-header">
+        <h2>⚽ Gerenciar Jogos</h2>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalJogo()">+ Novo Jogo</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Todos os Jogos</div>
+        <div style="overflow-x:auto">
+          <table class="data-table" id="jogosTable">
+            <thead>
+              <tr>
+                <th>Jogo</th>
+                <th>Modalidade</th>
+                <th>Fase</th>
+                <th>Placar</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="jogosTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL: TIMES -->
+    <div id="painel-times" style="display:none">
+      <div class="section-header">
+        <h2>👕 Times</h2>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalTime()">+ Novo Time</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Todos os Times</div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr><th>Time</th><th>Sigla</th><th>Curso</th><th>Cor</th><th>Ações</th></tr>
+            </thead>
+            <tbody id="timesTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL: GRUPOS -->
+    <div id="painel-grupos" style="display:none">
+      <div class="section-header">
+        <h2>📊 Grupos</h2>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalGrupo()">+ Novo Grupo</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Grupos Cadastrados</div>
+        <div id="gruposAdmin"></div>
+      </div>
+
+      <!-- GERADOR DE MATA-MATA -->
+      <div class="admin-card">
+        <div class="admin-card-title">
+          🏆 Gerar Mata-mata
+          <select class="form-select" id="matamataModalidade" style="font-size:0.85rem;max-width:200px" onchange="renderGerador()"></select>
+        </div>
+        <div id="geradorMatamata">
+          <p style="color:var(--text-muted);font-size:0.875rem">Selecione uma modalidade acima para ver os classificados e gerar os confrontos.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL: MODALIDADES -->
+    <div id="painel-modalidades" style="display:none">
+      <div class="section-header"><h2>🏅 Modalidades</h2></div>
+      <div class="admin-card">
+        <div class="admin-card-title">Modalidades Cadastradas</div>
+        <table class="data-table">
+          <thead><tr><th>Ícone</th><th>Nome</th><th>Ações</th></tr></thead>
+          <tbody id="modalidadesTbody"></tbody>
+        </table>
+      </div>
+      <!-- Formulário inline de nova modalidade -->
+      <div class="admin-card">
+        <div class="admin-card-title">Nova Modalidade</div>
+        <div class="form-grid form-grid-2" style="margin-bottom:1rem">
+          <div class="form-group">
+            <label class="form-label">Ícone (emoji)</label>
+            <input type="text" class="form-input" id="novaModalidadeIcone" placeholder="Ex: ⚽" maxlength="4" style="font-size:1.4rem">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nome *</label>
+            <input type="text" class="form-input" id="novaModalidadeNome" placeholder="Ex: Futebol">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="criarModalidade()">+ Adicionar Modalidade</button>
+      </div>
+    </div>
+
+    <!-- MODAL: EDITAR MODALIDADE -->
+    <div class="modal-overlay" id="modalEditarModalidade">
+      <div class="modal">
+        <div class="modal-header">
+          <span>Editar Modalidade</span>
+          <button class="modal-close" onclick="fecharModal('modalEditarModalidade')">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Ícone (emoji)</label>
+              <input type="text" class="form-input" id="editModalidadeIcone" maxlength="4" style="font-size:1.4rem">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nome *</label>
+              <input type="text" class="form-input" id="editModalidadeNome">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" onclick="fecharModal('modalEditarModalidade')">Cancelar</button>
+          <button class="btn btn-primary" onclick="salvarEdicaoModalidade()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL: ADMINISTRADORES -->
+    <div id="painel-admins" style="display:none">
+      <div class="section-header"><h2>👤 Administradores</h2></div>
+      <div class="admin-card">
+        <div class="admin-card-title">Novo Administrador</div>
+        <div class="form-grid form-grid-3" style="margin-bottom:1rem">
+          <div class="form-group">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-input" id="adminNomeInput" placeholder="Nome completo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="adminEmailInput" placeholder="email@exemplo.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" class="form-input" id="adminSenhaInput" placeholder="Mínimo 6 caracteres">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btnSalvarAdmin" onclick="salvarNovoAdmin()">Criar Admin</button>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Administradores Cadastrados</div>
+        <table class="data-table">
+          <thead><tr><th>Nome</th><th>Email</th><th>Ações</th></tr></thead>
+          <tbody id="adminsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+<script src="/public/js/app.js"></script>
+<script>
+// ===== AUTH CHECK =====
+if (!localStorage.getItem('copa_token')) window.location.href = '/login.html';
+const adminData = JSON.parse(localStorage.getItem('copa_admin') || '{}');
+document.getElementById('adminNome').textContent = adminData.nome || 'Admin';
+{
+  const initials = (adminData.nome || 'A').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  const ta = document.getElementById('topbarAvatar'); if (ta) ta.textContent = initials;
+  const sa = document.getElementById('sidebarAvatar'); if (sa) sa.textContent = initials;
+  const nt = document.getElementById('adminNomeTopbar'); if (nt) nt.textContent = adminData.nome || 'Admin';
+}
+
+function logout() {
+  localStorage.removeItem('copa_token');
+  localStorage.removeItem('copa_admin');
+  window.location.href = '/login.html';
+}
+
+// ===== ESTADO =====
+let times = [], modalidades = [], grupos = [];
+let jogoEditandoId = null;
+let timeEditandoId = null;
+let placarAtual = { id: null, gols_casa: 0, gols_visitante: 0, status: 'agendado', periodo_atual: 0, timer_ativo: 0, timer_inicio: null, timer_decorrido: 0, duracao_periodo: 45, num_periodos: 2 };
+
+// ===== SIDEBAR MOBILE =====
+function toggleSidebar() {
+  const sidebar = document.getElementById('adminSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const btn = document.getElementById('hamburgerBtn');
+  const aberta = sidebar.classList.toggle('aberta');
+  overlay.classList.toggle('show', aberta);
+  btn.classList.toggle('aberto', aberta);
+}
+
+function fecharSidebar() {
+  document.getElementById('adminSidebar').classList.remove('aberta');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+  document.getElementById('hamburgerBtn').classList.remove('aberto');
+}
+
+// ===== NAVEGAÇÃO =====
+const _panelTitles = {
+  placar: 'Placar ao Vivo', jogos: 'Gerenciar Jogos', times: 'Times',
+  grupos: 'Grupos', modalidades: 'Modalidades', admins: 'Administradores'
+};
+function mostrarPainel(nome, el) {
+  document.querySelectorAll('[id^="painel-"]').forEach(p => p.style.display = 'none');
+  document.getElementById(`painel-${nome}`).style.display = '';
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  const titulo = _panelTitles[nome] || nome;
+  const tt = document.getElementById('topbarTitle'); if (tt) tt.textContent = titulo;
+  document.title = `${titulo} — Admin · Copa Medicina`;
+  fecharSidebar();
+  if (nome === 'jogos') carregarJogosAdmin();
+  if (nome === 'times') carregarTimes();
+  if (nome === 'grupos') carregarGruposAdmin().then(() => {
+    const sel = document.getElementById('matamataModalidade');
+    if (sel) {
+      sel.innerHTML = '<option value="">Selecionar modalidade...</option>' +
+        modalidades.map(m => `<option value="${m.id}">${m.icone} ${m.nome}</option>`).join('');
+    }
+  });
+  if (nome === 'modalidades') carregarModalidades();
+  if (nome === 'placar') carregarSeletorPlacar();
+  if (nome === 'admins') carregarAdmins();
+  carregarDashboard();
+}
+
+// ===== DADOS BASE =====
+async function carregarBase() {
+  [times, modalidades, grupos] = await Promise.all([
+    api.get('/times'), api.get('/modalidades'), api.get('/grupos')
+  ]);
+}
+
+function populateSelect(selectId, items, valKey, labelFn, emptyLabel) {
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  sel.innerHTML = emptyLabel ? `<option value="">${emptyLabel}</option>` : '';
+  items.forEach(i => {
+    const opt = document.createElement('option');
+    opt.value = i[valKey];
+    opt.textContent = labelFn(i);
+    sel.appendChild(opt);
+  });
+}
+
+// ===== PLACAR AO VIVO =====
+async function carregarSeletorPlacar() {
+  await carregarBase();
+  const opts = [{ id: '', nome: 'Todas' }, ...modalidades];
+  populateSelect('placarFiltroModalidade', opts, 'id', m => m.icone ? `${m.icone} ${m.nome}` : m.nome, null);
+  await filtrarJogosLive();
+}
+
+async function filtrarJogosLive() {
+  const modId = document.getElementById('placarFiltroModalidade').value;
+  let url = '/jogos';
+  if (modId) url += `?modalidade_id=${modId}`;
+  const jogos = await api.get(url);
+  const ativos = jogos.filter(j => j.status !== 'encerrado');
+
+  const sel = document.getElementById('placarJogoSelect');
+  sel.innerHTML = '<option value="">Selecionar jogo...</option>';
+  ativos.forEach(j => {
+    const opt = document.createElement('option');
+    opt.value = j.id;
+    opt.textContent = `${j.modalidade_icone} ${j.time_casa_sigla} × ${j.time_visitante_sigla} — ${j.status === 'ao_vivo' ? '🔴 AO VIVO' : formatarData(j.data_jogo) || 'sem data'}`;
+    sel.appendChild(opt);
+  });
+  document.getElementById('placarControlArea').style.display = 'none';
+}
+
+async function selecionarJogoLive() {
+  const id = document.getElementById('placarJogoSelect').value;
+  if (!id) { document.getElementById('placarControlArea').style.display = 'none'; return; }
+  const j = await api.get(`/jogos/${id}`);
+  placarAtual = { id: j.id, gols_casa: j.gols_casa, gols_visitante: j.gols_visitante, status: j.status,
+    periodo_atual: j.periodo_atual || 0, timer_ativo: j.timer_ativo || 0,
+    timer_inicio: j.timer_inicio || null, timer_decorrido: j.timer_decorrido || 0,
+    duracao_periodo: j.duracao_periodo || 45, num_periodos: j.num_periodos || 2 };
+
+  document.getElementById('placarCasaNome').textContent = j.time_casa_nome;
+  document.getElementById('placarVisNome').textContent = j.time_visitante_nome;
+  document.getElementById('placarCasaNum').textContent = j.gols_casa;
+  document.getElementById('placarVisNum').textContent = j.gols_visitante;
+  document.getElementById('placarJogoInfo').textContent = `${j.modalidade_icone} ${j.time_casa_nome} × ${j.time_visitante_nome}`;
+  const cb = document.getElementById('placarCasaBadge');
+  if (cb) { cb.textContent = j.time_casa_sigla; cb.style.background = j.time_casa_cor || '#1a3064'; }
+  const vb = document.getElementById('placarVisBadge');
+  if (vb) { vb.textContent = j.time_visitante_sigla; vb.style.background = j.time_visitante_cor || '#1a3064'; }
+  document.getElementById('placarControlArea').style.display = '';
+  atualizarUITimer(j);
+
+  // Popular selects de times para artilheiros e cartões
+  const timesOpts = `
+    <option value="">Time...</option>
+    <option value="${j.time_casa_id}">${j.time_casa_sigla} (Casa)</option>
+    <option value="${j.time_visitante_id}">${j.time_visitante_sigla} (Visitante)</option>
+  `;
+  const golTimeSelect = document.getElementById('golTime');
+  if (golTimeSelect) golTimeSelect.innerHTML = timesOpts;
+  const cartaoTimeSelect = document.getElementById('cartaoTime');
+  if (cartaoTimeSelect) cartaoTimeSelect.innerHTML = timesOpts;
+
+  carregarGols(j.id);
+  carregarCartoes(j.id);
+}
+
+// ===== TIMER =====
+let timerInterval = null;
+
+function calcularSegundos(td) {
+  let s = td.timer_decorrido || 0;
+  if (td.timer_ativo && td.timer_inicio) s += Math.floor((Date.now() - Number(td.timer_inicio)) / 1000);
+  return s;
+}
+
+function formatarTempo(segundos) {
+  const m = Math.floor(segundos / 60).toString().padStart(2, '0');
+  const s = (segundos % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+async function controlarTimer(acao, periodo) {
+  if (!placarAtual.id) return;
+  try {
+    const payload = { acao };
+    if (periodo !== undefined) payload.periodo = periodo;
+    const td = await api.put(`/jogos/${placarAtual.id}/timer`, payload);
+    placarAtual.periodo_atual   = td.periodo_atual;
+    placarAtual.timer_ativo     = td.timer_ativo;
+    placarAtual.timer_inicio    = td.timer_inicio;
+    placarAtual.timer_decorrido = td.timer_decorrido;
+    atualizarUITimer(td);
+  } catch (err) {
+    toast(err.erro || 'Erro no timer', 'error');
+  }
+}
+
+function atualizarUITimer(td) {
+  if (!td) return;
+  if (td.periodo_atual   !== undefined) placarAtual.periodo_atual   = td.periodo_atual;
+  if (td.timer_ativo     !== undefined) placarAtual.timer_ativo     = td.timer_ativo;
+  if (td.timer_inicio    !== undefined) placarAtual.timer_inicio    = td.timer_inicio;
+  if (td.timer_decorrido !== undefined) placarAtual.timer_decorrido = td.timer_decorrido;
+  if (td.duracao_periodo !== undefined) placarAtual.duracao_periodo = td.duracao_periodo;
+  if (td.num_periodos    !== undefined) placarAtual.num_periodos    = td.num_periodos;
+
+  const dur   = (placarAtual.duracao_periodo || 45) * 60;
+  const p     = placarAtual.periodo_atual || 0;
+  const nPer  = placarAtual.num_periodos || 2;
+  const ativo = !!placarAtual.timer_ativo;
+
+  // Limpar interval anterior
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+
+  // Mostrar/ocultar bloco de timer inline
+  const inlineBlock = document.getElementById('timerInlineBlock');
+  if (inlineBlock) inlineBlock.style.display = p > 0 ? 'flex' : 'none';
+
+  // Label e limite
+  const labelEl  = document.getElementById('timerPeriodoLabel');
+  const limiteEl = document.getElementById('timerLimite');
+  if (labelEl)  labelEl.textContent  = p > 0 ? `${p}T` : '';
+  if (limiteEl) limiteEl.textContent = `/${formatarTempo(dur)}`;
+
+  function tick() {
+    const s  = Math.min(calcularSegundos(placarAtual), dur);
+    const el = document.getElementById('timerDisplay');
+    if (el) el.textContent = formatarTempo(s);
+  }
+  tick();
+  if (ativo) timerInterval = setInterval(tick, 1000);
+
+  // Gerar botões de controle dinamicamente
+  const wrapper = document.getElementById('timerBotoesWrapper');
+  if (!wrapper) return;
+  let btns = '';
+  if (p === 0) {
+    // Não iniciado — sem botões extras (o "Iniciar/Ao Vivo" já faz isso)
+  } else {
+    if (ativo) {
+      btns += `<button class="btn btn-warning btn-sm" onclick="controlarTimer('pausar')">⏸ Pausar</button>`;
+    } else {
+      btns += `<button class="btn btn-success btn-sm" onclick="controlarTimer('retomar')">▶ Retomar</button>`;
+    }
+    if (p < nPer) {
+      const prox = p + 1;
+      btns += `<button class="btn btn-primary btn-sm" onclick="controlarTimer('iniciar_periodo',${prox})">▶ Iniciar ${prox}T</button>`;
+    }
+    btns += `<button class="btn btn-outline btn-sm" onclick="controlarTimer('reiniciar')">↺ Reiniciar</button>`;
+  }
+  wrapper.innerHTML = btns;
+}
+
+function ajustarGol(time, delta) {
+  if (time === 'casa') {
+    placarAtual.gols_casa = Math.max(0, placarAtual.gols_casa + delta);
+    document.getElementById('placarCasaNum').textContent = placarAtual.gols_casa;
+  } else {
+    placarAtual.gols_visitante = Math.max(0, placarAtual.gols_visitante + delta);
+    document.getElementById('placarVisNum').textContent = placarAtual.gols_visitante;
+  }
+}
+
+async function setStatus(status) {
+  if (!placarAtual.id) return;
+  // Integração com timer
+  if (status === 'ao_vivo' && placarAtual.periodo_atual === 0) {
+    await controlarTimer('iniciar_periodo', 1);
+  } else if (status === 'encerrado' && placarAtual.timer_ativo) {
+    await controlarTimer('pausar');
+  }
+  placarAtual.status = status;
+  await salvarPlacar();
+}
+
+async function salvarPlacar() {
+  if (!placarAtual.id) return;
+  const btn = document.querySelector('#placarControlArea .btn-primary.btn-outline');
+  btnLoading(btn, true, 'Salvando...');
+  try {
+    await api.put(`/jogos/${placarAtual.id}/placar`, {
+      gols_casa: placarAtual.gols_casa,
+      gols_visitante: placarAtual.gols_visitante,
+      status: placarAtual.status
+    });
+    toast('Placar atualizado!', 'success');
+  } catch (err) {
+    toast(err.erro || 'Erro ao salvar', 'error');
+  } finally {
+    btnLoading(btn, false);
+  }
+}
+
+// ===== JOGOS =====
+async function carregarJogosAdmin() {
+  const jogos = await api.get('/jogos');
+  const tbody = document.getElementById('jogosTbody');
+  tbody.innerHTML = jogos.length === 0 ? '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem">Nenhum jogo cadastrado</td></tr>' :
+    jogos.map(j => `
+      <tr>
+        <td><strong>${j.time_casa_sigla}</strong> × <strong>${j.time_visitante_sigla}</strong></td>
+        <td>${j.modalidade_icone} ${j.modalidade_nome}</td>
+        <td style="font-size:0.8rem">${faseLabel(j.fase)}</td>
+        <td>${j.status !== 'agendado' ? `<strong>${j.gols_casa} × ${j.gols_visitante}</strong>` : '—'}</td>
+        <td><span class="status-badge status-${j.status}">${statusLabel(j.status)}</span></td>
+        <td style="font-size:0.8rem">${formatarData(j.data_jogo)}</td>
+        <td style="display:flex;gap:0.4rem">
+          <button class="btn btn-outline btn-sm" onclick="editarJogo(${j.id})">✏️</button>
+          <button class="btn btn-outline btn-sm" onclick="deletarJogo(${j.id})">🗑</button>
+        </td>
+      </tr>
+    `).join('');
+}
+
+async function abrirModalJogo() {
+  await carregarBase();
+  jogoEditandoId = null;
+  document.getElementById('modalJogoTitulo').textContent = 'Novo Jogo';
+  populateSelect('jogoModalidade', modalidades, 'id', m => `${m.icone} ${m.nome}`, null);
+  populateSelect('jogoTimeCasa', times, 'id', t => `${t.sigla} — ${t.nome}`, 'Selecionar...');
+  populateSelect('jogoTimeVisitante', times, 'id', t => `${t.sigla} — ${t.nome}`, 'Selecionar...');
+  populateSelect('jogoGrupo', grupos, 'id', g => `Grupo ${g.nome} (${g.modalidade_nome})`, 'Sem grupo');
+  document.getElementById('jogoData').value = '';
+  document.getElementById('jogoLocal').value = '';
+  document.getElementById('jogoObs').value = '';
+  document.getElementById('jogoNumPeriodos').value = '2';
+  document.getElementById('jogoDuracaoPeriodo').value = '45';
+  abrirModal('modalJogo');
+}
+
+async function editarJogo(id) {
+  await carregarBase();
+  const j = await api.get(`/jogos/${id}`);
+  jogoEditandoId = id;
+  document.getElementById('modalJogoTitulo').textContent = 'Editar Jogo';
+  populateSelect('jogoModalidade', modalidades, 'id', m => `${m.icone} ${m.nome}`, null);
+  populateSelect('jogoTimeCasa', times, 'id', t => `${t.sigla} — ${t.nome}`, 'Selecionar...');
+  populateSelect('jogoTimeVisitante', times, 'id', t => `${t.sigla} — ${t.nome}`, 'Selecionar...');
+  populateSelect('jogoGrupo', grupos, 'id', g => `Grupo ${g.nome} (${g.modalidade_nome})`, 'Sem grupo');
+  document.getElementById('jogoModalidade').value = j.modalidade_id;
+  document.getElementById('jogoFase').value = j.fase;
+  document.getElementById('jogoGrupo').value = j.grupo_id || '';
+  document.getElementById('jogoTimeCasa').value = j.time_casa_id;
+  document.getElementById('jogoTimeVisitante').value = j.time_visitante_id;
+  document.getElementById('jogoData').value = j.data_jogo ? j.data_jogo.slice(0, 16) : '';
+  document.getElementById('jogoLocal').value = j.local_jogo || '';
+  document.getElementById('jogoObs').value = j.observacoes || '';
+  document.getElementById('jogoNumPeriodos').value = j.num_periodos || 2;
+  document.getElementById('jogoDuracaoPeriodo').value = j.duracao_periodo || 45;
+  abrirModal('modalJogo');
+}
+
+async function salvarJogo() {
+  const btn = document.querySelector('#modalJogo .btn-primary');
+  btnLoading(btn, true, 'Salvando...');
+  try {
+    const data = {
+      modalidade_id: document.getElementById('jogoModalidade').value,
+      fase: document.getElementById('jogoFase').value,
+      grupo_id: document.getElementById('jogoGrupo').value || null,
+      time_casa_id: document.getElementById('jogoTimeCasa').value,
+      time_visitante_id: document.getElementById('jogoTimeVisitante').value,
+      data_jogo: document.getElementById('jogoData').value || null,
+      local_jogo: document.getElementById('jogoLocal').value,
+      observacoes: document.getElementById('jogoObs').value,
+      num_periodos: parseInt(document.getElementById('jogoNumPeriodos').value) || 2,
+      duracao_periodo: parseInt(document.getElementById('jogoDuracaoPeriodo').value) || 45
+    };
+    if (jogoEditandoId) {
+      await api.put(`/jogos/${jogoEditandoId}`, data);
+      toast('Jogo atualizado!', 'success');
+    } else {
+      await api.post('/jogos', data);
+      toast('Jogo criado!', 'success');
+    }
+    fecharModal('modalJogo');
+    await carregarJogosAdmin();
+  } catch (err) {
+    toast(err.erro || 'Erro ao salvar jogo', 'error');
+  } finally {
+    btnLoading(btn, false);
+  }
+}
+
+async function deletarJogo(id) {
+  if (!confirm('Remover este jogo?')) return;
+  try {
+    await api.del(`/jogos/${id}`);
+    toast('Jogo removido', 'info');
+    await carregarJogosAdmin();
+  } catch (err) {
+    toast(err.erro || 'Erro ao remover jogo', 'error');
+  }
+}
+
+// ===== TIMES =====
+async function carregarTimes() {
+  const tbody = document.getElementById('timesTbody');
+  const data = await api.get('/times');
+  times = data;
+  tbody.innerHTML = data.length === 0 ? '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:2rem">Nenhum time cadastrado</td></tr>' :
+    data.map(t => `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            ${t.logo
+              ? `<img src="${t.logo}" style="width:28px;height:28px;object-fit:contain;border-radius:4px;border:1px solid var(--border)">`
+              : `<div style="width:28px;height:28px;border-radius:50%;background:${t.cor};display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.7rem">${t.sigla.slice(0,2)}</div>`}
+            ${t.nome}
+          </div>
+        </td>
+        <td><strong>${t.sigla}</strong></td>
+        <td style="color:var(--text-muted);font-size:0.85rem">${t.curso || '—'}</td>
+        <td><div style="width:24px;height:24px;border-radius:4px;background:${t.cor};display:inline-block"></div></td>
+        <td style="display:flex;gap:0.4rem">
+          <button class="btn btn-outline btn-sm" onclick="editarTime(${t.id})">✏️</button>
+          <button class="btn btn-outline btn-sm" onclick="deletarTime(${t.id})">🗑</button>
+        </td>
+      </tr>
+    `).join('');
+}
+
+function previewLogo(input) {
+  const preview = document.getElementById('timeLogoPreview');
+  if (input.files && input.files[0]) {
+    preview.src = URL.createObjectURL(input.files[0]);
+    preview.style.display = '';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function abrirModalTime() {
+  timeEditandoId = null;
+  document.getElementById('modalTimeTitulo').textContent = 'Novo Time';
+  document.getElementById('timeNome').value = '';
+  document.getElementById('timeSigla').value = '';
+  document.getElementById('timeCor').value = '#1a73e8';
+  document.getElementById('timeCurso').value = '';
+  document.getElementById('timeLogo').value = '';
+  document.getElementById('timeLogoPreview').style.display = 'none';
+  abrirModal('modalTime');
+}
+
+async function editarTime(id) {
+  const t = times.find(x => x.id === id);
+  if (!t) return;
+  timeEditandoId = id;
+  document.getElementById('modalTimeTitulo').textContent = 'Editar Time';
+  document.getElementById('timeNome').value = t.nome;
+  document.getElementById('timeSigla').value = t.sigla;
+  document.getElementById('timeCor').value = t.cor || '#1a73e8';
+  document.getElementById('timeCurso').value = t.curso || '';
+  document.getElementById('timeLogo').value = '';
+  const preview = document.getElementById('timeLogoPreview');
+  if (t.logo) { preview.src = t.logo; preview.style.display = ''; }
+  else preview.style.display = 'none';
+  abrirModal('modalTime');
+}
+
+async function salvarTime() {
+  const btn = document.querySelector('#modalTime .btn-primary');
+  btnLoading(btn, true, 'Salvando...');
+  try {
+    const dados = {
+      nome: document.getElementById('timeNome').value,
+      sigla: document.getElementById('timeSigla').value,
+      cor: document.getElementById('timeCor').value,
+      curso: document.getElementById('timeCurso').value
+    };
+    let timeId;
+    if (timeEditandoId) {
+      await api.put(`/times/${timeEditandoId}`, dados);
+      timeId = timeEditandoId;
+      toast('Time atualizado!', 'success');
+    } else {
+      const time = await api.post('/times', dados);
+      timeId = time.id;
+      toast('Time criado!', 'success');
+    }
+    const arquivo = document.getElementById('timeLogo').files[0];
+    if (arquivo) {
+      const form = new FormData();
+      form.append('logo', arquivo);
+      await fetch(`/api/times/${timeId}/logo`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${api.token}` },
+        body: form
+      });
+    }
+    fecharModal('modalTime');
+    carregarTimes();
+  } catch (err) {
+    toast(err.erro || 'Erro ao salvar time', 'error');
+  } finally {
+    btnLoading(btn, false);
+  }
+}
+
+async function deletarTime(id) {
+  if (!confirm('Remover este time? Os jogos relacionados podem ser afetados.')) return;
+  await api.del(`/times/${id}`);
+  toast('Time removido', 'info');
+  carregarTimes();
+}
+
+// ===== GRUPOS =====
+async function carregarGruposAdmin() {
+  await carregarBase();
+  const container = document.getElementById('gruposAdmin');
+  if (grupos.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:2rem">Nenhum grupo cadastrado</p>';
+    return;
+  }
+  container.innerHTML = grupos.map(g => {
+    const timesDisponiveis = times.filter(t => !g.classificacao.find(c => c.time_id === t.id));
+    return `
+      <div style="border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:1rem;overflow:hidden">
+        <div style="background:var(--bg);padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+            <strong>${g.modalidade_icone} Grupo ${g.nome} — ${g.modalidade_nome}</strong>
+            <button class="btn btn-outline btn-sm" onclick="editarGrupo(${g.id},'${g.nome}')">✏️ Renomear</button>
+          </div>
+          <div style="display:flex;gap:0.4rem">
+            <button class="btn btn-outline btn-sm" onclick="resetarClassificacao(${g.id})" title="Zerar estatísticas do grupo">↺ Resetar</button>
+            <button class="btn btn-danger btn-sm" onclick="deletarGrupo(${g.id})">🗑</button>
+          </div>
+        </div>
+        <div style="padding:0.75rem 1rem;border-bottom:1px solid var(--border);display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          <select class="form-select" id="selectGrupo${g.id}" style="flex:1;min-width:160px;font-size:0.875rem">
+            <option value="">Selecionar time...</option>
+            ${timesDisponiveis.map(t => `<option value="${t.id}">${t.sigla} — ${t.nome}</option>`).join('')}
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="adicionarTimeGrupo(${g.id})">+ Adicionar</button>
+        </div>
+        <div style="padding:0.5rem 1rem">
+          ${g.classificacao.length === 0
+            ? '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0">Nenhum time no grupo ainda.</p>'
+            : g.classificacao.map(t => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid var(--border)">
+                <div style="display:flex;align-items:center;gap:0.5rem">
+                  <div style="width:20px;height:20px;border-radius:50%;background:${t.cor};flex-shrink:0"></div>
+                  <span style="font-size:0.875rem;font-weight:500">${t.sigla} — ${t.nome}</span>
+                </div>
+                <button class="btn btn-outline btn-sm" style="padding:0.2rem 0.6rem;font-size:0.75rem" onclick="removerTimeGrupo(${g.id},${t.time_id})">Remover</button>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function abrirModalGrupo() {
+  await carregarBase();
+  populateSelect('grupoModalidade', modalidades, 'id', m => `${m.icone} ${m.nome}`, null);
+  abrirModal('modalGrupo');
+}
+
+async function salvarGrupo() {
+  const btn = document.querySelector('#modalGrupo .btn-primary');
+  btnLoading(btn, true, 'Salvando...');
+  try {
+    await api.post('/grupos', {
+      nome: document.getElementById('grupoNome').value,
+      modalidade_id: document.getElementById('grupoModalidade').value
+    });
+    toast('Grupo criado!', 'success');
+    fecharModal('modalGrupo');
+    carregarGruposAdmin();
+  } catch (err) {
+    toast(err.erro || 'Erro ao criar grupo', 'error');
+  } finally {
+    btnLoading(btn, false);
+  }
+}
+
+async function adicionarTimeGrupo(grupoId) {
+  const select = document.getElementById(`selectGrupo${grupoId}`);
+  if (!select || !select.value) {
+    toast('Selecione um time primeiro', 'error');
+    return;
+  }
+  try {
+    await api.post(`/grupos/${grupoId}/times`, { time_id: select.value });
+    toast('Time adicionado ao grupo!', 'success');
+    carregarGruposAdmin();
+  } catch (err) {
+    toast(err.erro || 'Erro ao adicionar time', 'error');
+  }
+}
+
+async function removerTimeGrupo(grupoId, timeId) {
+  await api.del(`/grupos/${grupoId}/times/${timeId}`);
+  toast('Time removido do grupo', 'info');
+  carregarGruposAdmin();
+}
+
+async function editarGrupo(id, nomeAtual) {
+  const novo = prompt('Novo nome do grupo:', nomeAtual);
+  if (!novo || novo.trim() === nomeAtual) return;
+  try {
+    await api.put(`/grupos/${id}`, { nome: novo.trim() });
+    toast('Grupo renomeado!', 'success');
+    carregarGruposAdmin();
+  } catch(e) { toast(e.erro || 'Erro ao renomear', 'error'); }
+}
+
+async function resetarClassificacao(id) {
+  if (!confirm('Zerar todas as estatísticas deste grupo? Os jogos não serão removidos.')) return;
+  try {
+    await api.post(`/grupos/${id}/resetar`, {});
+    toast('Classificação resetada!', 'info');
+    carregarGruposAdmin();
+  } catch(e) { toast(e.erro || 'Erro ao resetar', 'error'); }
+}
+
+async function deletarGrupo(id) {
+  if (!confirm('Remover este grupo?')) return;
+  try {
+    await api.del(`/grupos/${id}`);
+    toast('Grupo removido', 'info');
+    carregarGruposAdmin();
+  } catch(e) { toast(e.erro || 'Erro ao remover grupo', 'error'); }
+}
+
+// ===== MODALIDADES =====
+async function carregarModalidades() {
+  const data = await api.get('/modalidades');
+  modalidades = data;
+  const tbody = document.getElementById('modalidadesTbody');
+  tbody.innerHTML = data.length === 0
+    ? '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:2rem">Nenhuma modalidade</td></tr>'
+    : data.map(m => `
+      <tr>
+        <td style="font-size:1.5rem">${m.icone}</td>
+        <td><strong>${m.nome}</strong></td>
+        <td style="display:flex;gap:0.4rem">
+          <button class="btn btn-outline btn-sm" onclick="abrirEditarModalidade(${m.id},'${m.nome}','${m.icone}')">✏️ Editar</button>
+          <button class="btn btn-outline btn-sm" onclick="deletarModalidade(${m.id})">🗑</button>
+        </td>
+      </tr>
+    `).join('');
+}
+
+async function criarModalidade() {
+  const nome = document.getElementById('novaModalidadeNome').value.trim();
+  const icone = document.getElementById('novaModalidadeIcone').value.trim() || '🏆';
+  if (!nome) { toast('Informe o nome da modalidade', 'error'); return; }
+  try {
+    await api.post('/modalidades', { nome, icone });
+    toast('Modalidade criada!', 'success');
+    document.getElementById('novaModalidadeNome').value = '';
+    document.getElementById('novaModalidadeIcone').value = '';
+    carregarModalidades();
+  } catch(e) { toast(e.erro || 'Erro ao criar', 'error'); }
+}
+
+let _editModalidadeId = null;
+function abrirEditarModalidade(id, nome, icone) {
+  _editModalidadeId = id;
+  document.getElementById('editModalidadeNome').value = nome;
+  document.getElementById('editModalidadeIcone').value = icone;
+  abrirModal('modalEditarModalidade');
+}
+
+async function salvarEdicaoModalidade() {
+  const btn = document.querySelector('#modalEditarModalidade .btn-primary');
+  const nome = document.getElementById('editModalidadeNome').value.trim();
+  const icone = document.getElementById('editModalidadeIcone').value.trim() || '🏆';
+  if (!nome) { toast('Informe o nome', 'error'); return; }
+  btnLoading(btn, true, 'Salvando...');
+  try {
+    await api.put(`/modalidades/${_editModalidadeId}`, { nome, icone });
+    toast('Modalidade atualizada!', 'success');
+    fecharModal('modalEditarModalidade');
+    carregarModalidades();
+  } catch(e) { toast(e.erro || 'Erro ao salvar', 'error'); }
+  finally { btnLoading(btn, false); }
+}
+
+async function deletarModalidade(id) {
+  if (!confirm('Remover esta modalidade? Todos os grupos e jogos relacionados serão removidos.')) return;
+  await api.del(`/modalidades/${id}`);
+  toast('Modalidade removida', 'info');
+  carregarModalidades();
+}
+
+// ===== SOCKET =====
+const socket = io();
+socket.on('placar_atualizado', (j) => {
+  const casaEl = document.getElementById('placarCasaNum');
+  const visEl = document.getElementById('placarVisNum');
+  if (placarAtual.id === j.id && casaEl) {
+    casaEl.textContent = j.gols_casa;
+    visEl.textContent = j.gols_visitante;
+  }
+});
+
+socket.on('timer_atualizado', (td) => {
+  if (placarAtual.id && Number(td.id) === Number(placarAtual.id)) {
+    atualizarUITimer(td);
+  }
+});
+
+// ===== GERADOR MATA-MATA =====
+async function renderGerador() {
+  const modalidadeId = document.getElementById('matamataModalidade').value;
+  const container = document.getElementById('geradorMatamata');
+  if (!modalidadeId) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Selecione uma modalidade.</p>';
+    return;
+  }
+  const gruposFiltrados = grupos.filter(g => String(g.modalidade_id) === String(modalidadeId));
+  if (gruposFiltrados.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:0.875rem">Nenhum grupo nesta modalidade.</p>';
+    return;
+  }
+
+  // Classificados: todos os times de todos os grupos em ordem
+  const classificados = gruposFiltrados.flatMap(g =>
+    g.classificacao.map((t, i) => ({ ...t, posicao: i + 1, grupo_nome: g.nome, grupo_id: g.id }))
+  );
+
+  const faseOpts = [
+    { value: 'oitavas', label: 'Oitavas de Final' },
+    { value: 'quartas', label: 'Quartas de Final' },
+    { value: 'semifinal', label: 'Semifinal' },
+    { value: 'terceiro_lugar', label: '3º Lugar' },
+    { value: 'final', label: 'Final' },
+  ];
+
+  container.innerHTML = `
+    <div style="margin-bottom:1rem">
+      <label class="form-label">Fase a gerar</label>
+      <select class="form-select" id="geradorFase" style="max-width:220px">
+        ${faseOpts.map(f => `<option value="${f.value}">${f.label}</option>`).join('')}
+      </select>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <div class="form-label" style="margin-bottom:0.5rem">Classificados disponíveis</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem" id="classificadosList">
+        ${classificados.map(t => `
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:0.35rem 0.65rem;font-size:0.8rem;display:flex;align-items:center;gap:0.4rem">
+            <div style="width:10px;height:10px;border-radius:50%;background:${t.cor}"></div>
+            <strong>${t.posicao}º ${t.grupo_nome}</strong> — ${t.sigla}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div id="confrontosGerador"></div>
+    <button class="btn btn-primary btn-sm" style="margin-top:0.5rem" onclick="adicionarConfronto()">+ Adicionar Confronto</button>
+    <button class="btn btn-success btn-sm" style="margin-top:0.5rem;margin-left:0.5rem" onclick="criarJogosMatamata(${modalidadeId})">✅ Criar Jogos</button>
+  `;
+  // Adiciona 1 confronto inicial
+  adicionarConfronto();
+}
+
+let confrontoCount = 0;
+function adicionarConfronto() {
+  confrontoCount++;
+  const container = document.getElementById('confrontosGerador');
+  if (!container) return;
+  const todos = grupos.flatMap(g => g.classificacao.map(t => ({ ...t, grupo_nome: g.nome })));
+  const opts = todos.map(t => `<option value="${t.time_id}">${t.sigla} — ${t.nome} (Grupo ${t.grupo_nome})</option>`).join('');
+  const div = document.createElement('div');
+  div.id = `confronto-${confrontoCount}`;
+  div.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap';
+  div.innerHTML = `
+    <span style="font-size:0.8rem;color:var(--text-muted);min-width:20px">${confrontoCount}.</span>
+    <select class="form-select" id="casa-${confrontoCount}" style="flex:1;min-width:140px;font-size:0.85rem">
+      <option value="">Time Casa...</option>${opts}
+    </select>
+    <span style="color:var(--text-muted);font-weight:700">×</span>
+    <select class="form-select" id="vis-${confrontoCount}" style="flex:1;min-width:140px;font-size:0.85rem">
+      <option value="">Time Visitante...</option>${opts}
+    </select>
+    <button class="btn btn-outline btn-sm" onclick="document.getElementById('confronto-${confrontoCount}').remove()">✕</button>
+  `;
+  container.appendChild(div);
+}
+
+async function criarJogosMatamata(modalidadeId) {
+  const fase = document.getElementById('geradorFase').value;
+  const confrontos = [...document.querySelectorAll('[id^="confronto-"]')];
+  const jogosParaCriar = [];
+
+  for (const el of confrontos) {
+    const id = el.id.split('-')[1];
+    const casa = document.getElementById(`casa-${id}`)?.value;
+    const vis  = document.getElementById(`vis-${id}`)?.value;
+    if (!casa || !vis) { toast('Preencha todos os confrontos', 'error'); return; }
+    if (casa === vis)  { toast('Os times de um confronto precisam ser diferentes', 'error'); return; }
+    jogosParaCriar.push({ modalidade_id: modalidadeId, fase, time_casa_id: casa, time_visitante_id: vis });
+  }
+
+  if (jogosParaCriar.length === 0) { toast('Adicione pelo menos um confronto', 'error'); return; }
+
+  try {
+    for (const jogo of jogosParaCriar) await api.post('/jogos', jogo);
+    toast(`${jogosParaCriar.length} jogo(s) criado(s)!`, 'success');
+    document.getElementById('confrontosGerador').innerHTML = '';
+    confrontoCount = 0;
+    adicionarConfronto();
+    carregarDashboard();
+  } catch(e) { toast(e.erro || 'Erro ao criar jogos', 'error'); }
+}
+
+// ===== DASHBOARD =====
+async function carregarDashboard() {
+  try {
+    const [jogos, timesData] = await Promise.all([api.get('/jogos'), api.get('/times')]);
+    const hoje = new Date().toDateString();
+    const aoVivo  = jogos.filter(j => j.status === 'ao_vivo').length;
+    const hojeN   = jogos.filter(j => j.data_jogo && new Date(j.data_jogo).toDateString() === hoje).length;
+    const total   = jogos.length;
+    const encerrados = jogos.filter(j => j.status === 'encerrado').length;
+
+    const items = [
+      { icon: '⚽', label: 'Total de Jogos', value: total, color: '#2563eb' },
+      { icon: '🔴', label: 'Ao Vivo Agora', value: aoVivo, color: aoVivo > 0 ? '#dc2626' : '#64748b' },
+      { icon: '📅', label: 'Jogos Hoje', value: hojeN, color: '#059669' },
+      { icon: '✅', label: 'Encerrados', value: encerrados, color: '#64748b' },
+      { icon: '👕', label: 'Times', value: timesData.length, color: '#7c3aed' },
+    ];
+
+    const liveDot = document.getElementById('sidebarLiveDot');
+    if (liveDot) liveDot.style.display = aoVivo > 0 ? '' : 'none';
+
+    document.getElementById('dashboardResumo').innerHTML = items.map(i => `
+      <div class="stat-card" style="--accent-color:${i.color};--icon-bg:${i.color}18">
+        <div class="stat-icon">${i.icon}</div>
+        <div>
+          <div class="stat-value">${i.value}</div>
+          <div class="stat-label">${i.label}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { /* silencioso */ }
+}
+
+// ===== ADMINS =====
+async function carregarAdmins() {
+  const tbody = document.getElementById('adminsTbody');
+  if (!tbody) return;
+  try {
+    const data = await api.get('/auth/admins');
+    const eu = JSON.parse(localStorage.getItem('copa_admin') || '{}');
+    tbody.innerHTML = data.length === 0
+      ? '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:2rem">Nenhum admin</td></tr>'
+      : data.map(a => `
+        <tr>
+          <td><strong>${a.nome}</strong></td>
+          <td style="color:var(--text-muted)">${a.email}</td>
+          <td>
+            ${a.id !== eu.id
+              ? `<button class="btn btn-outline btn-sm" onclick="removerAdmin(${a.id},'${a.nome}')">🗑 Remover</button>`
+              : '<span style="font-size:0.78rem;color:var(--text-muted)">Você</span>'}
+          </td>
+        </tr>`).join('');
+  } catch(e) { toast('Erro ao carregar admins', 'error'); }
+}
+
+async function salvarNovoAdmin() {
+  const nome  = document.getElementById('adminNomeInput').value.trim();
+  const email = document.getElementById('adminEmailInput').value.trim();
+  const senha = document.getElementById('adminSenhaInput').value;
+  if (!nome || !email || !senha) { toast('Preencha todos os campos', 'error'); return; }
+  const btn = document.getElementById('btnSalvarAdmin');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+  try {
+    await api.post('/auth/admins', { nome, email, senha });
+    toast('Admin criado!', 'success');
+    document.getElementById('adminNomeInput').value = '';
+    document.getElementById('adminEmailInput').value = '';
+    document.getElementById('adminSenhaInput').value = '';
+    carregarAdmins();
+  } catch(e) { toast(e.erro || 'Erro ao criar admin', 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Criar Admin'; }
+}
+
+async function removerAdmin(id, nome) {
+  if (!confirm(`Remover o admin "${nome}"?`)) return;
+  try {
+    await api.del(`/auth/admins/${id}`);
+    toast('Admin removido', 'info');
+    carregarAdmins();
+  } catch(e) { toast(e.erro || 'Erro', 'error'); }
+}
+
+// Retorna o minuto atual do cronômetro (para pré-preencher gols/cartões)
+function minutoAtualJogo() {
+  let s = placarAtual.timer_decorrido || 0;
+  if (placarAtual.timer_ativo && placarAtual.timer_inicio) {
+    s += Math.floor((Date.now() - Number(placarAtual.timer_inicio)) / 1000);
+  }
+  const min = Math.floor(s / 60);
+  return min > 0 ? min : null;
+}
+
+// ===== CARTÕES =====
+async function carregarCartoes(jogoId) {
+  try {
+    const cartoes = await api.get(`/jogos/${jogoId}/cartoes`);
+    renderCartoesList(cartoes);
+  } catch (e) { console.error(e); }
+}
+
+function renderCartoesList(cartoes) {
+  const el = document.getElementById('cartoesList');
+  if (!el) return;
+  if (!cartoes || cartoes.length === 0) {
+    el.innerHTML = '<div class="gols-empty">Nenhum cartão registrado</div>';
+    return;
+  }
+  el.innerHTML = cartoes.map(c => `
+    <div class="gol-item">
+      <div class="cartao-icon ${c.tipo}"></div>
+      <span class="gol-sigla">${c.time_sigla}</span>
+      <span class="gol-jogador">${c.jogador}</span>
+      ${c.minuto ? `<span class="gol-min">${c.minuto}'</span>` : ''}
+      <button class="gol-del" onclick="removerCartao(${c.id})" title="Remover">×</button>
+    </div>
+  `).join('');
+}
+
+async function adicionarCartao() {
+  const jogador = (document.getElementById('cartaoJogador').value || '').trim();
+  const time_id = document.getElementById('cartaoTime').value;
+  const tipo    = document.getElementById('cartaoTipo').value;
+  const minuto  = document.getElementById('cartaoMinuto').value || minutoAtualJogo();
+  if (!placarAtual.id) return toast('Selecione um jogo primeiro', 'warning');
+  if (!jogador)  return toast('Informe o nome do jogador', 'warning');
+  if (!time_id)  return toast('Selecione o time', 'warning');
+  try {
+    await api.post(`/jogos/${placarAtual.id}/cartoes`, { jogador, time_id, tipo, minuto: minuto || null });
+    document.getElementById('cartaoJogador').value = '';
+    document.getElementById('cartaoMinuto').value  = '';
+    await carregarCartoes(placarAtual.id);
+    toast('Cartão registrado!', 'success');
+  } catch (e) { toast('Erro ao registrar cartão', 'error'); }
+}
+
+async function removerCartao(cartaoId) {
+  if (!placarAtual.id) return;
+  try {
+    await api.del(`/jogos/${placarAtual.id}/cartoes/${cartaoId}`);
+    await carregarCartoes(placarAtual.id);
+  } catch (e) { toast('Erro ao remover cartão', 'error'); }
+}
+
+// ===== ARTILHEIROS =====
+async function carregarGols(jogoId) {
+  try {
+    const gols = await api.get(`/jogos/${jogoId}/gols`);
+    renderGolsList(gols);
+  } catch (e) { console.error(e); }
+}
+
+function renderGolsList(gols) {
+  const el = document.getElementById('golsList');
+  if (!el) return;
+  if (!gols || gols.length === 0) {
+    el.innerHTML = '<div class="gols-empty">Nenhum gol registrado</div>';
+    return;
+  }
+  el.innerHTML = gols.map(g => `
+    <div class="gol-item">
+      <div class="gol-dot" style="background:${g.time_cor}"></div>
+      <span class="gol-sigla">${g.time_sigla}</span>
+      <span class="gol-jogador">${g.jogador}</span>
+      ${g.minuto ? `<span class="gol-min">${g.minuto}'</span>` : ''}
+      <button class="gol-del" onclick="removerGol(${g.id})" title="Remover">×</button>
+    </div>
+  `).join('');
+}
+
+async function adicionarGol() {
+  const jogador = (document.getElementById('golJogador').value || '').trim();
+  const time_id = document.getElementById('golTime').value;
+  const minuto  = document.getElementById('golMinuto').value || minutoAtualJogo();
+  if (!placarAtual.id) return toast('Selecione um jogo primeiro', 'warning');
+  if (!jogador)  return toast('Informe o nome do jogador', 'warning');
+  if (!time_id)  return toast('Selecione o time', 'warning');
+  try {
+    await api.post(`/jogos/${placarAtual.id}/gols`, { jogador, time_id, minuto: minuto || null });
+    document.getElementById('golJogador').value = '';
+    document.getElementById('golMinuto').value  = '';
+    await carregarGols(placarAtual.id);
+    toast('Gol registrado!', 'success');
+  } catch (e) { toast('Erro ao registrar gol', 'error'); }
+}
+
+async function removerGol(golId) {
+  if (!placarAtual.id) return;
+  try {
+    await api.del(`/jogos/${placarAtual.id}/gols/${golId}`);
+    await carregarGols(placarAtual.id);
+  } catch (e) { toast('Erro ao remover gol', 'error'); }
+}
+
+// ===== INIT =====
+carregarBase().then(() => { carregarSeletorPlacar(); carregarDashboard(); });
+</script>
+</body>
+</html>
