@@ -183,6 +183,19 @@ async function initDB() {
     `);
 
     await conn.query(`
+      CREATE TABLE IF NOT EXISTS noticias (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        titulo VARCHAR(200) NOT NULL,
+        conteudo TEXT,
+        imagem VARCHAR(255) DEFAULT NULL,
+        tag VARCHAR(50) DEFAULT '',
+        fixado TINYINT(1) DEFAULT 0,
+        ativo TINYINT(1) DEFAULT 1,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS push_subscriptions (
         id INT AUTO_INCREMENT PRIMARY KEY,
         endpoint TEXT NOT NULL,

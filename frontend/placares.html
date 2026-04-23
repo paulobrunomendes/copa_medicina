@@ -4,16 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Placares — Copa Med Horus</title>
+  <link rel="icon" href="/public/logo-icon.png" type="image/png">
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
-  <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/public/logo-icon.png">
   <link rel="manifest" href="/public/manifest.json">
-  <meta name="theme-color" content="#1e40af">
+  <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="/public/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     /* ===== BACKGROUND MELHORADO ===== */
-    body { background: #1a2540; }
+    body { background: #111111; }
+    .site-navbar-page-bg {
+      background: #111 url('/public/court-bg.webp') center/cover no-repeat;
+      position: relative; padding: 3rem 2rem 2.5rem;
+      border-bottom: 2px solid rgba(245,194,0,0.15);
+    }
+    .site-navbar-page-bg::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.84); }
+    .site-navbar-page-bg-inner { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; }
+    .site-navbar-page-bg h1 { font-size: clamp(1.8rem,4vw,2.75rem); font-weight: 900; color: white; letter-spacing: -0.8px; margin-bottom: 0.4rem; }
+    .site-navbar-page-bg p { font-size: 0.95rem; color: rgba(255,255,255,0.55); }
     .container { background: transparent; }
     .modalidade-tabs .tab-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.65); }
     .modalidade-tabs .tab-btn:hover { border-color: rgba(255,255,255,0.3); color: white; background: rgba(255,255,255,0.12); }
@@ -349,22 +359,20 @@
 
 <!-- NAVBAR SITE -->
 <style>
-  .site-navbar { position: sticky; top: 0; z-index: 300; background: rgba(4,10,28,0.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.07); box-shadow: 0 2px 30px rgba(0,0,0,0.5); }
+  .site-navbar { position: sticky; top: 0; z-index: 300; background: rgba(10,10,10,0.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 2px 30px rgba(0,0,0,0.6); }
   .site-nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
   .site-nav-logo { display: flex; align-items: center; gap: 10px; }
-  .site-nav-logo img { width: 32px; height: 32px; object-fit: contain; }
-  .site-nav-logo span { font-size: 0.95rem; font-weight: 900; color: white; letter-spacing: -0.3px; }
-  .site-nav-logo span strong { color: #f59e0b; }
+  .site-nav-logo img { height: 38px; width: auto; object-fit: contain; }
   .site-nav-links { display: flex; align-items: center; gap: 0.2rem; }
   .site-nav-link { padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: rgba(255,255,255,0.6); transition: all 0.18s; white-space: nowrap; text-decoration: none; }
   .site-nav-link:hover { color: white; background: rgba(255,255,255,0.08); }
   .site-nav-link.active { color: white; background: rgba(255,255,255,0.1); }
-  .site-nav-admin { margin-left: 0.75rem; padding: 0.45rem 1rem; border-radius: 8px; background: #2563eb; color: white; font-size: 0.875rem; font-weight: 700; transition: all 0.18s; text-decoration: none; }
-  .site-nav-admin:hover { background: #1d4ed8; transform: translateY(-1px); }
+  .site-nav-admin { margin-left: 0.75rem; padding: 0.45rem 1rem; border-radius: 8px; background: #F5C200; color: #111; font-size: 0.875rem; font-weight: 800; transition: all 0.18s; text-decoration: none; }
+  .site-nav-admin:hover { background: #ffe94d; transform: translateY(-1px); }
   .site-nav-hburg { display: none; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.5rem; cursor: pointer; padding: 0.25rem; }
   @media(max-width:720px) {
     .site-nav-hburg { display: block; }
-    .site-nav-links { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 64px; left: 0; right: 0; background: #040a1c; padding: 0.75rem 1rem 1rem; gap: 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .site-nav-links { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 64px; left: 0; right: 0; background: #0a0a0a; padding: 0.75rem 1rem 1rem; gap: 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
     .site-nav-links.open { display: flex; }
     .site-nav-admin { margin-left: 0; }
     .site-nav-inner { padding: 0 1.25rem; }
@@ -373,19 +381,26 @@
 <nav class="site-navbar">
   <div class="site-nav-inner">
     <a href="/" class="site-nav-logo">
-      <img src="/public/logo.png" alt="Logo" onerror="this.style.display='none'">
-      <span>Copa <strong>Med Horus</strong></span>
+      <img src="/public/logo-icon.png" alt="Copa Med Horus">
     </a>
     <button class="site-nav-hburg" onclick="document.getElementById('siteNavLinks').classList.toggle('open')">☰</button>
     <div class="site-nav-links" id="siteNavLinks">
       <a href="/" class="site-nav-link">Início</a>
-      <a href="/placares.html" class="site-nav-link active">Placares</a>
+      <a href="/noticias.html" class="site-nav-link">Notícias</a>
+      <a href="/placares.html" class="site-nav-link active">Jogos</a>
       <a href="/parceiros.html" class="site-nav-link">Parceiros</a>
       <a href="/loja.html" class="site-nav-link">Loja</a>
       <a href="/admin" class="site-nav-admin">Área Admin</a>
     </div>
   </div>
 </nav>
+
+<div class="site-navbar-page-bg">
+  <div class="site-navbar-page-bg-inner">
+    <h1>⚽ Placares & Resultados</h1>
+    <p>Acompanhe jogos ao vivo, resultados, classificação e artilheiros.</p>
+  </div>
+</div>
 
 <!-- SUB-NAV DE SEÇÕES (interno ao placares) -->
 <header class="header" style="position:sticky;top:64px;z-index:200">
@@ -949,8 +964,9 @@
                     <td>
                       <div class="time-row">
                         <span class="pos-badge pos-${i+1}">${i+1}</span>
-                        <div class="time-dot" style="background:${t.cor}"></div>
-                        <span style="font-weight:500">${t.sigla}</span>
+                        ${t.logo
+                          ? `<img src="${t.logo}" alt="${t.sigla}" style="width:32px;height:32px;object-fit:contain;border-radius:50%;background:white;padding:2px;flex-shrink:0">`
+                          : `<div class="time-dot" style="background:${t.cor}"></div>`}
                         <span style="color:var(--text-muted);font-size:0.8rem">${t.nome}</span>
                       </div>
                     </td>

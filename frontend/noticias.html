@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loja Oficial — Copa Med Horus</title>
+  <title>Notícias — Copa Med Horus</title>
   <link rel="icon" href="/public/logo-icon.png" type="image/png">
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
   <link rel="apple-touch-icon" href="/public/logo-icon.png">
@@ -15,8 +15,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --primary: #111111; --primary-mid: #1e1e1e; --primary-light: #2563eb;
-      --gold: #F5C200; --gold-light: #ffe94d; --green: #25d366;
-      --red: #8B1010;
+      --gold: #F5C200; --gold-light: #ffe94d;
       --text: #0f172a; --text-muted: #64748b;
       --border: #e2e8f0; --bg: #f1f5f9;
     }
@@ -49,70 +48,41 @@
     .page-header p { font-size: 1rem; color: rgba(255,255,255,0.6); max-width: 540px; }
 
     /* MAIN */
-    main { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
-    .produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.75rem; }
+    main { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem; }
 
-    /* PRODUCT CARD */
-    .produto-card {
-      background: white; border-radius: 20px; overflow: hidden;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-      transition: all 0.25s; display: flex; flex-direction: column;
-      border: 1.5px solid var(--border);
+    /* NEWS CARDS */
+    .noticia-card {
+      background: white; border-radius: 18px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1.5px solid transparent;
+      transition: all 0.22s; margin-bottom: 1.5rem;
+      display: flex; gap: 0;
     }
-    .produto-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.13); border-color: rgba(37,99,235,0.2); }
-    .produto-foto-wrap { position: relative; overflow: hidden; }
-    .produto-foto {
-      width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block;
-      cursor: zoom-in; transition: transform 0.35s ease;
+    .noticia-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,0.1); border-color: rgba(37,99,235,0.15); }
+    .noticia-card.fixado { border-color: rgba(245,158,11,0.35); background: linear-gradient(to right, #fffbeb, white); }
+    .noticia-img { width: 200px; min-height: 160px; object-fit: cover; flex-shrink: 0; }
+    .noticia-img-placeholder { width: 200px; min-height: 160px; background: linear-gradient(135deg, #dde4f0, #e8edf5); display: flex; align-items: center; justify-content: center; font-size: 3rem; flex-shrink: 0; }
+    .noticia-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .noticia-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.6rem; }
+    .noticia-tag { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 0.2rem 0.6rem; border-radius: 100px; }
+    .noticia-tag.fixado { color: #d97706; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); }
+    .noticia-tag.cat { color: var(--primary-light); background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); }
+    .noticia-date { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
+    .noticia-titulo { font-size: 1.15rem; font-weight: 800; color: var(--text); line-height: 1.3; margin-bottom: 0.6rem; letter-spacing: -0.3px; }
+    .noticia-conteudo { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; flex: 1; }
+
+    @media(max-width:600px) {
+      .noticia-card { flex-direction: column; }
+      .noticia-img, .noticia-img-placeholder { width: 100%; height: 180px; min-height: unset; }
     }
-    .produto-foto:hover { transform: scale(1.06); }
-    .produto-foto-placeholder { width: 100%; aspect-ratio: 1/1; background: linear-gradient(135deg, #dde4f0, #e8edf5); display: flex; align-items: center; justify-content: center; font-size: 5rem; }
-    .produto-foto-hint {
-      position: absolute; bottom: 8px; right: 8px;
-      background: rgba(0,0,0,0.55); color: white;
-      font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.55rem;
-      border-radius: 100px; backdrop-filter: blur(4px); pointer-events: none;
-    }
-    .produto-body { padding: 1.35rem; flex: 1; display: flex; flex-direction: column; }
-    .produto-nome { font-weight: 800; font-size: 1.05rem; color: var(--text); margin-bottom: 0.4rem; line-height: 1.3; }
-    .produto-desc { font-size: 0.83rem; color: var(--text-muted); line-height: 1.7; flex: 1; margin-bottom: 1rem; }
-    .produto-footer { margin-top: auto; }
-    .produto-preco { font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-bottom: 0.85rem; letter-spacing: -0.6px; }
-    .btn-whatsapp {
-      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-      background: var(--green); color: white; font-weight: 800; font-size: 0.9rem;
-      padding: 0.85rem; border-radius: 12px; transition: all 0.18s; width: 100%;
-    }
-    .btn-whatsapp:hover { background: #1da851; transform: scale(1.02); box-shadow: 0 4px 16px rgba(37,211,102,0.4); }
-    .sem-contato { font-size: 0.78rem; color: var(--text-muted); text-align: center; padding: 0.5rem; }
 
     /* LIGHTBOX */
-    .lightbox {
-      position: fixed; inset: 0; z-index: 999;
-      background: rgba(5,10,25,0.92); backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 1rem; cursor: zoom-out;
-      animation: lbIn 0.2s ease;
-    }
-    @keyframes lbIn { from { opacity:0 } to { opacity:1 } }
-    .lightbox img {
-      max-width: 90vw; max-height: 88vh; object-fit: contain;
-      border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.7);
-      cursor: default;
-    }
-    .lightbox-close {
-      position: absolute; top: 1rem; right: 1.25rem;
-      background: rgba(255,255,255,0.12); border: none; color: white;
-      font-size: 1.8rem; width: 44px; height: 44px; border-radius: 50%;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: background 0.18s;
-    }
-    .lightbox-close:hover { background: rgba(255,255,255,0.25); }
-    .lightbox-nome {
-      position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-      color: rgba(255,255,255,0.7); font-size: 0.9rem; font-weight: 600;
-      white-space: nowrap; text-align: center;
-    }
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; border-radius: 12px; box-shadow: 0 24px 64px rgba(0,0,0,0.6); }
+    .lightbox-close { position: absolute; top: 1rem; right: 1.25rem; font-size: 2rem; color: white; cursor: pointer; line-height: 1; opacity: 0.7; transition: opacity 0.15s; }
+    .lightbox-close:hover { opacity: 1; }
+    .noticia-img { cursor: zoom-in; }
 
     /* EMPTY/LOADING */
     .empty-state { text-align: center; padding: 5rem 1rem; color: var(--text-muted); }
@@ -143,10 +113,10 @@
     <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
     <div class="nav-links" id="navLinks">
       <a href="/" class="nav-link">Início</a>
-      <a href="/noticias.html" class="nav-link">📰 Notícias</a>
+      <a href="/noticias.html" class="nav-link active">📰 Notícias</a>
       <a href="/placares.html" class="nav-link">⚽ Jogos</a>
       <a href="/parceiros.html" class="nav-link">🤝 Parceiros</a>
-      <a href="/loja.html" class="nav-link active">🛍️ Loja</a>
+      <a href="/loja.html" class="nav-link">🛍️ Loja</a>
       <a href="/admin" class="nav-link admin-link">🔐 Admin</a>
     </div>
   </div>
@@ -154,14 +124,19 @@
 
 <div class="page-header">
   <div class="page-header-inner">
-    <h1>🛍️ Loja Oficial</h1>
-    <p>Produtos exclusivos da Copa Med Horus. Peça diretamente pelo WhatsApp com facilidade.</p>
+    <h1>📰 Notícias & Comunicados</h1>
+    <p>Fique por dentro de tudo que acontece na Copa Med Horus.</p>
   </div>
 </div>
 
+<div class="lightbox" id="lightbox" onclick="fecharLightbox()">
+  <span class="lightbox-close" onclick="fecharLightbox()">✕</span>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <main>
-  <div id="produtosContainer" class="produtos-grid">
-    <div style="grid-column:1/-1;text-align:center;padding:4rem"><div class="spinner"></div></div>
+  <div id="noticiasContainer">
+    <div style="text-align:center;padding:4rem"><div class="spinner"></div></div>
   </div>
 </main>
 
@@ -184,74 +159,51 @@
 <script>
   async function init() {
     try {
-      const produtos = await fetch('/api/produtos').then(r=>r.json());
-      const el = document.getElementById('produtosContainer');
-      if (!produtos.length) {
-        el.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-          <div class="icon">🛍️</div>
-          <h3>Nenhum produto disponível ainda</h3>
-          <p>Em breve teremos produtos exclusivos da Copa Med Horus.</p>
+      const noticias = await fetch('/api/noticias').then(r => r.json());
+      const el = document.getElementById('noticiasContainer');
+      if (!noticias.length) {
+        el.innerHTML = `<div class="empty-state">
+          <div class="icon">📰</div>
+          <h3>Nenhuma notícia publicada ainda</h3>
+          <p>Em breve teremos novidades sobre a Copa Med Horus.</p>
         </div>`;
         return;
       }
-      el.innerHTML = produtos.map(p => {
-        const preco = p.preco ? parseFloat(p.preco).toFixed(2).replace('.',',') : null;
-        const msg = encodeURIComponent(p.whatsapp_msg || `Olá! Tenho interesse no produto: ${p.nome}`);
-        const waNum = p.whatsapp ? p.whatsapp.replace(/\D/g,'') : '';
-        const waLink = waNum ? `https://wa.me/${waNum}?text=${msg}` : '';
-        const nomeEsc = p.nome.replace(/'/g, "\\'");
+      el.innerHTML = noticias.map(n => {
+        const data = new Date(n.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
         return `
-          <div class="produto-card">
-            <div class="produto-foto-wrap">
-              ${p.foto
-                ? `<img src="${p.foto}" alt="${p.nome}" class="produto-foto" loading="lazy" onclick="abrirLightbox('${p.foto}','${nomeEsc}')">
-                   <div class="produto-foto-hint">🔍 Ver foto</div>`
-                : `<div class="produto-foto-placeholder">🛍️</div>`}
-            </div>
-            <div class="produto-body">
-              <div class="produto-nome">${p.nome}</div>
-              ${p.descricao ? `<div class="produto-desc">${p.descricao}</div>` : '<div class="produto-desc"></div>'}
-              <div class="produto-footer">
-                ${preco ? `<div class="produto-preco">R$ ${preco}</div>` : ''}
-                ${waLink
-                  ? `<a href="${waLink}" target="_blank" class="btn-whatsapp">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.083.535 4.042 1.47 5.745L0 24l6.395-1.44A11.935 11.935 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.587-.503-5.078-1.38l-.364-.214-3.772.849.864-3.681-.235-.378A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-                      Pedir pelo WhatsApp
-                    </a>`
-                  : `<div class="sem-contato">Entre em contato para mais informações</div>`}
+          <article class="noticia-card ${n.fixado ? 'fixado' : ''}">
+            ${n.imagem
+              ? `<img src="${n.imagem}" alt="${n.titulo}" class="noticia-img" loading="lazy" onclick="abrirLightbox('${n.imagem}')">`
+              : `<div class="noticia-img-placeholder">📰</div>`}
+            <div class="noticia-body">
+              <div class="noticia-meta">
+                ${n.fixado ? `<span class="noticia-tag fixado">📌 Fixado</span>` : ''}
+                ${n.tag ? `<span class="noticia-tag cat">${n.tag}</span>` : ''}
+                <span class="noticia-date">${data}</span>
               </div>
+              <div class="noticia-titulo">${n.titulo}</div>
+              ${n.conteudo ? `<div class="noticia-conteudo">${n.conteudo.replace(/\n/g, '<br>')}</div>` : ''}
             </div>
-          </div>
-        `;
+          </article>`;
       }).join('');
     } catch(e) {
-      document.getElementById('produtosContainer').innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="icon">❌</div><h3>Erro ao carregar produtos</h3></div>`;
+      document.getElementById('noticiasContainer').innerHTML = `<div class="empty-state"><div class="icon">❌</div><h3>Erro ao carregar notícias</h3></div>`;
     }
   }
 
-  function abrirLightbox(src, nome) {
-    const lb = document.createElement('div');
-    lb.className = 'lightbox';
-    lb.innerHTML = `
-      <img src="${src}" alt="${nome}" onclick="event.stopPropagation()">
-      <button class="lightbox-close" onclick="fecharLightbox()">×</button>
-      <div class="lightbox-nome">${nome}</div>
-    `;
-    lb.onclick = fecharLightbox;
-    document.body.appendChild(lb);
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', escLightbox);
-  }
-
-  function fecharLightbox() {
-    document.querySelector('.lightbox')?.remove();
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', escLightbox);
-  }
-
-  function escLightbox(e) { if (e.key === 'Escape') fecharLightbox(); }
-
   init();
+
+  function abrirLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function fecharLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharLightbox(); });
 </script>
 </body>
 </html>

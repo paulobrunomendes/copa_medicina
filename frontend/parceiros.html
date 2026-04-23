@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Parceiros & Benefícios — Copa Med Horus</title>
+  <link rel="icon" href="/public/logo-icon.png" type="image/png">
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
-  <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/public/logo-icon.png">
   <link rel="manifest" href="/public/manifest.json">
-  <meta name="theme-color" content="#0d1f4e">
+  <meta name="theme-color" content="#111111">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #0d1f4e; --primary-mid: #1a3a8f; --primary-light: #2563eb;
-      --gold: #f59e0b; --gold-light: #fcd34d;
+      --primary: #111111; --primary-mid: #1e1e1e; --primary-light: #2563eb;
+      --gold: #F5C200; --gold-light: #ffe94d;
       --text: #0f172a; --text-muted: #64748b;
       --border: #e2e8f0; --card: #fff; --bg: #f1f5f9;
     }
@@ -22,26 +23,26 @@
     a { text-decoration: none; color: inherit; }
 
     /* NAVBAR */
-    .navbar { position: sticky; top: 0; z-index: 200; background: rgba(7,13,30,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+    .navbar { position: sticky; top: 0; z-index: 200; background: rgba(10,10,10,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 24px rgba(0,0,0,0.6); }
     .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 1.5rem; }
     .nav-logo { display: flex; align-items: center; gap: 10px; }
-    .nav-logo-badge { width: 36px; height: 36px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 3px 12px rgba(245,158,11,0.45); }
-    .nav-logo-text { font-size: 1rem; font-weight: 800; color: white; letter-spacing: -0.3px; }
-    .nav-logo-text span { color: var(--gold); }
+    .nav-logo-img { height: 38px; width: auto; object-fit: contain; }
     .nav-links { display: flex; align-items: center; gap: 0.25rem; }
     .nav-link { padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: rgba(255,255,255,0.7); transition: all 0.18s; white-space: nowrap; }
     .nav-link:hover { color: white; background: rgba(255,255,255,0.08); }
     .nav-link.active { color: white; background: rgba(255,255,255,0.12); }
-    .nav-link.admin-link { background: linear-gradient(135deg, var(--primary-light), #1d4ed8); color: white; margin-left: 0.5rem; box-shadow: 0 2px 8px rgba(37,99,235,0.35); }
-    .nav-link.admin-link:hover { opacity: 0.9; transform: translateY(-1px); }
+    .nav-link.admin-link { background: var(--gold); color: #111; font-weight: 800; margin-left: 0.5rem; box-shadow: 0 2px 8px rgba(245,194,0,0.35); }
+    .nav-link.admin-link:hover { background: var(--gold-light); transform: translateY(-1px); }
     .nav-toggle { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0.25rem; }
     @media(max-width:640px) {
-      .nav-links { display: none; flex-direction: column; align-items: flex-start; position: absolute; top: 64px; left: 0; right: 0; background: #070d1e; padding: 1rem 1.5rem; gap: 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+      .nav-links { display: none; flex-direction: column; align-items: flex-start; position: absolute; top: 64px; left: 0; right: 0; background: #0a0a0a; padding: 1rem 1.5rem; gap: 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
       .nav-links.open { display: flex; } .nav-link { width: 100%; } .nav-toggle { display: block; }
     }
 
     /* PAGE HEADER */
-    .page-header { background: linear-gradient(135deg, #050c1f, #0d1f4e); padding: 3.5rem 1.5rem; }
+    .page-header { background: #111; background-image: url('/public/court-bg.webp'); background-size: cover; background-position: center; position: relative; padding: 3.5rem 1.5rem; border-bottom: 2px solid rgba(245,194,0,0.15); }
+    .page-header::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.82); }
+    .page-header-inner { position: relative; z-index: 1; }
     .page-header-inner { max-width: 1200px; margin: 0 auto; }
     .page-header h1 { font-size: clamp(1.8rem, 4vw, 2.75rem); font-weight: 900; color: white; letter-spacing: -0.8px; margin-bottom: 0.5rem; }
     .page-header p { font-size: 1rem; color: rgba(255,255,255,0.6); max-width: 540px; }
@@ -55,25 +56,35 @@
 
     /* MAIN */
     main { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
-    .parceiros-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+    .parceiros-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.5rem; }
     .parceiro-card {
-      background: white; border-radius: 18px;
+      background: white; border-radius: 20px;
       border: 1.5px solid var(--border);
-      transition: all 0.22s; overflow: hidden;
+      transition: all 0.25s; overflow: hidden; display: flex; flex-direction: column;
     }
-    .parceiro-card:hover { border-color: var(--primary-light); transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,0,0,0.1); }
-    .parceiro-card-header { padding: 1.5rem 1.5rem 1rem; display: flex; gap: 1rem; align-items: flex-start; }
-    .parceiro-logo-wrap { flex-shrink: 0; }
-    .parceiro-logo { width: 64px; height: 64px; border-radius: 14px; object-fit: contain; background: var(--bg); border: 1px solid var(--border); }
-    .parceiro-logo-placeholder { width: 64px; height: 64px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-mid)); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
-    .parceiro-info { flex: 1; min-width: 0; }
-    .parceiro-cat-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-light); background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); padding: 0.2rem 0.6rem; border-radius: 100px; display: inline-block; margin-bottom: 0.35rem; }
-    .parceiro-nome { font-weight: 800; font-size: 1rem; color: var(--text); line-height: 1.3; }
-    .parceiro-beneficio-tag { display: flex; align-items: flex-start; gap: 0.4rem; background: rgba(5,150,105,0.06); border-top: 1px solid rgba(5,150,105,0.12); padding: 0.75rem 1.5rem; }
-    .parceiro-beneficio-tag span { font-size: 0.82rem; font-weight: 600; color: #047857; line-height: 1.5; }
-    .parceiro-body { padding: 0 1.5rem 1rem; }
+    .parceiro-card:hover { border-color: var(--primary-light); transform: translateY(-5px); box-shadow: 0 16px 44px rgba(0,0,0,0.11); }
+
+    /* Logo area — destaque no topo */
+    .parceiro-logo-area {
+      height: 140px; background: #f8faff;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid var(--border); padding: 1.25rem;
+    }
+    .parceiro-logo { max-height: 100px; max-width: 75%; object-fit: contain; border-radius: 8px; }
+    .parceiro-logo-placeholder {
+      width: 80px; height: 80px; border-radius: 18px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-mid));
+      display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
+    }
+
+    /* Corpo do card */
+    .parceiro-card-body { padding: 1.25rem 1.5rem 0.75rem; flex: 1; }
+    .parceiro-cat-badge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-light); background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); padding: 0.2rem 0.6rem; border-radius: 100px; display: inline-block; margin-bottom: 0.5rem; }
+    .parceiro-nome { font-weight: 800; font-size: 1.1rem; color: var(--text); line-height: 1.3; margin-bottom: 0.5rem; }
+    .parceiro-beneficio-tag { display: flex; align-items: flex-start; gap: 0.4rem; background: rgba(5,150,105,0.06); border-radius: 8px; padding: 0.6rem 0.85rem; margin-bottom: 0.6rem; }
+    .parceiro-beneficio-tag span { font-size: 0.83rem; font-weight: 600; color: #047857; line-height: 1.5; }
     .parceiro-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.65; }
-    .parceiro-contacts { padding: 0.85rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .parceiro-contacts { padding: 0.9rem 1.5rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: auto; }
     .parceiro-btn {
       display: inline-flex; align-items: center; gap: 0.4rem;
       font-size: 0.78rem; font-weight: 700; padding: 0.45rem 0.9rem;
@@ -94,13 +105,15 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* FOOTER */
-    footer { background: #070d1e; color: rgba(255,255,255,0.45); padding: 2rem 1.5rem; text-align: center; margin-top: 3rem; }
+    footer { background: #0a0a0a; color: rgba(255,255,255,0.45); padding: 2rem 1.5rem; text-align: center; margin-top: 3rem; border-top: 1px solid rgba(245,194,0,0.12); }
     .footer-logo { font-size: 0.95rem; font-weight: 800; color: white; margin-bottom: 0.6rem; }
     .footer-logo span { color: var(--gold); }
     .footer-links { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
     .footer-link { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.45); transition: color 0.18s; }
     .footer-link:hover { color: white; }
     .footer-copy { font-size: 0.72rem; }
+    .footer-instagram { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; background: rgba(245,194,0,0.08); border: 1px solid rgba(245,194,0,0.25); color: rgba(245,194,0,0.8); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; transition: all 0.2s; text-decoration: none; }
+    .footer-instagram:hover { background: rgba(245,194,0,0.15); border-color: rgba(245,194,0,0.5); color: #F5C200; }
   </style>
 </head>
 <body>
@@ -108,13 +121,13 @@
 <nav class="navbar">
   <div class="nav-inner">
     <a href="/" class="nav-logo">
-      <div class="nav-logo-badge">🏆</div>
-      <div class="nav-logo-text">Copa <span>Med Horus</span></div>
+      <img src="/public/logo-icon.png" alt="Copa Med Horus" class="nav-logo-img">
     </a>
     <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
     <div class="nav-links" id="navLinks">
       <a href="/" class="nav-link">Início</a>
-      <a href="/placares.html" class="nav-link">⚽ Placares</a>
+      <a href="/noticias.html" class="nav-link">📰 Notícias</a>
+      <a href="/placares.html" class="nav-link">⚽ Jogos</a>
       <a href="/parceiros.html" class="nav-link active">🤝 Parceiros</a>
       <a href="/loja.html" class="nav-link">🛍️ Loja</a>
       <a href="/admin" class="nav-link admin-link">🔐 Admin</a>
@@ -145,10 +158,15 @@
   <div class="footer-logo">🏆 Copa <span>Med Horus</span></div>
   <div class="footer-links">
     <a href="/" class="footer-link">Início</a>
-    <a href="/placares.html" class="footer-link">Placares</a>
+    <a href="/noticias.html" class="footer-link">Notícias</a>
+    <a href="/placares.html" class="footer-link">Jogos</a>
     <a href="/parceiros.html" class="footer-link">Parceiros</a>
     <a href="/loja.html" class="footer-link">Loja</a>
   </div>
+  <a href="https://www.instagram.com/copamedhorus/" target="_blank" rel="noopener" class="footer-instagram">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    @copamedhorus
+  </a>
   <div class="footer-copy">© 2025 Copa Med Horus</div>
 </footer>
 
@@ -199,19 +217,17 @@
       const site = p.site && (p.site.startsWith('http') ? p.site : `https://${p.site}`);
       return `
         <div class="parceiro-card">
-          <div class="parceiro-card-header">
-            <div class="parceiro-logo-wrap">
-              ${p.logo
-                ? `<img src="${p.logo}" alt="${p.nome}" class="parceiro-logo" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'parceiro-logo-placeholder\\'>🤝</div>'">`
-                : `<div class="parceiro-logo-placeholder">🤝</div>`}
-            </div>
-            <div class="parceiro-info">
-              ${p.categoria ? `<div class="parceiro-cat-badge">${p.categoria}</div>` : ''}
-              <div class="parceiro-nome">${p.nome}</div>
-            </div>
+          <div class="parceiro-logo-area">
+            ${p.logo
+              ? `<img src="${p.logo}" alt="${p.nome}" class="parceiro-logo" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'parceiro-logo-placeholder\\'>🤝</div>'">`
+              : `<div class="parceiro-logo-placeholder">🤝</div>`}
           </div>
-          ${p.beneficio ? `<div class="parceiro-beneficio-tag"><span>🎁 ${p.beneficio}</span></div>` : ''}
-          ${p.descricao ? `<div class="parceiro-body"><p class="parceiro-desc">${p.descricao}</p></div>` : ''}
+          <div class="parceiro-card-body">
+            ${p.categoria ? `<div class="parceiro-cat-badge">${p.categoria}</div>` : ''}
+            <div class="parceiro-nome">${p.nome}</div>
+            ${p.beneficio ? `<div class="parceiro-beneficio-tag"><span>🎁 ${p.beneficio}</span></div>` : ''}
+            ${p.descricao ? `<p class="parceiro-desc">${p.descricao}</p>` : ''}
+          </div>
           ${wa || site || p.contato ? `
             <div class="parceiro-contacts">
               ${wa ? `<a href="${wa}" target="_blank" class="parceiro-btn wa">💬 WhatsApp</a>` : ''}

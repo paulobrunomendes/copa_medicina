@@ -116,4 +116,27 @@ router.get('/jogos', authMiddleware, async (req, res) => {
   }
 });
 
+// Backup completo do banco em JSON
+router.get('/backup', authMiddleware, async (req, res) => {
+  try {
+    const tabelas = ['modalidades', 'grupos', 'times', 'grupos_times', 'jogos', 'gols', 'artilheiros', 'noticias', 'parceiros', 'produtos', 'admins'];
+    const backup = { gerado_em: new Date().toISOString(), tabelas: {} };
+    for (const tabela of tabelas) {
+      try {
+        const [rows] = await pool.query(`SELECT * FROM ${tabela}`);
+        // Remove senha dos admins
+        if (tabela === 'admins') rows.forEach(r => delete r.senha);
+        backup.tabelas[tabela] = rows;
+      } catch (e) { backup.tabelas[tabela] = []; }
+    }
+    const json = JSON.stringify(backup, (_, v) => typeof v === 'bigint' ? v.toString() : v, 2);
+    const filename = `backup_copa_${new Date().toISOString().slice(0,10)}.json`;
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(json);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao gerar backup' });
+  }
+});
+
 module.exports = router;

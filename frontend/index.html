@@ -4,23 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Copa Med Horus</title>
+  <link rel="icon" href="/public/logo-icon.png" type="image/png">
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
-  <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/public/logo-icon.png">
   <link rel="manifest" href="/public/manifest.json">
-  <meta name="theme-color" content="#0d1f4e">
+  <meta name="theme-color" content="#111111">
   <meta name="description" content="Copa Med Horus — Acompanhe placares ao vivo, classificação, artilheiros, parceiros e loja oficial.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy:   #0d1f4e;
-      --navy2:  #1a3a8f;
+      --navy:   #111111;
+      --navy2:  #1e1e1e;
       --blue:   #2563eb;
-      --gold:   #f59e0b;
-      --goldd:  #d97706;
-      --goldl:  #fcd34d;
-      --red:    #dc2626;
+      --gold:   #F5C200;
+      --goldd:  #c9a000;
+      --goldl:  #ffe94d;
+      --red:    #8B1010;
       --green:  #25d366;
       --text:   #0f172a;
       --muted:  #64748b;
@@ -36,10 +37,10 @@
     /* ===== NAVBAR ===== */
     .navbar {
       position: sticky; top: 0; z-index: 500;
-      background: rgba(4, 10, 28, 0.96);
+      background: rgba(10, 10, 10, 0.97);
       backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      box-shadow: 0 2px 30px rgba(0,0,0,0.5);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 2px 30px rgba(0,0,0,0.6);
     }
     .nav-inner {
       max-width: 1280px; margin: 0 auto; padding: 0 2rem;
@@ -47,13 +48,13 @@
     }
     .nav-logo { display: flex; align-items: center; gap: 12px; }
     .nav-logo-img {
-      width: 36px; height: 36px; border-radius: 10px; object-fit: contain;
+      height: 38px; width: auto; object-fit: contain;
     }
     .nav-logo-fallback {
       width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--gold), var(--goldd));
+      background: var(--gold);
       display: none; align-items: center; justify-content: center; font-size: 1.1rem;
-      box-shadow: 0 3px 12px rgba(245,158,11,0.4);
+      box-shadow: 0 3px 12px rgba(245,194,0,0.4);
     }
     .nav-logo-name { font-size: 1rem; font-weight: 900; color: white; letter-spacing: -0.4px; }
     .nav-logo-name strong { color: var(--gold); font-weight: 900; }
@@ -68,16 +69,16 @@
     .nav-admin {
       margin-left: 0.75rem;
       padding: 0.48rem 1.1rem; border-radius: 8px;
-      background: var(--blue); color: white;
-      font-size: 0.875rem; font-weight: 700;
-      box-shadow: 0 2px 12px rgba(37,99,235,0.4);
+      background: var(--gold); color: #111;
+      font-size: 0.875rem; font-weight: 800;
+      box-shadow: 0 2px 12px rgba(245,194,0,0.35);
       transition: all 0.18s;
     }
-    .nav-admin:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(37,99,235,0.5); }
+    .nav-admin:hover { background: var(--goldl); transform: translateY(-1px); box-shadow: 0 4px 18px rgba(245,194,0,0.5); }
     .nav-hamburger { display: none; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.5rem; cursor: pointer; padding: 0.25rem; }
     @media(max-width: 720px) {
       .nav-hamburger { display: block; }
-      .nav-links { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 68px; left: 0; right: 0; background: #040a1c; padding: 0.75rem 1rem 1rem; gap: 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.07); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+      .nav-links { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 68px; left: 0; right: 0; background: #0a0a0a; padding: 0.75rem 1rem 1rem; gap: 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.07); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
       .nav-links.open { display: flex; }
       .nav-admin { margin-left: 0; }
       .nav-inner { padding: 0 1.25rem; }
@@ -85,103 +86,125 @@
 
     /* ===== HERO ===== */
     .hero {
-      background: linear-gradient(155deg, #020710 0%, #0d1f4e 50%, #1a0e60 100%);
+      background: #0a0a0a;
+      background-image: url('/public/court-bg.webp');
+      background-size: cover;
+      background-position: center 40%;
       position: relative; overflow: hidden;
       padding: 5rem 2rem 4rem;
-      min-height: 600px; display: flex; align-items: center;
+      min-height: 620px; display: flex; align-items: center;
     }
     .hero::before {
       content: '';
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse 70% 70% at 75% 30%, rgba(245,158,11,0.1) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 15% 70%, rgba(37,99,235,0.13) 0%, transparent 55%),
-        radial-gradient(ellipse 30% 50% at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 50%);
+        linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.80) 100%),
+        radial-gradient(ellipse 60% 80% at 72% 50%, rgba(245,194,0,0.1) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(139,16,16,0.07) 0%, transparent 55%);
+      pointer-events: none;
     }
     .hero-inner {
       max-width: 1280px; margin: 0 auto; width: 100%;
-      display: grid; grid-template-columns: 1fr 420px; gap: 4rem; align-items: center;
-      position: relative;
+      display: grid; grid-template-columns: 1fr 320px; gap: 4rem; align-items: center;
+      position: relative; z-index: 1;
     }
+    .hero-left { display: flex; flex-direction: column; align-items: flex-start; }
     .hero-eyebrow {
       display: inline-flex; align-items: center; gap: 0.6rem;
-      font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
-      color: rgba(245,158,11,0.85); margin-bottom: 1.25rem;
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px;
+      color: var(--gold); margin-bottom: 1.25rem;
     }
-    .hero-eyebrow::before { content: ''; display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; flex-shrink: 0; }
-    .hero h1 {
-      font-size: clamp(2.75rem, 5.5vw, 4rem);
-      font-weight: 900; color: white;
-      letter-spacing: -2px; line-height: 1.05;
-      margin-bottom: 1.25rem;
+    .hero-eyebrow::before { content: ''; display: block; width: 24px; height: 2px; background: var(--gold); border-radius: 2px; flex-shrink: 0; }
+
+    /* Logo principal — agora no lado esquerdo */
+    .hero-logo-wrap {
+      position: relative; display: flex; align-items: center; justify-content: flex-start;
+      margin-bottom: 1.5rem;
     }
-    .hero h1 .gold { color: var(--gold); }
+    .hero-logo-glow {
+      position: absolute; width: 560px; height: 300px; left: -40px;
+      background: radial-gradient(ellipse, rgba(245,194,0,0.22) 0%, transparent 70%);
+      filter: blur(50px);
+      animation: heroGlowPulse 3.5s ease-in-out infinite;
+    }
+    @keyframes heroGlowPulse { 0%,100%{opacity:0.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
+    .hero-logo-img {
+      width: 480px; max-width: 100%;
+      object-fit: contain; position: relative; z-index: 1;
+      animation: heroFloat 5s ease-in-out infinite;
+      filter: drop-shadow(0 8px 60px rgba(245,194,0,0.45)) drop-shadow(0 2px 12px rgba(0,0,0,0.8));
+    }
+    @keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
     .hero-desc {
-      font-size: 1.05rem; color: rgba(255,255,255,0.55);
-      max-width: 440px; line-height: 1.75; margin-bottom: 2rem;
+      font-size: 1rem; color: rgba(255,255,255,0.5);
+      max-width: 460px; line-height: 1.8; margin-bottom: 1.5rem;
     }
     .hero-live {
       display: inline-flex; align-items: center; gap: 0.55rem;
-      background: rgba(220,38,38,0.18); border: 1px solid rgba(220,38,38,0.35);
-      color: #fca5a5; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.5px;
-      padding: 0.45rem 1rem; border-radius: 50px; margin-bottom: 2rem;
+      background: rgba(139,16,16,0.2); border: 1px solid rgba(139,16,16,0.4);
+      color: #ff9999; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.5px;
+      padding: 0.45rem 1rem; border-radius: 50px; margin-bottom: 1.5rem;
     }
     .hero-live .dot { width: 7px; height: 7px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 8px #ef4444; animation: pulseDot 1.4s ease-in-out infinite; }
     @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(0.8);opacity:0.6} }
     .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
     .btn-gold {
       padding: 0.9rem 2rem; border-radius: 10px;
-      background: linear-gradient(135deg, var(--gold), var(--goldd));
-      color: var(--navy); font-weight: 900; font-size: 0.95rem;
-      box-shadow: 0 4px 20px rgba(245,158,11,0.45);
-      transition: all 0.2s;
+      background: var(--gold); color: #111; font-weight: 900; font-size: 0.95rem;
+      box-shadow: 0 4px 24px rgba(245,194,0,0.4); transition: all 0.2s;
     }
-    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.6); }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(245,194,0,0.55); background: var(--goldl); }
     .btn-ghost {
       padding: 0.9rem 2rem; border-radius: 10px;
-      border: 1.5px solid rgba(255,255,255,0.22); color: white;
+      border: 1.5px solid rgba(255,255,255,0.18); color: rgba(255,255,255,0.8);
       font-weight: 700; font-size: 0.95rem; transition: all 0.2s;
     }
-    .btn-ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
-    .hero-visual { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-    .hero-logo-ring {
-      width: 200px; height: 200px; border-radius: 50%;
-      background: radial-gradient(circle at 40% 35%, rgba(245,158,11,0.18), rgba(245,158,11,0.03));
-      border: 1.5px solid rgba(245,158,11,0.25);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 80px rgba(245,158,11,0.15), inset 0 0 40px rgba(245,158,11,0.04);
-      animation: heroGlow 4s ease-in-out infinite;
-    }
-    @keyframes heroGlow { 0%,100%{box-shadow:0 0 80px rgba(245,158,11,0.15),inset 0 0 40px rgba(245,158,11,0.04)} 50%{box-shadow:0 0 120px rgba(245,158,11,0.25),inset 0 0 60px rgba(245,158,11,0.08)} }
-    .hero-logo-ring img { width: 130px; height: 130px; object-fit: contain; }
-    .hero-stats-chips { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+    .btn-ghost:hover { background: rgba(255,255,255,0.07); transform: translateY(-2px); border-color: rgba(255,255,255,0.3); }
+
+    /* Stats chips — coluna direita no desktop */
+    .hero-right { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+    .hero-stats-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; }
     .hero-chip {
-      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px; padding: 0.6rem 1rem; text-align: center;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(245,194,0,0.15);
+      border-radius: 16px; padding: 1.25rem 1rem; text-align: center;
+      backdrop-filter: blur(4px);
     }
-    .hero-chip-num { font-size: 1.35rem; font-weight: 900; color: white; letter-spacing: -0.5px; line-height: 1; }
-    .hero-chip-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.38); margin-top: 0.15rem; }
-    @media(max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-visual { display: none; }
+    .hero-chip-num { font-size: 2rem; font-weight: 900; color: var(--gold); letter-spacing: -1px; line-height: 1; }
+    .hero-chip-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,0.35); margin-top: 0.3rem; }
+
+    @media(max-width: 960px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+      .hero-left { align-items: center; }
+      .hero-right { width: 100%; }
+      .hero-stats-chips { grid-template-columns: repeat(4, 1fr); }
       .hero { min-height: auto; padding: 3.5rem 1.5rem 3rem; }
+      .hero-eyebrow { justify-content: center; }
+      .hero-btns { justify-content: center; }
+      .hero-logo-wrap { justify-content: center; }
+      .hero-logo-img { width: 340px; }
+      .hero-logo-glow { left: 50%; transform: translateX(-50%); }
+    }
+    @media(max-width: 600px) {
+      .hero-stats-chips { grid-template-columns: repeat(2, 1fr); }
+      .hero-logo-img { width: 280px; }
     }
 
     /* ===== SECTIONS ===== */
     .sec { padding: 5rem 2rem; }
     .sec-inner { max-width: 1280px; margin: 0 auto; }
     .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
-    .sec-eyebrow { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); margin-bottom: 0.3rem; }
-    .sec-title { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 900; color: var(--navy); letter-spacing: -0.8px; line-height: 1.2; }
+    .sec-eyebrow { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #a07c00; margin-bottom: 0.3rem; }
+    .sec-title { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 900; color: #0f172a; letter-spacing: -0.8px; line-height: 1.2; }
     .sec-title-light { color: white; }
     .sec-eyebrow-light { color: rgba(245,158,11,0.85); }
     .sec-link {
       display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap;
-      font-size: 0.85rem; font-weight: 700; color: var(--blue);
-      border: 1.5px solid rgba(37,99,235,0.25); padding: 0.45rem 1rem; border-radius: 8px;
+      font-size: 0.85rem; font-weight: 700; color: var(--gold);
+      border: 1.5px solid rgba(245,194,0,0.3); padding: 0.45rem 1rem; border-radius: 8px;
       transition: all 0.18s;
     }
-    .sec-link:hover { background: rgba(37,99,235,0.06); border-color: var(--blue); }
+    .sec-link:hover { background: rgba(245,194,0,0.07); border-color: var(--gold); }
     .sec-link-light { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); }
     .sec-link-light:hover { background: rgba(255,255,255,0.07); color: white; border-color: rgba(255,255,255,0.4); }
 
@@ -194,17 +217,19 @@
       scrollbar-width: none; -ms-overflow-style: none;
     }
     .games-scroll::-webkit-scrollbar { display: none; }
+    .gcard-wrap { flex-shrink: 0; width: 420px; scroll-snap-align: start; display: flex; flex-direction: column; gap: 0.6rem; }
+    .gcard-date-label { font-size: 0.72rem; font-weight: 600; color: var(--muted); display: flex; align-items: center; gap: 0.35rem; padding: 0 0.25rem; }
     .gcard {
-      flex-shrink: 0; width: 300px; background: white;
-      border-radius: 16px; border: 1.5px solid var(--border);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-      overflow: hidden; scroll-snap-align: start;
+      width: 100%; background: white;
+      border-radius: 18px; border: 1.5px solid var(--border);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+      overflow: hidden;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
-    .gcard:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); border-color: #cbd5e1; }
+    .gcard:hover { transform: translateY(-5px); box-shadow: 0 14px 36px rgba(0,0,0,0.12); border-color: #cbd5e1; }
     .gcard.ao_vivo { border-left: 4px solid var(--red); }
-    .gcard.ao_vivo:hover { box-shadow: 0 12px 32px rgba(220,38,38,0.12); }
-    .gcard.agendado { border-left: 4px solid var(--blue); }
+    .gcard.ao_vivo:hover { box-shadow: 0 12px 32px rgba(139,16,16,0.15); }
+    .gcard.agendado { border-left: 4px solid var(--gold); }
     .gcard.encerrado { opacity: 0.65; }
     .gcard-top {
       padding: 0.6rem 1rem;
@@ -216,14 +241,14 @@
     .gbadge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 0.18rem 0.55rem; border-radius: 5px; }
     .gbadge-live { background: var(--red); color: white; animation: blinkB 1.5s ease-in-out infinite; }
     @keyframes blinkB { 0%,100%{opacity:1} 50%{opacity:0.7} }
-    .gbadge-ag { background: rgba(37,99,235,0.1); color: var(--blue); }
+    .gbadge-ag { background: rgba(245,194,0,0.12); color: #9a7800; }
     .gbadge-enc { background: rgba(100,116,139,0.1); color: var(--muted); }
-    .gcard-body { padding: 1.1rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .gcard-body { padding: 1.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
     .gteam { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; }
-    .gescudo { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: white; flex-shrink: 0; border: 2px solid rgba(0,0,0,0.06); }
-    .gnome { font-size: 0.78rem; font-weight: 700; color: var(--text); text-align: center; line-height: 1.3; max-width: 90px; }
+    .gescudo { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; color: white; flex-shrink: 0; border: 2px solid rgba(0,0,0,0.06); }
+    .gnome { font-size: 0.88rem; font-weight: 700; color: var(--text); text-align: center; line-height: 1.3; max-width: 110px; }
     .gscore-box { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; flex-shrink: 0; }
-    .gscore { font-size: 2rem; font-weight: 900; color: var(--navy); letter-spacing: -1.5px; line-height: 1; }
+    .gscore { font-size: 3.2rem; font-weight: 900; color: #0f172a; letter-spacing: -2px; line-height: 1; }
     .gscore-label { font-size: 0.6rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
     .gscore-label.live { color: var(--red); }
     .glive-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--red); margin-right: 3px; vertical-align: middle; animation: pulseDot 1.2s ease-in-out infinite; }
@@ -233,56 +258,90 @@
       font-size: 0.68rem; color: var(--muted);
     }
     .gcard-foot a {
-      font-size: 0.7rem; font-weight: 700; color: var(--blue);
+      font-size: 0.7rem; font-weight: 700; color: #9a7800;
       padding: 0.22rem 0.65rem; border-radius: 5px;
-      background: rgba(37,99,235,0.07); border: 1px solid rgba(37,99,235,0.2);
+      background: rgba(245,194,0,0.1); border: 1px solid rgba(245,194,0,0.25);
       transition: all 0.18s;
     }
-    .gcard-foot a:hover { background: var(--blue); color: white; }
+    .gcard-foot a:hover { background: var(--gold); color: #111; }
     .games-empty {
-      width: 300px; flex-shrink: 0; border-radius: 16px; border: 1.5px dashed var(--border);
+      width: 420px; flex-shrink: 0; border-radius: 16px; border: 1.5px dashed var(--border);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 2.5rem; gap: 0.5rem; color: var(--muted); text-align: center;
     }
 
     /* ===== PARCEIROS ===== */
-    .sec-parceiros { background: var(--navy); }
-    .partners-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .sec-parceiros { background: #111111; }
+    .partners-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.75rem; }
     .pchip {
       background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 14px; padding: 1rem 1.4rem;
-      display: flex; align-items: center; gap: 0.85rem;
-      transition: all 0.2s; min-width: 180px;
+      border-radius: 20px; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: all 0.2s; text-decoration: none;
     }
-    .pchip:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.22); transform: translateY(-2px); }
-    .pchip-logo { width: 44px; height: 44px; border-radius: 10px; object-fit: contain; background: white; flex-shrink: 0; padding: 4px; }
-    .pchip-placeholder { width: 44px; height: 44px; border-radius: 10px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
-    .pchip-nome { font-size: 0.88rem; font-weight: 800; color: white; }
-    .pchip-cat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: rgba(255,255,255,0.4); margin-top: 0.15rem; }
+    .pchip:hover { background: rgba(255,255,255,0.13); border-color: rgba(245,194,0,0.3); transform: translateY(-4px); box-shadow: 0 10px 32px rgba(0,0,0,0.35); }
+    .pchip-img-wrap { width: 100%; height: 200px; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .pchip-logo { max-width: 75%; max-height: 160px; object-fit: contain; }
+    .pchip-placeholder { width: 100%; height: 200px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
+    .pchip-body { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; }
+    .pchip-nome { font-size: 1.08rem; font-weight: 800; color: white; line-height: 1.3; }
+    .pchip-cat { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: rgba(255,255,255,0.4); margin-top: 0.35rem; }
     .partners-empty { color: rgba(255,255,255,0.4); font-size: 0.9rem; }
     .partners-more { font-size: 0.85rem; color: rgba(255,255,255,0.45); margin-top: 1.25rem; }
 
     /* ===== PRODUTOS ===== */
     .sec-products { background: white; }
-    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
     .prod-card { background: var(--bg); border-radius: 16px; overflow: hidden; border: 1.5px solid var(--border); transition: all 0.22s; display: flex; flex-direction: column; }
-    .prod-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); border-color: #cbd5e1; }
+    .prod-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); border-color: #cbd5e1; }
     .prod-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
-    .prod-img-placeholder { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, #e8edf5, #dde4f0); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
+    .prod-img-placeholder { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, #e8edf5, #dde4f0); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
     .prod-body { padding: 1.1rem; flex: 1; display: flex; flex-direction: column; }
-    .prod-name { font-size: 0.95rem; font-weight: 800; color: var(--text); margin-bottom: 0.3rem; }
-    .prod-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.6; flex: 1; margin-bottom: 0.85rem; }
-    .prod-price { font-size: 1.2rem; font-weight: 900; color: var(--navy); letter-spacing: -0.4px; margin-bottom: 0.75rem; }
-    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 0.45rem; background: var(--green); color: white; font-weight: 800; font-size: 0.85rem; padding: 0.7rem; border-radius: 10px; transition: all 0.18s; }
+    .prod-name { font-size: 0.95rem; font-weight: 800; color: var(--text); margin-bottom: 0.3rem; line-height: 1.3; }
+    .prod-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.55; flex: 1; margin-bottom: 0.6rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .prod-price { font-size: 1.1rem; font-weight: 900; color: #111; letter-spacing: -0.3px; margin-bottom: 0.6rem; }
+    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 0.35rem; background: var(--green); color: white; font-weight: 800; font-size: 0.82rem; padding: 0.65rem; border-radius: 9px; transition: all 0.18s; }
     .btn-wa:hover { background: #1da851; box-shadow: 0 4px 16px rgba(37,211,102,0.4); }
     .products-empty { grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--muted); }
 
+    /* ===== NOTÍCIAS ===== */
+    .sec-noticias { background: var(--bg); }
+    .noticias-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.75rem; }
+    .ncard {
+      background: white; border-radius: 20px; overflow: hidden;
+      border: 1.5px solid var(--border); display: flex; flex-direction: column;
+      transition: all 0.22s; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+    .ncard:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); border-color: #cbd5e1; }
+    .ncard.fixado { border-color: rgba(245,158,11,0.4); }
+    .ncard-img-wrap { position: relative; overflow: hidden; }
+    .ncard-img { width: 100%; max-height: 420px; min-height: 180px; object-fit: contain; background: #0d0d0d; cursor: zoom-in; transition: transform 0.3s; display: block; }
+    .ncard-img:hover { transform: scale(1.02); }
+    .ncard-img-zoom { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: white; border-radius: 6px; padding: 3px 7px; font-size: 0.7rem; font-weight: 700; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+    .ncard-img-wrap:hover .ncard-img-zoom { opacity: 1; }
+    .ncard-img-placeholder { width: 100%; height: 220px; background: linear-gradient(135deg, #dde4f0, #e8edf5); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+    .ncard-body { padding: 1.4rem; flex: 1; display: flex; flex-direction: column; }
+    .ncard-meta { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.65rem; }
+    .ncard-pin { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #d97706; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); padding: 0.15rem 0.5rem; border-radius: 100px; }
+    .ncard-tag { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #9a7800; background: rgba(245,194,0,0.1); border: 1px solid rgba(245,194,0,0.25); padding: 0.15rem 0.5rem; border-radius: 100px; }
+    .ncard-date { font-size: 0.72rem; color: var(--muted); font-weight: 500; }
+    .ncard-title { font-size: 1.08rem; font-weight: 800; color: var(--text); line-height: 1.35; margin-bottom: 0.55rem; }
+    .ncard-text { font-size: 0.85rem; color: var(--muted); line-height: 1.7; flex: 1; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+    .noticias-empty { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.9rem; }
+
+    /* Lightbox */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 9999; align-items: center; justify-content: center; cursor: zoom-out; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; border-radius: 12px; box-shadow: 0 20px 80px rgba(0,0,0,0.8); }
+    .lightbox-close { position: fixed; top: 1.25rem; right: 1.5rem; color: white; font-size: 2rem; font-weight: 300; cursor: pointer; line-height: 1; opacity: 0.7; transition: opacity 0.2s; }
+    .lightbox-close:hover { opacity: 1; }
+
     /* ===== FOOTER ===== */
-    .footer { background: #040a1c; padding: 4rem 2rem 2rem; }
+    .footer { background: #0a0a0a; padding: 4rem 2rem 2rem; border-top: 1px solid rgba(245,194,0,0.12); }
     .footer-inner { max-width: 1280px; margin: 0 auto; }
     .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
     .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 0.85rem; }
-    .footer-logo-img { width: 32px; height: 32px; object-fit: contain; }
+    .footer-logo-img { width: 180px; height: auto; object-fit: contain; display: block; margin-bottom: 1rem; filter: drop-shadow(0 2px 12px rgba(245,194,0,0.25)); }
     .footer-logo-name { font-size: 1rem; font-weight: 900; color: white; }
     .footer-logo-name strong { color: var(--gold); }
     .footer-tagline { font-size: 0.85rem; color: rgba(255,255,255,0.38); line-height: 1.7; max-width: 280px; }
@@ -291,6 +350,16 @@
     .footer-link:hover { color: white; }
     .footer-admin { display: inline-flex; align-items: center; gap: 0.45rem; margin-top: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; transition: all 0.18s; }
     .footer-admin:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+    .footer-instagram { display: inline-flex; align-items: center; gap: 0.55rem; margin-top: 1rem; background: rgba(245,194,0,0.08); border: 1px solid rgba(245,194,0,0.25); color: rgba(245,194,0,0.8); padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; transition: all 0.2s; }
+    .footer-instagram:hover { background: rgba(245,194,0,0.15); border-color: rgba(245,194,0,0.5); color: #F5C200; transform: translateY(-1px); }
+    .footer-times-strip { border-top: 1px solid rgba(255,255,255,0.06); padding: 2.5rem 0 1.5rem; margin-bottom: 1.5rem; }
+    .footer-times-title { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.25); margin-bottom: 1.75rem; text-align: center; }
+    .footer-times-logos { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2.5rem; }
+    .footer-time-item { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; opacity: 0.6; transition: opacity 0.22s, transform 0.22s; cursor: default; }
+    .footer-time-item:hover { opacity: 1; transform: translateY(-4px); }
+    .footer-time-item img { width: 90px; height: 90px; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+    .footer-time-item span { font-size: 0.58rem; font-weight: 700; color: rgba(255,255,255,0.35); text-align: center; max-width: 90px; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.5px; }
+    @media(max-width:600px) { .footer-times-logos { gap: 1.5rem; } .footer-time-item img { width: 68px; height: 68px; } }
     .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1.5rem; text-align: center; }
     .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
     @media(max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
@@ -309,15 +378,15 @@
 <nav class="navbar">
   <div class="nav-inner">
     <a href="/" class="nav-logo">
-      <img src="/public/logo.png" alt="Copa Med Horus" class="nav-logo-img"
+      <img src="/public/logo-icon.png" alt="Copa Med Horus" class="nav-logo-img"
            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
       <div class="nav-logo-fallback">🏆</div>
-      <span class="nav-logo-name">Copa <strong>Med Horus</strong></span>
     </a>
     <button class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
     <div class="nav-links" id="navLinks">
       <a href="/" class="nav-link active">Início</a>
-      <a href="/placares.html" class="nav-link">Placares</a>
+      <a href="/noticias.html" class="nav-link">Notícias</a>
+      <a href="/placares.html" class="nav-link">Jogos</a>
       <a href="/parceiros.html" class="nav-link">Parceiros</a>
       <a href="/loja.html" class="nav-link">Loja</a>
       <a href="/admin" class="nav-admin">Área Admin</a>
@@ -328,25 +397,24 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-inner">
-    <div>
+    <div class="hero-left">
       <div class="hero-eyebrow">Copa Universitária de Medicina</div>
-      <h1>Copa<br><span class="gold">Med Horus</span></h1>
+      <div class="hero-logo-wrap">
+        <div class="hero-logo-glow"></div>
+        <img src="/public/logo-copa.png" alt="Copa Med Horus" class="hero-logo-img"
+             onerror="this.style.display='none'">
+      </div>
       <p class="hero-desc">Futebol, futsal, vôlei, basquete e mais. Acompanhe placares em tempo real, classificação, artilheiros e todos os detalhes da copa.</p>
       <div class="hero-live" id="heroPill" style="display:none">
         <span class="dot"></span>
         <span id="heroPillTxt">JOGOS AO VIVO</span>
       </div>
       <div class="hero-btns">
-        <a href="/placares.html" class="btn-gold">⚽ Ver Placares</a>
+        <a href="/placares.html" class="btn-gold">⚽ Ver Jogos</a>
         <a href="/parceiros.html" class="btn-ghost">🤝 Parceiros & Benefícios</a>
       </div>
     </div>
-    <div class="hero-visual">
-      <div class="hero-logo-ring">
-        <img src="/public/logo.png" alt="Copa Med Horus"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-        <div style="display:none;font-size:5rem">🏆</div>
-      </div>
+    <div class="hero-right">
       <div class="hero-stats-chips">
         <div class="hero-chip"><div class="hero-chip-num" id="chip-jogos">—</div><div class="hero-chip-label">Jogos</div></div>
         <div class="hero-chip"><div class="hero-chip-num" id="chip-times">—</div><div class="hero-chip-label">Times</div></div>
@@ -369,6 +437,22 @@
     </div>
     <div class="games-scroll" id="gamesScroll">
       <div class="loading"><div class="spin"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTÍCIAS -->
+<section class="sec sec-noticias" id="secNoticias" style="display:none">
+  <div class="sec-inner">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">Comunicados</div>
+        <h2 class="sec-title">Notícias & Avisos</h2>
+      </div>
+      <a href="/noticias.html" class="sec-link">Ver todas →</a>
+    </div>
+    <div class="noticias-grid" id="noticiasGrid">
+      <div class="noticias-empty">Carregando...</div>
     </div>
   </div>
 </section>
@@ -406,23 +490,31 @@
   </div>
 </section>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="fecharLightbox()">
+  <span class="lightbox-close" onclick="fecharLightbox()">×</span>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-grid">
       <div>
-        <div class="footer-logo-row">
-          <img src="/public/logo.png" alt="Logo" class="footer-logo-img" onerror="this.style.display='none'">
-          <span class="footer-logo-name">Copa <strong>Med Horus</strong></span>
-        </div>
+        <img src="/public/logo-icon.png" alt="Copa Med Horus" class="footer-logo-img">
         <p class="footer-tagline">Acompanhe a copa universitária de medicina. Placares ao vivo, classificação, artilheiros e muito mais.</p>
+        <a href="https://www.instagram.com/copamedhorus/" target="_blank" rel="noopener" class="footer-instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          @copamedhorus
+        </a>
       </div>
       <div>
         <div class="footer-col-title">Navegação</div>
         <a href="/" class="footer-link">Início</a>
-        <a href="/placares.html" class="footer-link">Placares</a>
-        <a href="/parceiros.html" class="footer-link">Parceiros</a>
-        <a href="/loja.html" class="footer-link">Loja</a>
+        <a href="/Noticias.html" class="footer-link">Notícias</a>
+        <a href="/Jogos.html" class="footer-link">Jogos</a>
+        <a href="/Parceiros.html" class="footer-link">Parceiros</a>
+        <a href="/Loja.html" class="footer-link">Loja</a>
       </div>
       <div>
         <div class="footer-col-title">Sistema</div>
@@ -432,6 +524,17 @@
         <a href="/placares.html" class="footer-link">Mata-mata</a>
         <br>
         <a href="/admin" class="footer-admin">🔐 Área Admin</a>
+      </div>
+    </div>
+    <div class="footer-times-strip">
+      <div class="footer-times-title">Times participantes</div>
+      <div class="footer-times-logos">
+        <div class="footer-time-item"><img src="/public/logos/times/muriae.png" alt="Medicina Muriaé"><span>Medicina Muriaé</span></div>
+        <div class="footer-time-item"><img src="/public/logos/times/redentor.png" alt="A.A.A. Redentor"><span>A.A.A. Redentor</span></div>
+        <div class="footer-time-item"><img src="/public/logos/times/neocampus.png" alt="Neocampus FMC"><span>Neocampus FMC</span></div>
+        <div class="footer-time-item"><img src="/public/logos/times/horus.png" alt="Horus FAMESC-BJI"><span>Horus FAMESC-BJI</span></div>
+        <div class="footer-time-item"><img src="/public/logos/times/unig.png" alt="Medicina UNIG"><span>Medicina UNIG</span></div>
+        <div class="footer-time-item"><img src="/public/logos/times/ufrj.png" alt="UFRJ Macaé"><span>UFRJ Macaé</span></div>
       </div>
     </div>
     <div class="footer-bottom">
@@ -446,18 +549,19 @@
   // ===== HERO STATS =====
   async function carregarStats() {
     try {
-      const [jogos, times, art] = await Promise.all([
+      const [jogos, times, art, mods] = await Promise.all([
         fetch('/api/jogos').then(r => r.json()).catch(() => []),
         fetch('/api/times').then(r => r.json()).catch(() => []),
         fetch('/api/artilheiros').then(r => r.json()).catch(() => []),
+        fetch('/api/modalidades').then(r => r.json()).catch(() => []),
       ]);
       const ao_vivo = jogos.filter(j => j.status === 'ao_vivo');
-      const mods = new Set(jogos.map(j => j.modalidade_id));
       const totalGols = Array.isArray(art) ? art.reduce((s, g) => s + (+g.total_gols || 0), 0) : 0;
       document.getElementById('chip-jogos').textContent = jogos.length;
       document.getElementById('chip-times').textContent = times.length;
       document.getElementById('chip-gols').textContent = totalGols;
-      document.getElementById('chip-mods').textContent = mods.size;
+      document.getElementById('chip-mods').textContent = Array.isArray(mods) ? mods.length : 0;
+
       if (ao_vivo.length > 0) {
         document.getElementById('heroPill').style.display = 'inline-flex';
         document.getElementById('heroPillTxt').textContent = `${ao_vivo.length} JOGO${ao_vivo.length > 1 ? 'S' : ''} AO VIVO`;
@@ -503,21 +607,23 @@
              </div>`;
 
         return `
-          <a href="/jogo.html?id=${j.id}" class="gcard ${j.status}">
-            <div class="gcard-top ${isLive ? 'live-top' : ''}">
-              <span>${j.modalidade_icone || '⚽'} ${j.modalidade_nome}</span>
-              ${badge}
-            </div>
-            <div class="gcard-body">
-              <div class="gteam">${esc(j.time_casa_sigla,j.time_casa_cor,j.time_casa_logo)}<span class="gnome">${j.time_casa_nome}</span></div>
-              ${scoreArea}
-              <div class="gteam">${esc(j.time_visitante_sigla,j.time_visitante_cor,j.time_visitante_logo)}<span class="gnome">${j.time_visitante_nome}</span></div>
-            </div>
-            <div class="gcard-foot">
-              <span>${dataStr}</span>
-              <a href="/jogo.html?id=${j.id}">Ver →</a>
-            </div>
-          </a>`;
+          <div class="gcard-wrap">
+            <a href="/jogo.html?id=${j.id}" class="gcard ${j.status}">
+              <div class="gcard-top ${isLive ? 'live-top' : ''}">
+                <span>${j.modalidade_icone || '⚽'} ${j.modalidade_nome}</span>
+                ${badge}
+              </div>
+              <div class="gcard-body">
+                <div class="gteam">${esc(j.time_casa_sigla,j.time_casa_cor,j.time_casa_logo)}<span class="gnome">${j.time_casa_nome}</span></div>
+                ${scoreArea}
+                <div class="gteam">${esc(j.time_visitante_sigla,j.time_visitante_cor,j.time_visitante_logo)}<span class="gnome">${j.time_visitante_nome}</span></div>
+              </div>
+              <div class="gcard-foot">
+                <a href="/jogo.html?id=${j.id}">Ver detalhes →</a>
+              </div>
+            </a>
+            ${dataStr ? `<div class="gcard-date-label">📅 ${dataStr}</div>` : ''}
+          </div>`;
       }).join('');
 
       // Atualizar placares via Socket
@@ -539,9 +645,9 @@
       el.innerHTML = top.map(p => `
         <a href="/parceiros.html" class="pchip">
           ${p.logo
-            ? `<img src="${p.logo}" alt="${p.nome}" class="pchip-logo" onerror="this.style.display='none'">`
+            ? `<div class="pchip-img-wrap"><img src="${p.logo}" alt="${p.nome}" class="pchip-logo" onerror="this.style.display='none'"></div>`
             : `<div class="pchip-placeholder">🤝</div>`}
-          <div>
+          <div class="pchip-body">
             <div class="pchip-nome">${p.nome}</div>
             ${p.categoria ? `<div class="pchip-cat">${p.categoria}</div>` : ''}
           </div>
@@ -582,12 +688,86 @@
     } catch(e) {}
   }
 
+  async function carregarNoticias() {
+    try {
+      const lista = await fetch('/api/noticias').then(r => r.json());
+      const el = document.getElementById('noticiasGrid');
+      const sec = document.getElementById('secNoticias');
+      if (!lista.length) return;
+      sec.style.display = '';
+      const top = lista.slice(0, 3);
+      el.innerHTML = top.map(n => {
+        const data = new Date(n.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+        const imgHtml = n.imagem
+          ? '<div class="ncard-img-wrap"><img src="' + n.imagem + '" alt="' + n.titulo + '" class="ncard-img" loading="lazy" onclick="abrirLightbox(\'' + n.imagem + '\')"><span class="ncard-img-zoom">🔍 Ver maior</span></div>'
+          : '<div class="ncard-img-placeholder">📰</div>';
+        return `
+          <div class="ncard ${n.fixado ? 'fixado' : ''}">
+            ${imgHtml}
+            <div class="ncard-body">
+              <div class="ncard-meta">
+                ${n.fixado ? '<span class="ncard-pin">📌 Fixado</span>' : ''}
+                ${n.tag ? '<span class="ncard-tag">' + n.tag + '</span>' : ''}
+                <span class="ncard-date">${data}</span>
+              </div>
+              <div class="ncard-title">${n.titulo}</div>
+              ${n.conteudo ? '<div class="ncard-text">' + n.conteudo + '</div>' : ''}
+            </div>
+          </div>`;
+      }).join('');
+    } catch(e) {}
+  }
+
+  // ===== LIGHTBOX =====
+  function abrirLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function fecharLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharLightbox(); });
+
   carregarStats();
   carregarJogos();
+  carregarNoticias();
   carregarParceiros();
   carregarProdutos();
 
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/public/sw.js').catch(()=>{});
+  // ===== PUSH NOTIFICATIONS =====
+  function urlB64ToUint8Array(b64) {
+    const pad = '='.repeat((4 - b64.length % 4) % 4);
+    const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    const arr = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+
+  async function ativarPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const existing = await reg.pushManager.getSubscription();
+      if (existing) return; // já inscrito
+
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') return;
+
+      const { publicKey } = await fetch('/api/push/vapid-public-key').then(r => r.json()).catch(() => ({}));
+      if (!publicKey) return;
+
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(publicKey) });
+      await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub) });
+    } catch (e) { console.warn('Push:', e.message); }
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/public/sw.js')
+      .then(() => setTimeout(ativarPush, 2000))
+      .catch(() => {});
+  }
 </script>
 </body>
 </html>

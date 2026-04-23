@@ -162,11 +162,10 @@ router.put('/:id/placar', authMiddleware, async (req, res) => {
       }
     }
 
-    // Se o jogo foi encerrado e estava em grupos, atualizar classificação
+    // Se o jogo está/ficou encerrado em grupos, recalcula do zero (evita duplicação por reaberturas)
     if (status === 'encerrado' && jogoAnterior.fase === 'grupos') {
       let grupoId = jogoAnterior.grupo_id;
 
-      // Se não tem grupo_id, tenta encontrar grupo comum entre os dois times
       if (!grupoId) {
         const [grupoComum] = await pool.query(
           `SELECT gt1.grupo_id FROM grupos_times gt1
@@ -181,8 +180,7 @@ router.put('/:id/placar', authMiddleware, async (req, res) => {
       }
 
       if (grupoId) {
-        await atualizarClassificacao(grupoId, jogoAnterior.time_casa_id, jogoAnterior.time_visitante_id,
-          jogoAnterior.gols_casa, jogoAnterior.gols_visitante, gols_casa, gols_visitante, jogoAnterior.status);
+        await recalcularClassificacao(grupoId);
       }
     }
 
@@ -347,12 +345,12 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ erro: 'Jogo não encontrado' });
     const jogo = rows[0];
 
-    // Se estava encerrado em grupo, reverte a classificação
-    if (jogo.status === 'encerrado' && jogo.grupo_id && jogo.fase === 'grupos') {
-      await reverterClassificacao(jogo.grupo_id, jogo.time_casa_id, jogo.time_visitante_id, jogo.gols_casa, jogo.gols_visitante);
-    }
-
     await pool.query('DELETE FROM jogos WHERE id = ?', [req.params.id]);
+
+    // Se estava encerrado em grupo, recalcula após deletar
+    if (jogo.status === 'encerrado' && jogo.grupo_id && jogo.fase === 'grupos') {
+      await recalcularClassificacao(jogo.grupo_id);
+    }
     const io = req.app.get('io');
     if (io) io.emit('jogo_removido', { id: req.params.id });
     res.json({ mensagem: 'Jogo removido' });
@@ -521,6 +519,52 @@ router.delete('/:id/cartoes/:cartaoId', authMiddleware, async (req, res) => {
 });
 
 // Função auxiliar para atualizar classificação no grupo
+// Recalcula classificação do grupo do zero com base em todos os jogos encerrados
+async function recalcularClassificacao(grupoId) {
+  // Zera todos os times do grupo
+  await pool.query(`
+    UPDATE grupos_times SET
+      pontos=0, jogos=0, vitorias=0, empates=0, derrotas=0,
+      gols_pro=0, gols_contra=0, saldo_gols=0
+    WHERE grupo_id=?
+  `, [grupoId]);
+
+  // Busca todos os jogos encerrados do grupo
+  const [jogosGrupo] = await pool.query(
+    `SELECT * FROM jogos WHERE grupo_id=? AND status='encerrado' AND fase='grupos'`,
+    [grupoId]
+  );
+
+  for (const jogo of jogosGrupo) {
+    const gc = jogo.gols_casa, gv = jogo.gols_visitante;
+    const casaVenceu = gc > gv, visVenceu = gv > gc, empate = gc === gv;
+
+    await pool.query(`
+      INSERT INTO grupos_times (grupo_id, time_id, pontos, jogos, vitorias, empates, derrotas, gols_pro, gols_contra, saldo_gols)
+      VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        pontos=pontos+VALUES(pontos), jogos=jogos+1,
+        vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
+        gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
+    `, [grupoId, jogo.time_casa_id,
+      casaVenceu ? 3 : empate ? 1 : 0,
+      casaVenceu ? 1 : 0, empate ? 1 : 0, visVenceu ? 1 : 0,
+      gc, gv, gc - gv]);
+
+    await pool.query(`
+      INSERT INTO grupos_times (grupo_id, time_id, pontos, jogos, vitorias, empates, derrotas, gols_pro, gols_contra, saldo_gols)
+      VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+        pontos=pontos+VALUES(pontos), jogos=jogos+1,
+        vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
+        gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
+    `, [grupoId, jogo.time_visitante_id,
+      visVenceu ? 3 : empate ? 1 : 0,
+      visVenceu ? 1 : 0, empate ? 1 : 0, casaVenceu ? 1 : 0,
+      gv, gc, gv - gc]);
+  }
+}
+
 async function atualizarClassificacao(grupoId, casaId, visitanteId, golsCasaAnt, golsVisAnt, golsCasaNovo, golsVisNovo, statusAnterior) {
   // Se já estava encerrado, reverte os dados antigos antes de aplicar os novos
   if (statusAnterior === 'encerrado') {

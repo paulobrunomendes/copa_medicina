@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Placar ao Vivo — Admin · Copa Med Horus</title>
+  <link rel="icon" href="/public/logo-icon.png" type="image/png">
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
-  <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/public/logo-icon.png">
   <link rel="manifest" href="/public/manifest.json">
-  <meta name="theme-color" content="#1e40af">
+  <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="/public/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     /* ===== SIDEBAR MELHORADA ===== */
-    .admin-sidebar { background: linear-gradient(180deg, #0f1f4a 0%, #0a1530 100%); }
+    .admin-sidebar { background: linear-gradient(180deg, #0d0d0d 0%, #111111 100%); border-right: 1px solid rgba(245,194,0,0.1); }
     .admin-sidebar-title { font-size: 1.05rem; letter-spacing: -0.5px; padding: 1.25rem 1.5rem; }
     .admin-sidebar-title span { font-size: 1.3rem; }
 
@@ -43,8 +44,8 @@
     }
 
     .sidebar-item:hover .s-icon { background: rgba(255,255,255,0.14); }
-    .sidebar-item.active .s-icon { background: rgba(255,215,0,0.18); }
-    .sidebar-item.active { border-left-color: #f59e0b; color: white; background: rgba(245,158,11,0.08); }
+    .sidebar-item.active .s-icon { background: rgba(245,194,0,0.2); }
+    .sidebar-item.active { border-left-color: #F5C200; color: white; background: rgba(245,194,0,0.08); }
 
     .sidebar-live-dot {
       width: 7px; height: 7px; border-radius: 50%;
@@ -76,7 +77,7 @@
       width: 36px; height: 36px; border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
       font-size: 1.1rem;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: #F5C200;
       flex-shrink: 0;
     }
 
@@ -89,8 +90,8 @@
 
     .admin-avatar {
       width: 34px; height: 34px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white; font-weight: 800; font-size: 0.8rem;
+      background: #F5C200;
+      color: #111; font-weight: 800; font-size: 0.8rem;
       display: flex; align-items: center; justify-content: center;
     }
 
@@ -180,22 +181,23 @@
     }
     .find-match-icon {
       width: 48px; height: 48px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      background: #F5C200;
       border-radius: 13px; display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem; box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+      font-size: 1.4rem; box-shadow: 0 4px 14px rgba(245,194,0,0.3);
     }
     .find-match-title { font-weight: 800; font-size: 1rem; color: var(--text); }
     .find-match-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
 
     /* ===== MATCH CARD (dark stadium) ===== */
     .match-card {
-      background: linear-gradient(135deg, #0c1830 0%, #162850 60%, #0f1f4a 100%);
+      background: linear-gradient(135deg, #0d0d0d 0%, #1a1400 60%, #111111 100%);
       border-radius: 20px;
       padding: 2rem 1.5rem 1.75rem;
       display: flex; align-items: center; gap: 1rem;
       margin-bottom: 1rem;
       position: relative; overflow: hidden;
-      box-shadow: 0 10px 40px rgba(10,20,60,0.4);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      border: 1px solid rgba(245,194,0,0.12);
     }
     .match-card::before {
       content: ''; position: absolute;
@@ -260,9 +262,9 @@
 
     /* ===== TIMER ===== */
     #timerInlineBlock {
-      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
-      border-radius: 14px; border: none !important;
-      padding: 1.1rem 2rem; box-shadow: 0 4px 20px rgba(37,99,235,0.35);
+      background: linear-gradient(135deg, #1a1400 0%, #2a2000 100%) !important;
+      border-radius: 14px; border: 1px solid rgba(245,194,0,0.25) !important;
+      padding: 1.1rem 2rem; box-shadow: 0 4px 20px rgba(245,194,0,0.15);
     }
     #timerPeriodoLabel {
       font-size: 0.62rem; font-weight: 800; color: rgba(255,255,255,0.45);
@@ -658,6 +660,10 @@
         Exportar CSV
       </div>
       <div class="sidebar-section-label">Site</div>
+      <div class="sidebar-item" onclick="mostrarPainel('noticias', this)">
+        <div class="s-icon">📰</div>
+        Notícias
+      </div>
       <div class="sidebar-item" onclick="mostrarPainel('parceiros', this)">
         <div class="s-icon">🤝</div>
         Parceiros
@@ -1034,9 +1040,20 @@
 
     <!-- PAINEL: EXPORTAR CSV -->
     <div id="painel-exportar" style="display:none">
-      <div class="section-header"><h2>📥 Exportar Dados (CSV)</h2></div>
+      <div class="section-header"><h2>📥 Exportar & Backup</h2></div>
+
+      <!-- Backup -->
+      <div class="admin-card" style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+        <div>
+          <div style="font-weight:700;font-size:1rem;margin-bottom:0.25rem">💾 Backup do Banco de Dados</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)">Exporta todos os dados (jogos, times, grupos, artilheiros, notícias etc.) em formato JSON.</div>
+        </div>
+        <button class="btn btn-primary" onclick="baixarBackup()">⬇ Baixar Backup JSON</button>
+      </div>
+
+      <!-- CSV -->
       <div class="admin-card" style="margin-bottom:1rem">
-        <div class="admin-card-title">Filtrar por Modalidade (opcional)</div>
+        <div class="admin-card-title">Exportar CSV — Filtrar por Modalidade (opcional)</div>
         <div class="form-group" style="max-width:280px">
           <select class="form-select" id="exportarModalidade">
             <option value="">Todas as modalidades</option>
@@ -1063,6 +1080,15 @@
     </div>
 
     <!-- PAINEL: PARCEIROS -->
+    <!-- PAINEL: NOTÍCIAS -->
+    <div id="painel-noticias" style="display:none">
+      <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem">
+        <h2>📰 Notícias / Comunicados</h2>
+        <button class="btn btn-primary" onclick="abrirModalNoticia()">+ Nova Notícia</button>
+      </div>
+      <div id="noticiasAdminList"></div>
+    </div>
+
     <div id="painel-parceiros" style="display:none">
       <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem">
         <h2>🤝 Parceiros</h2>
@@ -1151,7 +1177,7 @@ const _panelTitles = {
   placar: 'Placar ao Vivo', jogos: 'Gerenciar Jogos', times: 'Times',
   grupos: 'Grupos', modalidades: 'Modalidades', admins: 'Administradores',
   matamata: 'Mata-mata', senha: 'Trocar Senha', exportar: 'Exportar CSV',
-  parceiros: 'Parceiros', produtos: 'Produtos'
+  parceiros: 'Parceiros', produtos: 'Produtos', noticias: 'Notícias'
 };
 function mostrarPainel(nome, el) {
   document.querySelectorAll('[id^="painel-"]').forEach(p => p.style.display = 'none');
@@ -1161,6 +1187,7 @@ function mostrarPainel(nome, el) {
   const titulo = _panelTitles[nome] || nome;
   const tt = document.getElementById('topbarTitle'); if (tt) tt.textContent = titulo;
   document.title = `${titulo} — Admin · Copa Med Horus`;
+  sessionStorage.setItem('copa_painel', nome);
   fecharSidebar();
   if (nome === 'jogos') carregarJogosAdmin();
   if (nome === 'times') carregarTimes();
@@ -1172,12 +1199,13 @@ function mostrarPainel(nome, el) {
     }
   });
   if (nome === 'modalidades') carregarModalidades();
-  if (nome === 'placar') carregarSeletorPlacar();
+  if (nome === 'placar') filtrarJogosLive(true);
   if (nome === 'admins') carregarAdmins();
   if (nome === 'matamata') iniciarMatamata();
   if (nome === 'exportar') iniciarExportar();
   if (nome === 'parceiros') carregarParceirosAdmin();
   if (nome === 'produtos') carregarProdutosAdmin();
+  if (nome === 'noticias') carregarNoticiasAdmin();
   carregarDashboard();
 }
 
@@ -1205,10 +1233,10 @@ async function carregarSeletorPlacar() {
   await carregarBase();
   const opts = [{ id: '', nome: 'Todas' }, ...modalidades];
   populateSelect('placarFiltroModalidade', opts, 'id', m => m.icone ? `${m.icone} ${m.nome}` : m.nome, null);
-  await filtrarJogosLive();
+  // Não chama filtrarJogosLive aqui — feito pelo init/mostrarPainel
 }
 
-async function filtrarJogosLive() {
+async function filtrarJogosLive(preservar = false) {
   const modId = document.getElementById('placarFiltroModalidade').value;
   let url = '/jogos';
   if (modId) url += `?modalidade_id=${modId}`;
@@ -1216,6 +1244,7 @@ async function filtrarJogosLive() {
   const ativos = jogos.filter(j => j.status !== 'encerrado');
 
   const sel = document.getElementById('placarJogoSelect');
+  const idAnterior = placarAtual.id || sessionStorage.getItem('copa_jogo_id');
   sel.innerHTML = '<option value="">Selecionar jogo...</option>';
   ativos.forEach(j => {
     const opt = document.createElement('option');
@@ -1223,12 +1252,28 @@ async function filtrarJogosLive() {
     opt.textContent = `${j.modalidade_icone} ${j.time_casa_sigla} × ${j.time_visitante_sigla} — ${j.status === 'ao_vivo' ? '🔴 AO VIVO' : formatarData(j.data_jogo) || 'sem data'}`;
     sel.appendChild(opt);
   });
-  document.getElementById('placarControlArea').style.display = 'none';
+
+  // Restaurar seleção anterior se o jogo ainda está na lista
+  if (preservar && idAnterior && ativos.find(j => String(j.id) === String(idAnterior))) {
+    sel.value = idAnterior;
+    if (!placarAtual.id) {
+      // Veio de um refresh — recarrega os dados do jogo
+      await selecionarJogoLive();
+    }
+    // Se placarAtual.id já está setado, painel já está visível — não esconde
+  } else if (!preservar) {
+    document.getElementById('placarControlArea').style.display = 'none';
+  }
 }
 
 async function selecionarJogoLive() {
   const id = document.getElementById('placarJogoSelect').value;
-  if (!id) { document.getElementById('placarControlArea').style.display = 'none'; return; }
+  if (!id) {
+    document.getElementById('placarControlArea').style.display = 'none';
+    sessionStorage.removeItem('copa_jogo_id');
+    return;
+  }
+  sessionStorage.setItem('copa_jogo_id', id);
   const j = await api.get(`/jogos/${id}`);
   placarAtual = { id: j.id, gols_casa: j.gols_casa, gols_visitante: j.gols_visitante, status: j.status,
     periodo_atual: j.periodo_atual || 0, timer_ativo: j.timer_ativo || 0,
@@ -1321,9 +1366,9 @@ function atualizarUITimer(td) {
   // Limpar interval anterior
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 
-  // Mostrar/ocultar bloco de timer inline
+  // Mostrar bloco de timer sempre que jogo estiver selecionado
   const inlineBlock = document.getElementById('timerInlineBlock');
-  if (inlineBlock) inlineBlock.style.display = p > 0 ? 'flex' : 'none';
+  if (inlineBlock) inlineBlock.style.display = 'flex';
 
   // Label e limite
   const labelEl  = document.getElementById('timerPeriodoLabel');
@@ -1349,7 +1394,7 @@ function atualizarUITimer(td) {
   if (!wrapper) return;
   let btns = '';
   if (p === 0) {
-    // Não iniciado — sem botões extras (o "Iniciar/Ao Vivo" já faz isso)
+    btns += `<button class="btn btn-success btn-sm" onclick="controlarTimer('iniciar_periodo',1)">▶ Iniciar 1T</button>`;
   } else {
     if (ativo) {
       btns += `<button class="btn btn-warning btn-sm" onclick="controlarTimer('pausar')">⏸ Pausar</button>`;
@@ -1378,8 +1423,12 @@ function ajustarGol(time, delta) {
 async function setStatus(status) {
   if (!placarAtual.id) return;
   // Integração com timer
-  if (status === 'ao_vivo' && placarAtual.periodo_atual === 0) {
-    await controlarTimer('iniciar_periodo', 1);
+  if (status === 'ao_vivo' && !placarAtual.timer_ativo) {
+    if (placarAtual.periodo_atual === 0) {
+      await controlarTimer('iniciar_periodo', 1);
+    } else {
+      await controlarTimer('retomar');
+    }
   } else if (status === 'encerrado' && placarAtual.timer_ativo) {
     await controlarTimer('pausar');
   }
@@ -1545,12 +1594,31 @@ async function carregarTimes() {
         <td><strong>${t.sigla}</strong></td>
         <td style="color:var(--text-muted);font-size:0.85rem">${t.curso || '—'}</td>
         <td><div style="width:24px;height:24px;border-radius:4px;background:${t.cor};display:inline-block"></div></td>
-        <td style="display:flex;gap:0.4rem">
+        <td style="display:flex;gap:0.4rem;align-items:center">
+          <label title="Trocar logo" style="cursor:pointer;display:inline-flex">
+            <span class="btn btn-outline btn-sm">🖼</span>
+            <input type="file" accept="image/*" style="display:none" onchange="uploadLogoRapido(${t.id}, this)">
+          </label>
           <button class="btn btn-outline btn-sm" onclick="editarTime(${t.id})">✏️</button>
           <button class="btn btn-outline btn-sm" onclick="deletarTime(${t.id})">🗑</button>
         </td>
       </tr>
     `).join('');
+}
+
+async function uploadLogoRapido(timeId, input) {
+  if (!input.files[0]) return;
+  const fd = new FormData();
+  fd.append('logo', input.files[0]);
+  try {
+    await fetch(`/api/times/${timeId}/logo`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${localStorage.getItem('copa_token')}` },
+      body: fd
+    });
+    toast('Logo atualizada!', 'success');
+    carregarTimes();
+  } catch(e) { toast('Erro ao enviar logo', 'error'); }
 }
 
 function previewLogo(input) {
@@ -1655,6 +1723,7 @@ async function carregarGruposAdmin() {
             <button class="btn btn-outline btn-sm" onclick="editarGrupo(${g.id},'${g.nome}')">✏️ Renomear</button>
           </div>
           <div style="display:flex;gap:0.4rem">
+            <button class="btn btn-primary btn-sm" onclick="recalcularClassificacao(${g.id})" title="Recalcular do zero com base nos jogos encerrados">🔄 Recalcular</button>
             <button class="btn btn-outline btn-sm" onclick="resetarClassificacao(${g.id})" title="Zerar estatísticas do grupo">↺ Resetar</button>
             <button class="btn btn-danger btn-sm" onclick="deletarGrupo(${g.id})">🗑</button>
           </div>
@@ -1738,6 +1807,14 @@ async function editarGrupo(id, nomeAtual) {
     toast('Grupo renomeado!', 'success');
     carregarGruposAdmin();
   } catch(e) { toast(e.erro || 'Erro ao renomear', 'error'); }
+}
+
+async function recalcularClassificacao(id) {
+  try {
+    const r = await api.post(`/grupos/${id}/recalcular`, {});
+    toast(r.mensagem || 'Recalculado!', 'success');
+    carregarGruposAdmin();
+  } catch(e) { toast(e.erro || 'Erro ao recalcular', 'error'); }
 }
 
 async function resetarClassificacao(id) {
@@ -1971,6 +2048,23 @@ async function carregarDashboard() {
       </div>
     `).join('');
   } catch(e) { /* silencioso */ }
+}
+
+// ===== BACKUP =====
+async function baixarBackup() {
+  const token = localStorage.getItem('copa_token') || '';
+  try {
+    const r = await fetch('/api/exportar/backup', { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!r.ok) throw new Error('Erro ao gerar backup');
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup_copa_${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    toast('Backup baixado!', 'success');
+  } catch(e) { toast(e.message || 'Erro ao baixar backup', 'error'); }
 }
 
 // ===== EXPORTAR CSV =====
@@ -2372,7 +2466,23 @@ async function removerGol(golId) {
 }
 
 // ===== INIT =====
-carregarBase().then(() => { carregarSeletorPlacar(); carregarDashboard(); });
+carregarBase().then(async () => {
+  carregarDashboard();
+
+  // Restaurar painel salvo (ou padrão: placar)
+  const painelSalvo = sessionStorage.getItem('copa_painel') || 'placar';
+  const sidebarEl = document.querySelector(`.sidebar-item[onclick*="'${painelSalvo}'"]`);
+
+  // Carregar select de modalidades antes de restaurar
+  await carregarSeletorPlacar();
+
+  if (painelSalvo !== 'placar' && sidebarEl) {
+    mostrarPainel(painelSalvo, sidebarEl);
+  } else {
+    // Restaurar jogo selecionado no painel placar
+    await filtrarJogosLive(true);
+  }
+});
 
 // ===== PARCEIROS ADMIN =====
 let parceiroEditandoId = null;
@@ -2383,25 +2493,26 @@ async function carregarParceirosAdmin() {
   try {
     const lista = await api.get('/parceiros/todos');
     if (!lista.length) { el.innerHTML = '<p style="color:var(--text-muted)">Nenhum parceiro cadastrado.</p>'; return; }
-    el.innerHTML = lista.map(p => `
-      <div class="admin-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem">
-        ${p.logo ? `<img src="${p.logo}" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:var(--bg);border:1px solid var(--border)">` : `<div style="width:52px;height:52px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0">🤝</div>`}
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:0.95rem">${p.nome}</div>
-          ${p.categoria ? `<div style="font-size:0.75rem;color:var(--primary-light);font-weight:700;text-transform:uppercase;letter-spacing:0.5px">${p.categoria}</div>` : ''}
-          ${p.beneficio ? `<div style="font-size:0.8rem;color:var(--text-muted)">🎁 ${p.beneficio}</div>` : ''}
+    el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem">` + lista.map(p => `
+      <div class="admin-card" style="display:flex;flex-direction:column;gap:0;overflow:hidden;padding:0">
+        <div style="background:var(--bg);display:flex;align-items:center;justify-content:center;height:130px;position:relative;border-bottom:1px solid var(--border)">
+          ${p.logo
+            ? `<img src="${p.logo}" style="max-height:100px;max-width:80%;object-fit:contain;border-radius:8px">`
+            : `<div style="font-size:3.5rem;opacity:0.25">🤝</div>`}
+          <span style="position:absolute;top:8px;right:8px;font-size:0.65rem;font-weight:800;padding:0.2rem 0.55rem;border-radius:100px;${p.ativo ? 'background:#dcfce7;color:#166534' : 'background:#f1f5f9;color:#64748b'}">${p.ativo ? 'Ativo' : 'Inativo'}</span>
         </div>
-        <div style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0">
-          <span class="badge ${p.ativo ? 'badge-success' : 'badge-muted'}">${p.ativo ? 'Ativo' : 'Inativo'}</span>
-          <label title="Upload de logo" style="cursor:pointer">
-            <input type="file" accept="image/*" style="display:none" onchange="uploadLogoParceiro(${p.id}, this)">
-            <span class="btn btn-outline" style="font-size:0.78rem;padding:0.35rem 0.75rem">📷</span>
-          </label>
-          <button class="btn btn-outline" onclick="editarParceiro(${p.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem">✏️ Editar</button>
+        <div style="padding:1rem;flex:1">
+          ${p.categoria ? `<div style="font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary-light);margin-bottom:0.3rem">${p.categoria}</div>` : ''}
+          <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:0.25rem">${p.nome}</div>
+          ${p.beneficio ? `<div style="font-size:0.8rem;color:#047857;background:#f0fdf4;padding:0.3rem 0.6rem;border-radius:6px;margin-bottom:0.5rem">🎁 ${p.beneficio}</div>` : ''}
+          ${p.descricao ? `<div style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.descricao}</div>` : ''}
+        </div>
+        <div style="padding:0.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-outline" onclick="editarParceiro(${p.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem;flex:1">✏️ Editar</button>
           <button class="btn btn-danger btn-outline" onclick="deletarParceiro(${p.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem">🗑️</button>
         </div>
       </div>
-    `).join('');
+    `).join('') + `</div>`;
   } catch(e) { el.innerHTML = '<p style="color:var(--accent)">Erro ao carregar parceiros.</p>'; }
 }
 
@@ -2409,12 +2520,25 @@ function abrirModalParceiro(dados = {}) {
   parceiroEditandoId = dados.id || null;
   const html = `
     <div id="modalParceiro" class="modal-overlay" onclick="if(event.target===this)fecharModalParceiro()">
-      <div class="modal-box" style="max-width:520px">
+      <div class="modal" style="max-width:520px">
         <div class="modal-header">
           <h3>${dados.id ? '✏️ Editar Parceiro' : '🤝 Novo Parceiro'}</h3>
           <button class="modal-close" onclick="fecharModalParceiro()">×</button>
         </div>
         <div class="modal-body" style="display:grid;gap:0.85rem">
+          <div class="form-group">
+            <label class="form-label">Logo do Parceiro</label>
+            <label style="display:flex;align-items:center;gap:1rem;cursor:pointer;padding:0.75rem;border:2px dashed var(--border);border-radius:10px;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--primary-light)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div id="pLogoPreview" style="width:56px;height:56px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;overflow:hidden">
+                ${dados.logo ? `<img src="${dados.logo}" style="width:100%;height:100%;object-fit:contain">` : '🤝'}
+              </div>
+              <div>
+                <div style="font-size:0.82rem;font-weight:700;color:var(--text)">Clique para selecionar imagem</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)">PNG, JPG ou SVG até 2MB</div>
+              </div>
+              <input type="file" id="pLogoInput" accept="image/*" style="display:none" onchange="prevLogoP(this)">
+            </label>
+          </div>
           <div class="form-group"><label class="form-label">Nome *</label><input class="form-input" id="pNome" value="${dados.nome||''}" placeholder="Nome do parceiro"></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem">
             <div class="form-group"><label class="form-label">Categoria</label><input class="form-input" id="pCat" value="${dados.categoria||''}" placeholder="Ex: Alimentação, Saúde..."></div>
@@ -2436,9 +2560,10 @@ function abrirModalParceiro(dados = {}) {
       </div>
     </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
+  abrirModal('modalParceiro');
 }
 
-function fecharModalParceiro() { document.getElementById('modalParceiro')?.remove(); }
+function fecharModalParceiro() { fecharModal('modalParceiro'); setTimeout(() => document.getElementById('modalParceiro')?.remove(), 200); }
 
 async function editarParceiro(id) {
   try {
@@ -2446,6 +2571,15 @@ async function editarParceiro(id) {
     const p = lista.find(x => x.id === id);
     if (p) abrirModalParceiro(p);
   } catch(e) { toast('Erro ao carregar parceiro','error'); }
+}
+
+function prevLogoP(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('pLogoPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:contain">`;
+  };
+  reader.readAsDataURL(file);
 }
 
 async function salvarParceiro() {
@@ -2463,8 +2597,14 @@ async function salvarParceiro() {
   };
   if (parceiroEditandoId) payload.ativo = parseInt(document.getElementById('pAtivo').value);
   try {
-    if (parceiroEditandoId) await api.put(`/parceiros/${parceiroEditandoId}`, payload);
-    else await api.post('/parceiros', payload);
+    let id = parceiroEditandoId;
+    if (id) await api.put(`/parceiros/${id}`, payload);
+    else { const res = await api.post('/parceiros', payload); id = res.id; }
+    const file = document.getElementById('pLogoInput')?.files[0];
+    if (file && id) {
+      const fd = new FormData(); fd.append('logo', file);
+      await fetch(`/api/parceiros/${id}/logo`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('copa_token')}` }, body: fd });
+    }
     fecharModalParceiro();
     toast(`Parceiro ${parceiroEditandoId ? 'atualizado' : 'criado'}!`);
     carregarParceirosAdmin();
@@ -2495,28 +2635,28 @@ async function carregarProdutosAdmin() {
   try {
     const lista = await api.get('/produtos/todos');
     if (!lista.length) { el.innerHTML = '<p style="color:var(--text-muted)">Nenhum produto cadastrado.</p>'; return; }
-    el.innerHTML = lista.map(p => {
-      const preco = p.preco ? `R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}` : '—';
+    el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem">` + lista.map(p => {
+      const preco = p.preco ? `R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}` : null;
       return `
-        <div class="admin-card" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem">
-          ${p.foto ? `<img src="${p.foto}" style="width:60px;height:60px;object-fit:cover;border-radius:10px;flex-shrink:0">` : `<div style="width:60px;height:60px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0">🛍️</div>`}
-          <div style="flex:1;min-width:0">
-            <div style="font-weight:800;font-size:0.95rem">${p.nome}</div>
-            <div style="font-size:0.82rem;color:var(--primary-light);font-weight:700">${preco}</div>
-            ${p.descricao ? `<div style="font-size:0.78rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.descricao}</div>` : ''}
+        <div class="admin-card" style="display:flex;flex-direction:column;overflow:hidden;padding:0">
+          <div style="position:relative;background:var(--bg);height:160px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--border)">
+            ${p.foto
+              ? `<img src="${p.foto}" alt="${p.nome}" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in;transition:transform 0.2s" onclick="verImagemGrande('${p.foto}','${p.nome.replace(/'/g,"\\'")}');" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">`
+              : `<div style="font-size:4rem;opacity:0.2">🛍️</div>`}
+            <span style="position:absolute;top:8px;right:8px;font-size:0.65rem;font-weight:800;padding:0.2rem 0.55rem;border-radius:100px;${p.ativo ? 'background:#dcfce7;color:#166534' : 'background:#f1f5f9;color:#64748b'}">${p.ativo ? 'Ativo' : 'Inativo'}</span>
           </div>
-          <div style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0">
-            <span class="badge ${p.ativo ? 'badge-success' : 'badge-muted'}">${p.ativo ? 'Ativo' : 'Inativo'}</span>
-            <label title="Upload de foto" style="cursor:pointer">
-              <input type="file" accept="image/*" style="display:none" onchange="uploadFotoProduto(${p.id}, this)">
-              <span class="btn btn-outline" style="font-size:0.78rem;padding:0.35rem 0.75rem">📷</span>
-            </label>
-            <button class="btn btn-outline" onclick="editarProduto(${p.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem">✏️ Editar</button>
+          <div style="padding:1rem;flex:1">
+            <div style="font-weight:800;font-size:1rem;color:var(--text);margin-bottom:0.2rem">${p.nome}</div>
+            ${preco ? `<div style="font-size:1.05rem;font-weight:900;color:var(--primary);letter-spacing:-0.3px;margin-bottom:0.3rem">${preco}</div>` : ''}
+            ${p.descricao ? `<div style="font-size:0.78rem;color:var(--text-muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${p.descricao}</div>` : ''}
+          </div>
+          <div style="padding:0.75rem 1rem;border-top:1px solid var(--border);display:flex;gap:0.5rem">
+            <button class="btn btn-outline" onclick="editarProduto(${p.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem;flex:1">✏️ Editar</button>
             <button class="btn btn-danger btn-outline" onclick="deletarProduto(${p.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem">🗑️</button>
           </div>
         </div>
       `;
-    }).join('');
+    }).join('') + `</div>`;
   } catch(e) { el.innerHTML = '<p style="color:var(--accent)">Erro ao carregar produtos.</p>'; }
 }
 
@@ -2524,12 +2664,25 @@ function abrirModalProduto(dados = {}) {
   produtoEditandoId = dados.id || null;
   const html = `
     <div id="modalProduto" class="modal-overlay" onclick="if(event.target===this)fecharModalProduto()">
-      <div class="modal-box" style="max-width:520px">
+      <div class="modal" style="max-width:520px">
         <div class="modal-header">
           <h3>${dados.id ? '✏️ Editar Produto' : '🛍️ Novo Produto'}</h3>
           <button class="modal-close" onclick="fecharModalProduto()">×</button>
         </div>
         <div class="modal-body" style="display:grid;gap:0.85rem">
+          <div class="form-group">
+            <label class="form-label">Foto do Produto</label>
+            <label style="display:flex;align-items:center;gap:1rem;cursor:pointer;padding:0.75rem;border:2px dashed var(--border);border-radius:10px;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--primary-light)'" onmouseout="this.style.borderColor='var(--border)'">
+              <div id="prFotoPreview" style="width:72px;height:56px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;overflow:hidden">
+                ${dados.foto ? `<img src="${dados.foto}" style="width:100%;height:100%;object-fit:cover">` : '🛍️'}
+              </div>
+              <div>
+                <div style="font-size:0.82rem;font-weight:700;color:var(--text)">Clique para selecionar imagem</div>
+                <div style="font-size:0.75rem;color:var(--text-muted)">PNG, JPG até 5MB</div>
+              </div>
+              <input type="file" id="prFotoInput" accept="image/*" style="display:none" onchange="prevFotoPr(this)">
+            </label>
+          </div>
           <div class="form-group"><label class="form-label">Nome *</label><input class="form-input" id="prNome" value="${dados.nome||''}" placeholder="Nome do produto"></div>
           <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-input" id="prDesc" rows="2" placeholder="Descrição do produto">${dados.descricao||''}</textarea></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem">
@@ -2547,9 +2700,10 @@ function abrirModalProduto(dados = {}) {
       </div>
     </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
+  abrirModal('modalProduto');
 }
 
-function fecharModalProduto() { document.getElementById('modalProduto')?.remove(); }
+function fecharModalProduto() { fecharModal('modalProduto'); setTimeout(() => document.getElementById('modalProduto')?.remove(), 200); }
 
 async function editarProduto(id) {
   try {
@@ -2557,6 +2711,15 @@ async function editarProduto(id) {
     const p = lista.find(x => x.id === id);
     if (p) abrirModalProduto(p);
   } catch(e) { toast('Erro ao carregar produto','error'); }
+}
+
+function prevFotoPr(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('prFotoPreview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover">`;
+  };
+  reader.readAsDataURL(file);
 }
 
 async function salvarProduto() {
@@ -2572,8 +2735,14 @@ async function salvarProduto() {
   };
   if (produtoEditandoId) payload.ativo = parseInt(document.getElementById('prAtivo').value);
   try {
-    if (produtoEditandoId) await api.put(`/produtos/${produtoEditandoId}`, payload);
-    else await api.post('/produtos', payload);
+    let id = produtoEditandoId;
+    if (id) await api.put(`/produtos/${id}`, payload);
+    else { const res = await api.post('/produtos', payload); id = res.id; }
+    const file = document.getElementById('prFotoInput')?.files[0];
+    if (file && id) {
+      const fd = new FormData(); fd.append('foto', file);
+      await fetch(`/api/produtos/${id}/foto`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('copa_token')}` }, body: fd });
+    }
     fecharModalProduto();
     toast(`Produto ${produtoEditandoId ? 'atualizado' : 'criado'}!`);
     carregarProdutosAdmin();
@@ -2593,6 +2762,186 @@ async function deletarProduto(id) {
   if (!confirm('Remover este produto?')) return;
   try { await api.del(`/produtos/${id}`); toast('Produto removido'); carregarProdutosAdmin(); }
   catch(e) { toast('Erro ao remover','error'); }
+}
+
+// ===== NOTÍCIAS =====
+async function carregarNoticiasAdmin() {
+  try {
+    const lista = await api.get('/noticias/todas');
+    const el = document.getElementById('noticiasAdminList');
+    if (!lista.length) {
+      el.innerHTML = '<p style="color:var(--text-muted);padding:1rem">Nenhuma notícia cadastrada.</p>';
+      return;
+    }
+    el.innerHTML = lista.map(n => `
+      <div class="admin-card" style="margin-bottom:1rem;display:flex;gap:1rem;align-items:flex-start">
+        ${n.imagem ? `<img src="${n.imagem}" style="width:80px;height:60px;object-fit:cover;border-radius:10px;flex-shrink:0">` : `<div style="width:80px;height:60px;background:#e2e8f0;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.5rem">📰</div>`}
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.25rem">
+            ${n.fixado ? '<span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#d97706;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);padding:0.15rem 0.5rem;border-radius:100px">📌 Fixado</span>' : ''}
+            ${n.tag ? `<span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--primary-light);background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);padding:0.15rem 0.5rem;border-radius:100px">${n.tag}</span>` : ''}
+            ${!n.ativo ? '<span style="font-size:0.65rem;font-weight:700;color:#94a3b8;background:#f1f5f9;border:1px solid #e2e8f0;padding:0.15rem 0.5rem;border-radius:100px">Inativo</span>' : ''}
+          </div>
+          <div style="font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:0.25rem;line-height:1.3">${n.titulo}</div>
+          <div style="font-size:0.78rem;color:var(--text-muted)">${new Date(n.criado_em).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})}</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-shrink:0">
+          <button class="btn btn-outline btn-sm" onclick="editarNoticia(${n.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem">✏️</button>
+          <button class="btn btn-danger btn-outline" onclick="deletarNoticia(${n.id})" style="font-size:0.78rem;padding:0.35rem 0.75rem">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { toast('Erro ao carregar notícias','error'); }
+}
+
+function abrirModalNoticia(n = null) {
+  const edit = !!n;
+  const id = n?.id || '';
+  const titulo = n?.titulo || '';
+  const conteudo = n?.conteudo || '';
+  const tag = n?.tag || '';
+  const fixado = n?.fixado ? 'checked' : '';
+  const ativo = (!n || n?.ativo) ? 'checked' : '';
+  const imgPreview = n?.imagem
+    ? '<img id="noticiaImgPreview" src="' + n.imagem + '" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0">'
+    : '<img id="noticiaImgPreview" style="display:none;width:80px;height:60px;object-fit:cover;border-radius:8px">';
+  const imgBtn = edit
+    ? '<button type="button" class="btn btn-outline btn-sm" onclick="uploadImagemNoticia(' + n.id + ')">📤 Enviar agora</button>'
+    : '<span style="font-size:0.78rem;color:var(--text-muted)">Será enviada ao salvar</span>';
+
+  const html = `
+    <div id="modalNoticia" class="modal-overlay" onclick="if(event.target===this)fecharModalNoticia()">
+      <div class="modal" style="max-width:600px">
+        <div class="modal-header">
+          <div class="modal-title">${edit ? '✏️ Editar Notícia' : '📰 Nova Notícia'}</div>
+          <button class="modal-close" onclick="fecharModalNoticia()">×</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="noticiaId" value="${id}">
+          <div class="form-group">
+            <label class="form-label">Título *</label>
+            <input type="text" class="form-input" id="noticiaTitulo" placeholder="Ex: Semifinal definida!" value="${titulo}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Conteúdo</label>
+            <textarea class="form-input" id="noticiaConteudo" rows="5" placeholder="Texto completo da notícia ou comunicado...">${conteudo}</textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div class="form-group">
+              <label class="form-label">Tag / Categoria</label>
+              <input type="text" class="form-input" id="noticiaTag" placeholder="Ex: Aviso, Resultado" value="${tag}">
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:column;justify-content:flex-end">
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.875rem;font-weight:600;color:var(--text-muted)">
+                <input type="checkbox" id="noticiaFixado" ${fixado} style="width:16px;height:16px">
+                📌 Fixar no topo
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.875rem;font-weight:600;color:var(--text-muted);margin-top:0.5rem">
+                <input type="checkbox" id="noticiaAtivo" ${ativo} style="width:16px;height:16px">
+                Publicar (visível)
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">🖼️ Imagem de capa</label>
+            <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;padding:0.75rem;background:var(--bg);border-radius:10px;border:1.5px dashed var(--border)">
+              ${imgPreview}
+              <div style="flex:1;display:flex;flex-direction:column;gap:0.5rem">
+                <input type="file" id="noticiaImgInput" accept="image/*" onchange="previewImagemNoticia(this)" style="font-size:0.82rem;width:100%">
+                ${imgBtn}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" onclick="fecharModalNoticia()">Cancelar</button>
+          <button class="btn btn-primary" onclick="salvarNoticia()">💾 Salvar</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+  abrirModal('modalNoticia');
+}
+
+async function editarNoticia(id) {
+  try {
+    const todas = await api.get('/noticias/todas');
+    const n = todas.find(x => x.id === id);
+    if (n) abrirModalNoticia(n);
+  } catch(e) { toast('Erro ao carregar notícia','error'); }
+}
+
+function fecharModalNoticia() { fecharModal('modalNoticia'); setTimeout(() => document.getElementById('modalNoticia')?.remove(), 200); }
+
+async function salvarNoticia() {
+  const id = document.getElementById('noticiaId').value;
+  const payload = {
+    titulo: document.getElementById('noticiaTitulo').value.trim(),
+    conteudo: document.getElementById('noticiaConteudo').value.trim(),
+    tag: document.getElementById('noticiaTag').value.trim(),
+    fixado: document.getElementById('noticiaFixado').checked ? 1 : 0,
+    ativo: document.getElementById('noticiaAtivo').checked ? 1 : 0,
+  };
+  if (!payload.titulo) { toast('Preencha o título','error'); return; }
+  try {
+    if (id) {
+      await api.put(`/noticias/${id}`, payload);
+      const imgFile = document.getElementById('noticiaImgInput')?.files[0];
+      if (imgFile) await uploadImagemNoticia(id, imgFile);
+      toast('Notícia atualizada!');
+    } else {
+      const res = await api.post('/noticias', payload);
+      const novoId = res.id;
+      const imgFile = document.getElementById('noticiaImgInput')?.files[0];
+      if (imgFile && novoId) await uploadImagemNoticia(novoId, imgFile);
+      toast('Notícia criada!');
+    }
+    fecharModalNoticia();
+    carregarNoticiasAdmin();
+  } catch(e) { toast('Erro ao salvar','error'); }
+}
+
+function previewImagemNoticia(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('noticiaImgPreview');
+  if (preview) { preview.src = URL.createObjectURL(file); preview.style.display = ''; }
+}
+
+async function uploadImagemNoticia(id, file) {
+  const f = file || document.getElementById('noticiaImgInput')?.files[0];
+  if (!f) { if (!file) toast('Selecione uma imagem','error'); return; }
+  const fd = new FormData();
+  fd.append('imagem', f);
+  try {
+    await fetch(`/api/noticias/${id}/imagem`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('copa_token')}` },
+      body: fd
+    }).then(r => r.json());
+    if (!file) { toast('Imagem enviada!'); fecharModalNoticia(); carregarNoticiasAdmin(); }
+  } catch(e) { toast('Erro ao enviar imagem','error'); }
+}
+
+async function deletarNoticia(id) {
+  if (!confirm('Remover esta notícia?')) return;
+  try { await api.del(`/noticias/${id}`); toast('Notícia removida'); carregarNoticiasAdmin(); }
+  catch(e) { toast('Erro ao remover','error'); }
+}
+
+// ===== LIGHTBOX =====
+function verImagemGrande(src, titulo) {
+  const lb = document.createElement('div');
+  lb.id = 'lightbox';
+  lb.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;cursor:zoom-out;backdrop-filter:blur(4px)';
+  lb.innerHTML = `
+    <img src="${src}" alt="${titulo}" style="max-width:90vw;max-height:82vh;object-fit:contain;border-radius:12px;box-shadow:0 24px 80px rgba(0,0,0,0.6)">
+    <div style="color:rgba(255,255,255,0.7);font-size:0.9rem;font-weight:600;margin-top:1rem;text-align:center">${titulo}</div>
+    <button onclick="document.getElementById('lightbox').remove()" style="position:absolute;top:1rem;right:1.25rem;background:rgba(255,255,255,0.12);border:none;color:white;font-size:1.6rem;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.18s" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">×</button>
+  `;
+  lb.onclick = e => { if (e.target === lb) lb.remove(); };
+  document.body.appendChild(lb);
+  document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { lb.remove(); document.removeEventListener('keydown', esc); } });
 }
 </script>
 </body>

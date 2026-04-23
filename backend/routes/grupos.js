@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
     // Para cada grupo, buscar classificação
     for (const grupo of grupos) {
       const [classificacao] = await pool.query(`
-        SELECT gt.*, t.nome, t.sigla, t.cor, t.curso
+        SELECT gt.*, t.nome, t.sigla, t.cor, t.logo, t.curso
         FROM grupos_times gt
         JOIN times t ON gt.time_id = t.id
         WHERE gt.grupo_id = ?
@@ -77,6 +77,56 @@ router.post('/:id/resetar', authMiddleware, async (req, res) => {
     res.json({ mensagem: 'Classificação resetada' });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao resetar classificação' });
+  }
+});
+
+// Recalcular classificação do grupo do zero (admin)
+router.post('/:id/recalcular', authMiddleware, async (req, res) => {
+  const grupoId = req.params.id;
+  try {
+    await pool.query(
+      'UPDATE grupos_times SET pontos=0, jogos=0, vitorias=0, empates=0, derrotas=0, gols_pro=0, gols_contra=0, saldo_gols=0 WHERE grupo_id=?',
+      [grupoId]
+    );
+
+    const [jogosGrupo] = await pool.query(
+      `SELECT * FROM jogos WHERE grupo_id=? AND status='encerrado' AND fase='grupos'`,
+      [grupoId]
+    );
+
+    for (const jogo of jogosGrupo) {
+      const gc = jogo.gols_casa, gv = jogo.gols_visitante;
+      const casaVenceu = gc > gv, visVenceu = gv > gc, empate = gc === gv;
+
+      await pool.query(`
+        INSERT INTO grupos_times (grupo_id, time_id, pontos, jogos, vitorias, empates, derrotas, gols_pro, gols_contra, saldo_gols)
+        VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+          pontos=pontos+VALUES(pontos), jogos=jogos+1,
+          vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
+          gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
+      `, [grupoId, jogo.time_casa_id,
+        casaVenceu ? 3 : empate ? 1 : 0,
+        casaVenceu ? 1 : 0, empate ? 1 : 0, visVenceu ? 1 : 0,
+        gc, gv, gc - gv]);
+
+      await pool.query(`
+        INSERT INTO grupos_times (grupo_id, time_id, pontos, jogos, vitorias, empates, derrotas, gols_pro, gols_contra, saldo_gols)
+        VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+          pontos=pontos+VALUES(pontos), jogos=jogos+1,
+          vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
+          gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
+      `, [grupoId, jogo.time_visitante_id,
+        visVenceu ? 3 : empate ? 1 : 0,
+        visVenceu ? 1 : 0, empate ? 1 : 0, casaVenceu ? 1 : 0,
+        gv, gc, gv - gc]);
+    }
+
+    res.json({ mensagem: `Recalculado: ${jogosGrupo.length} jogo(s) processado(s)` });
+  } catch (err) {
+    console.error('recalcular erro:', err);
+    res.status(500).json({ erro: 'Erro ao recalcular: ' + err.message });
   }
 });
 

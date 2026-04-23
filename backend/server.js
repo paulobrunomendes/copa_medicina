@@ -38,6 +38,7 @@ app.use('/api/stats', require('./routes/stats'));
 app.use('/api/exportar', require('./routes/exportar'));
 app.use('/api/parceiros', require('./routes/parceiros'));
 app.use('/api/produtos', require('./routes/produtos'));
+app.use('/api/noticias', require('./routes/noticias'));
 
 // Health check
 app.get('/api/health', (req, res) => {

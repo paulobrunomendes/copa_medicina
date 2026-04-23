@@ -4,21 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Placar ao Vivo — Copa Med Horus</title>
+  <link rel="icon" href="/public/logo-icon.png" type="image/png">
   <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
-  <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/public/logo-icon.png">
   <link rel="manifest" href="/public/manifest.json">
-  <meta name="theme-color" content="#1e40af">
+  <meta name="theme-color" content="#111111">
   <link rel="stylesheet" href="/public/css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { background: var(--bg); }
 
     .jogo-hero {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      background: #0a0a0a url('/public/court-bg.webp') center/cover no-repeat;
+      position: relative;
       color: white;
       padding: 2.5rem 1.5rem 3rem;
       text-align: center;
     }
+    .jogo-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(0,0,0,0.82);
+      pointer-events: none;
+    }
+    .jogo-hero > * { position: relative; z-index: 1; }
 
     .jogo-hero-modal {
       font-size: 0.85rem;
@@ -99,8 +107,8 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.25);
       padding: 0.3rem 0.9rem;
       border-radius: 50px;
       font-size: 0.8rem;
@@ -108,6 +116,14 @@
       letter-spacing: 0.5px;
       margin-bottom: 1rem;
     }
+    .status-live-badge.live {
+      background: rgba(220,38,38,0.25);
+      border-color: rgba(220,38,38,0.6);
+      color: #fca5a5;
+      box-shadow: 0 0 20px rgba(220,38,38,0.3);
+      animation: livePulse 2s ease-in-out infinite;
+    }
+    @keyframes livePulse { 0%,100%{box-shadow:0 0 20px rgba(220,38,38,0.3)} 50%{box-shadow:0 0 35px rgba(220,38,38,0.55)} }
 
     .info-card {
       background: white;
@@ -257,7 +273,7 @@
     document.title = `${j.time_casa_sigla} × ${j.time_visitante_sigla} — Copa Med Horus`;
 
     const statusBadge = j.status === 'ao_vivo'
-      ? `<div class="status-live-badge"><span class="live-dot"></span> AO VIVO</div>`
+      ? `<div class="status-live-badge live"><span class="live-dot" style="background:#ef4444;box-shadow:0 0 8px #ef4444"></span> AO VIVO</div>`
       : j.status === 'encerrado'
       ? `<div class="status-live-badge">✅ ENCERRADO</div>`
       : `<div class="status-live-badge">📅 AGENDADO</div>`;
@@ -268,7 +284,9 @@
       <div class="jogo-hero-modal">${j.modalidade_icone} ${j.modalidade_nome} — ${j.grupo_nome ? 'Grupo ' + j.grupo_nome : faseLabel(j.fase)}</div>
       <div class="jogo-hero-times">
         <div class="hero-time">
-          <div class="hero-escudo" style="background:${j.time_casa_cor}">${j.time_casa_sigla}</div>
+          ${j.time_casa_logo
+            ? `<img src="${j.time_casa_logo}" alt="${j.time_casa_sigla}" class="hero-escudo" style="object-fit:contain;background:white;padding:6px;" onerror="this.outerHTML='<div class=\\'hero-escudo\\' style=\\'background:${j.time_casa_cor}\\'>${j.time_casa_sigla}</div>'">`
+            : `<div class="hero-escudo" style="background:${j.time_casa_cor}">${j.time_casa_sigla}</div>`}
           <div class="hero-nome">${j.time_casa_nome}</div>
         </div>
         <div class="hero-placar" style="flex-direction:column;align-items:center;gap:0.2rem">
@@ -281,7 +299,9 @@
           ${(j.gols_penaltis_casa || j.gols_penaltis_visitante) ? `<div id="heroPen" style="font-size:0.72rem;opacity:0.8;font-weight:600">Pên. ${j.gols_penaltis_casa} × ${j.gols_penaltis_visitante}</div>` : '<div id="heroPen"></div>'}
         </div>
         <div class="hero-time">
-          <div class="hero-escudo" style="background:${j.time_visitante_cor}">${j.time_visitante_sigla}</div>
+          ${j.time_visitante_logo
+            ? `<img src="${j.time_visitante_logo}" alt="${j.time_visitante_sigla}" class="hero-escudo" style="object-fit:contain;background:white;padding:6px;" onerror="this.outerHTML='<div class=\\'hero-escudo\\' style=\\'background:${j.time_visitante_cor}\\'>${j.time_visitante_sigla}</div>'">`
+            : `<div class="hero-escudo" style="background:${j.time_visitante_cor}">${j.time_visitante_sigla}</div>`}
           <div class="hero-nome">${j.time_visitante_nome}</div>
         </div>
       </div>
@@ -390,6 +410,39 @@
   }
 
   init();
+
+  // ===== PUSH NOTIFICATIONS =====
+  function urlB64ToUint8Array(b64) {
+    const pad = '='.repeat((4 - b64.length % 4) % 4);
+    const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+    const arr = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+
+  async function ativarPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const existing = await reg.pushManager.getSubscription();
+      if (existing) return;
+
+      const perm = await Notification.requestPermission();
+      if (perm !== 'granted') return;
+
+      const { publicKey } = await fetch('/api/push/vapid-public-key').then(r => r.json()).catch(() => ({}));
+      if (!publicKey) return;
+
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToUint8Array(publicKey) });
+      await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(sub) });
+    } catch (e) { console.warn('Push:', e.message); }
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/public/sw.js')
+      .then(() => setTimeout(ativarPush, 1500))
+      .catch(() => {});
+  }
 </script>
 </body>
 </html>
