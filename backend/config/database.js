@@ -151,6 +151,38 @@ async function initDB() {
     `);
 
     await conn.query(`
+      CREATE TABLE IF NOT EXISTS parceiros (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        logo VARCHAR(255) DEFAULT NULL,
+        categoria VARCHAR(50) DEFAULT '',
+        beneficio VARCHAR(200) DEFAULT '',
+        descricao TEXT,
+        contato VARCHAR(100) DEFAULT '',
+        whatsapp VARCHAR(20) DEFAULT '',
+        site VARCHAR(200) DEFAULT '',
+        ativo TINYINT(1) DEFAULT 1,
+        ordem INT DEFAULT 0,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS produtos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        descricao TEXT,
+        preco DECIMAL(10,2) DEFAULT NULL,
+        foto VARCHAR(255) DEFAULT NULL,
+        whatsapp_msg TEXT,
+        whatsapp VARCHAR(20) DEFAULT '',
+        ativo TINYINT(1) DEFAULT 1,
+        ordem INT DEFAULT 0,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS push_subscriptions (
         id INT AUTO_INCREMENT PRIMARY KEY,
         endpoint TEXT NOT NULL,

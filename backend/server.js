@@ -36,21 +36,21 @@ app.use('/api/artilheiros', require('./routes/artilheiros'));
 app.use('/api/push', require('./routes/push'));
 app.use('/api/stats', require('./routes/stats'));
 app.use('/api/exportar', require('./routes/exportar'));
+app.use('/api/parceiros', require('./routes/parceiros'));
+app.use('/api/produtos', require('./routes/produtos'));
 
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Rotas conhecidas do frontend
-const frontendRoutes = ['/', '/login.html', '/jogo.html', '/admin', '/admin/'];
+// SPA fallback
 app.get('*', (req, res) => {
   const p = req.path;
-  if (frontendRoutes.includes(p) || p.startsWith('/admin/') || p.startsWith('/public/')) {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'));
-  } else {
-    res.status(404).sendFile(path.join(__dirname, '../frontend/404.html'));
+  if (p === '/admin' || p.startsWith('/admin/')) {
+    return res.sendFile(path.join(__dirname, '../frontend/admin/index.html'));
   }
+  res.status(404).sendFile(path.join(__dirname, '../frontend/404.html'));
 });
 
 // Socket.IO
