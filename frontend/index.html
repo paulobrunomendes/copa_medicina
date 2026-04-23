@@ -8,1171 +8,586 @@
   <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
   <link rel="manifest" href="/public/manifest.json">
   <meta name="theme-color" content="#0d1f4e">
-  <meta name="description" content="Copa Med Horus — Placares ao vivo, classificação, artilheiros, parceiros e loja.">
-  <link rel="stylesheet" href="/public/css/style.css">
+  <meta name="description" content="Copa Med Horus — Acompanhe placares ao vivo, classificação, artilheiros, parceiros e loja oficial.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* ===== BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0d1f4e;
+      --navy2:  #1a3a8f;
+      --blue:   #2563eb;
+      --gold:   #f59e0b;
+      --goldd:  #d97706;
+      --goldl:  #fcd34d;
+      --red:    #dc2626;
+      --green:  #25d366;
+      --text:   #0f172a;
+      --muted:  #64748b;
+      --border: #e2e8f0;
+      --bg:     #f8fafc;
+      --white:  #ffffff;
+    }
     html { scroll-behavior: smooth; }
-    body { background: #111827; }
+    body { font-family: 'Inter', -apple-system, sans-serif; color: var(--text); background: var(--white); -webkit-font-smoothing: antialiased; line-height: 1.6; }
     a { text-decoration: none; color: inherit; }
+    img { display: block; }
 
-    /* ===== TOPBAR ===== */
-    .topbar {
-      background: #070d1e;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      padding: 0 1.5rem;
-      position: sticky; top: 0; z-index: 300;
-      box-shadow: 0 2px 20px rgba(0,0,0,0.5);
-    }
-    .topbar-inner {
-      max-width: 1280px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 58px;
-    }
-    .topbar-logo { display: flex; align-items: center; gap: 10px; }
-    .topbar-logo img { width: 32px; height: 32px; object-fit: contain; }
-    .topbar-logo-fallback {
-      width: 32px; height: 32px;
-      background: linear-gradient(135deg,#f59e0b,#d97706);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-    }
-    .topbar-logo-text {
-      font-size: 0.95rem; font-weight: 800; color: white; letter-spacing: -0.3px;
-    }
-    .topbar-logo-text em { color: #f59e0b; font-style: normal; }
-    .topbar-right { display: flex; align-items: center; gap: 0.5rem; }
-    .topbar-admin {
-      display: flex; align-items: center; gap: 0.4rem;
-      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(255,255,255,0.75); font-size: 0.8rem; font-weight: 700;
-      padding: 0.38rem 0.85rem; border-radius: 8px;
-      transition: all 0.18s;
-    }
-    .topbar-admin:hover { background: rgba(255,255,255,0.15); color: white; }
-    .topbar-hamburger {
-      display: none; background: none; border: none;
-      color: rgba(255,255,255,0.7); font-size: 1.35rem; cursor: pointer; padding: 0.25rem;
-    }
-    @media(max-width:600px) { .topbar-hamburger { display: block; } .topbar-admin { display: none; } }
-
-    /* ===== HERO SITE ===== */
-    .site-hero {
-      background: linear-gradient(160deg, #040b1d 0%, #0d1f4e 55%, #1a1060 100%);
-      position: relative; overflow: hidden;
-      padding: 2.5rem 1.5rem 0;
-    }
-    .site-hero::after {
-      content: '';
-      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-    }
-    .site-hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 80% at 80% 20%, rgba(245,158,11,0.07) 0%, transparent 60%),
-                  radial-gradient(ellipse 40% 60% at 10% 80%, rgba(37,99,235,0.1) 0%, transparent 60%);
-    }
-    .hero-top {
-      max-width: 1280px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 2rem; position: relative;
-    }
-    .hero-brand { display: flex; align-items: center; gap: 1.25rem; }
-    .hero-badge-wrap {
-      width: 68px; height: 68px; border-radius: 18px;
-      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.05));
-      border: 1.5px solid rgba(245,158,11,0.3);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .hero-badge-wrap img { width: 52px; height: 52px; object-fit: contain; }
-    .hero-info h1 {
-      font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 900;
-      color: white; letter-spacing: -0.5px; line-height: 1.15; margin-bottom: 0.25rem;
-    }
-    .hero-info h1 em { color: #f59e0b; font-style: normal; }
-    .hero-sub { font-size: 0.82rem; color: rgba(255,255,255,0.45); font-weight: 500; }
-    .hero-live-pill {
-      display: flex; align-items: center; gap: 0.5rem;
-      background: rgba(220,38,38,0.15); border: 1px solid rgba(220,38,38,0.3);
-      color: #fca5a5; font-size: 0.75rem; font-weight: 800;
-      padding: 0.5rem 1rem; border-radius: 50px;
-      letter-spacing: 0.5px; white-space: nowrap;
-    }
-    .hero-live-pill .live-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: #ef4444;
-      box-shadow: 0 0 8px #ef4444;
-      animation: pulseRed 1.4s ease-in-out infinite;
-    }
-    @keyframes pulseRed { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.85)} }
-    .hero-stats-bar {
-      max-width: 1280px; margin: 1.5rem auto 0;
-      display: flex; gap: 0; border-top: 1px solid rgba(255,255,255,0.06);
-      position: relative;
-    }
-    .hero-stat {
-      flex: 1; padding: 0.85rem 1.25rem;
-      border-right: 1px solid rgba(255,255,255,0.06);
-      display: flex; align-items: center; gap: 0.7rem;
-    }
-    .hero-stat:last-child { border-right: none; }
-    .hero-stat-icon { font-size: 1.2rem; }
-    .hero-stat-num { font-size: 1.3rem; font-weight: 900; color: white; letter-spacing: -0.5px; line-height: 1; }
-    .hero-stat-label { font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.38); text-transform: uppercase; letter-spacing: 0.7px; margin-top: 0.15rem; }
-    @media(max-width:600px) {
-      .hero-stats-bar { display: grid; grid-template-columns: 1fr 1fr; }
-      .hero-stat { border-right: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); }
-      .hero-live-pill { display: none; }
-    }
-
-    /* ===== TAB NAV ===== */
-    .tab-nav-wrap {
-      background: #0d1528;
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: sticky; top: 0; z-index: 500;
+      background: rgba(4, 10, 28, 0.96);
+      backdrop-filter: blur(14px);
       border-bottom: 1px solid rgba(255,255,255,0.07);
-      position: sticky; top: 58px; z-index: 200;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 2px 30px rgba(0,0,0,0.5);
     }
-    .tab-nav {
-      max-width: 1280px; margin: 0 auto;
-      display: flex; align-items: stretch; overflow-x: auto;
-      scrollbar-width: none; -ms-overflow-style: none;
-      padding: 0 1rem;
+    .nav-inner {
+      max-width: 1280px; margin: 0 auto; padding: 0 2rem;
+      height: 68px; display: flex; align-items: center; justify-content: space-between;
     }
-    .tab-nav::-webkit-scrollbar { display: none; }
-    .tab-btn-main {
-      padding: 0 1.1rem; height: 46px;
-      font-size: 0.82rem; font-weight: 700;
-      color: rgba(255,255,255,0.48); white-space: nowrap;
-      border: none; background: none; cursor: pointer;
-      display: flex; align-items: center; gap: 0.35rem;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s; font-family: inherit;
-      letter-spacing: 0.1px;
+    .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .nav-logo-img {
+      width: 36px; height: 36px; border-radius: 10px; object-fit: contain;
     }
-    .tab-btn-main:hover { color: rgba(255,255,255,0.8); }
-    .tab-btn-main.active { color: white; border-bottom-color: #f59e0b; }
-    .tab-divider { width: 1px; background: rgba(255,255,255,0.07); margin: 0.75rem 0.25rem; flex-shrink: 0; }
-
-    /* ===== MAIN CONTENT ===== */
-    .main-wrap { max-width: 1280px; margin: 0 auto; padding: 1.75rem 1.5rem 3rem; }
-
-    /* ===== DARK GAME SECTIONS ===== */
-    .game-section { color: white; }
-
-    /* Modalidade filter tabs (inside section) */
-    .mod-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .mod-tab {
-      padding: 0.38rem 0.95rem; border-radius: 50px;
-      font-size: 0.78rem; font-weight: 700;
-      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.55); cursor: pointer; transition: all 0.18s; font-family: inherit;
+    .nav-logo-fallback {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold), var(--goldd));
+      display: none; align-items: center; justify-content: center; font-size: 1.1rem;
+      box-shadow: 0 3px 12px rgba(245,158,11,0.4);
     }
-    .mod-tab:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }
-    .mod-tab.active { background: #1a3a8f; border-color: #2563eb; color: white; box-shadow: 0 2px 10px rgba(37,99,235,0.3); }
-
-    /* ===== SECTION HEADERS ===== */
-    .sec-title {
-      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 1.5px; color: rgba(255,255,255,0.3);
-      margin-bottom: 0.85rem;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .sec-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
-    .sec-title.live { color: #f87171; }
-    .sec-title.next { color: #93c5fd; }
-
-    /* ===== JOGO CARD ===== */
-    .jogo-card {
-      background: #1a2640;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 14px;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      cursor: pointer;
-    }
-    .jogo-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.15); }
-    .card-live { border-left: 3px solid #ef4444 !important; }
-    .card-live:hover { box-shadow: 0 10px 30px rgba(220,38,38,0.2) !important; }
-    .card-encerrado { opacity: 0.6; }
-    .card-encerrado:hover { opacity: 0.85; }
-
-    .jogo-card-header {
-      padding: 0.5rem 1rem;
-      background: rgba(0,0,0,0.2);
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.45);
-      letter-spacing: 0.3px;
-    }
-    .jogo-card-header.ao_vivo { background: rgba(185,28,28,0.35); color: rgba(255,200,200,0.8); }
-
-    .jogo-card-body {
-      padding: 1.1rem 1rem 0.9rem;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-    .time-info { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-    .time-escudo {
-      width: 52px; height: 52px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.78rem; font-weight: 800; color: white;
-      border: 2px solid rgba(255,255,255,0.25);
-      flex-shrink: 0;
-    }
-    .time-nome { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.9); text-align: center; max-width: 90px; line-height: 1.3; }
-
-    .placar-box {
-      display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
-      background: rgba(0,0,0,0.2); border-radius: 12px;
-      padding: 0.6rem 1rem; min-width: 100px;
-    }
-    .placar-nums { display: flex; align-items: center; gap: 0.4rem; }
-    .placar-num { font-size: 2.4rem; font-weight: 900; color: white; letter-spacing: -2px; line-height: 1; }
-    .placar-sep { font-size: 1.4rem; font-weight: 300; color: rgba(255,255,255,0.3); }
-    .placar-vs { font-size: 0.62rem; font-weight: 800; letter-spacing: 1.5px; color: rgba(255,255,255,0.35); text-transform: uppercase; }
-    .placar-vs.live { color: #f87171; }
-    .live-score-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #ef4444; margin-right: 3px; vertical-align: middle; animation: pulseRed 1.2s ease-in-out infinite; }
-
-    .jogo-card-footer {
-      padding: 0.5rem 1rem;
-      background: rgba(0,0,0,0.15);
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 0.7rem; color: rgba(255,255,255,0.35); gap: 0.5rem;
-    }
-    .jogo-card-footer a {
-      background: rgba(37,99,235,0.25); border: 1px solid rgba(37,99,235,0.4);
-      color: #93c5fd; padding: 0.25rem 0.75rem;
-      border-radius: 50px; font-size: 0.68rem; font-weight: 700;
+    .nav-logo-name { font-size: 1rem; font-weight: 900; color: white; letter-spacing: -0.4px; }
+    .nav-logo-name strong { color: var(--gold); font-weight: 900; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      padding: 0.5rem 1rem; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600; color: rgba(255,255,255,0.6);
       transition: all 0.18s; white-space: nowrap;
     }
-    .jogo-card-footer a:hover { background: rgba(37,99,235,0.4); color: white; }
-    .card-timer-footer { font-size: 0.76rem; font-weight: 800; color: #f87171; letter-spacing: 0.5px; }
-    .share-footer-btn {
-      background: transparent; border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.35); padding: 0.25rem 0.6rem;
-      border-radius: 50px; font-size: 0.65rem; cursor: pointer; font-family: inherit; transition: all 0.18s;
+    .nav-link:hover { color: white; background: rgba(255,255,255,0.08); }
+    .nav-link.active { color: white; background: rgba(255,255,255,0.1); }
+    .nav-admin {
+      margin-left: 0.75rem;
+      padding: 0.48rem 1.1rem; border-radius: 8px;
+      background: var(--blue); color: white;
+      font-size: 0.875rem; font-weight: 700;
+      box-shadow: 0 2px 12px rgba(37,99,235,0.4);
+      transition: all 0.18s;
     }
-    .share-footer-btn:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); }
-
-    /* Penalty info */
-    #card-prorro-TEMPLATE, #card-pen-TEMPLATE { font-size: 0.63rem; color: rgba(255,255,255,0.4); font-weight: 600; text-align: center; }
-
-    /* ===== STATUS BADGES ===== */
-    .status-badge {
-      font-size: 0.63rem; font-weight: 800; text-transform: uppercase;
-      letter-spacing: 0.8px; padding: 0.18rem 0.55rem; border-radius: 5px;
-    }
-    .status-agendado { background: rgba(37,99,235,0.2); color: #93c5fd; }
-    .status-ao_vivo { background: rgba(220,38,38,0.25); color: #fca5a5; animation: blinkBg 1.5s ease-in-out infinite; }
-    .status-encerrado { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
-    @keyframes blinkBg { 0%,100%{opacity:1} 50%{opacity:0.65} }
-
-    /* ===== JOGOS GRID ===== */
-    .jogos-grid { display: grid; gap: 0.85rem; margin-bottom: 2rem; }
-    @media(min-width:900px) { .jogos-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media(min-width:1200px) { .jogos-grid { grid-template-columns: repeat(3, 1fr); } }
-
-    /* ===== EMPTY STATE ===== */
-    .empty-state {
-      text-align: center; padding: 3.5rem 1rem;
-      background: rgba(255,255,255,0.03); border-radius: 14px;
-      border: 1px dashed rgba(255,255,255,0.08);
-    }
-    .empty-state-icon { font-size: 3rem; margin-bottom: 0.75rem; }
-    .empty-state h3 { font-size: 1rem; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 0.35rem; }
-    .empty-state p { font-size: 0.82rem; color: rgba(255,255,255,0.3); }
-
-    /* ===== CLASSIFICAÇÃO ===== */
-    .grupos-grid { display: grid; gap: 1.25rem; }
-    @media(min-width:900px) { .grupos-grid { grid-template-columns: repeat(2, 1fr); } }
-    .grupo-card { background: #1a2640; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; }
-    .grupo-card-header { padding: 0.75rem 1.1rem; background: rgba(0,0,0,0.25); font-size: 0.75rem; font-weight: 800; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; text-transform: uppercase; }
-    .table-scroll { overflow-x: auto; }
-    .classificacao-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-    .classificacao-table th { padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.15); font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
-    .classificacao-table th:first-child { text-align: left; }
-    .classificacao-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; color: rgba(255,255,255,0.75); font-weight: 600; }
-    .classificacao-table td:first-child { text-align: left; }
-    .classificacao-table tr:last-child td { border-bottom: none; }
-    .classificacao-table tr:hover td { background: rgba(255,255,255,0.03); }
-    .time-row { display: flex; align-items: center; gap: 0.5rem; }
-    .pos-badge { font-size: 0.7rem; font-weight: 800; color: rgba(255,255,255,0.35); min-width: 16px; text-align: center; }
-    .pos-badge.pos-1 { color: #fbbf24; }
-    .pos-badge.pos-2 { color: #94a3b8; }
-    .pos-badge.pos-3 { color: #cd7c2f; }
-    .time-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-    /* ===== ARTILHEIROS ===== */
-    .artilheiros-card { background: #1a2640; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; }
-    .artilheiros-row { display: flex; align-items: center; gap: 0.9rem; padding: 0.8rem 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
-    .artilheiros-row:last-child { border-bottom: none; }
-    .artilheiros-row:hover { background: rgba(255,255,255,0.03); }
-    .artilheiro-pos { font-size: 0.78rem; font-weight: 800; color: rgba(255,255,255,0.3); min-width: 22px; text-align: center; }
-    .artilheiro-pos.top1 { color: #fbbf24; font-size: 1rem; }
-    .artilheiro-pos.top2 { color: #94a3b8; font-size: 0.9rem; }
-    .artilheiro-pos.top3 { color: #cd7c2f; font-size: 0.85rem; }
-    .artilheiro-escudo { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 800; color: white; flex-shrink: 0; }
-    .artilheiro-info { flex: 1; min-width: 0; }
-    .artilheiro-nome { font-weight: 700; font-size: 0.9rem; color: rgba(255,255,255,0.9); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .artilheiro-time { font-size: 0.72rem; color: rgba(255,255,255,0.35); font-weight: 500; }
-    .artilheiro-gols { font-size: 1.05rem; font-weight: 900; color: #60a5fa; flex-shrink: 0; display: flex; align-items: center; gap: 0.3rem; }
-    .artilheiro-gols span { font-size: 0.72rem; color: rgba(255,255,255,0.3); font-weight: 600; }
-
-    /* ===== STATS ===== */
-    .stats-card { background: #1a2640; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; margin-bottom: 1.25rem; }
-    .stats-header { padding: 0.7rem 1.1rem; background: rgba(0,0,0,0.25); font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); }
-    .stats-row { display: grid; grid-template-columns: 2rem 34px 1fr repeat(5,38px); align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; }
-    .stats-row:last-child { border-bottom: none; }
-    .stats-row:hover { background: rgba(255,255,255,0.03); }
-    .stats-pos { font-weight: 800; color: rgba(255,255,255,0.3); text-align: center; font-size: 0.72rem; }
-    .stats-num { font-weight: 700; text-align: center; color: rgba(255,255,255,0.4); font-size: 0.78rem; }
-    .stats-num.highlight { color: #60a5fa; font-weight: 800; }
-    @media(max-width:480px) { .stats-row { grid-template-columns: 1.5rem 28px 1fr repeat(3,32px); } .stats-col-hide { display: none; } }
-
-    /* ===== CAMPEÃO BANNER ===== */
-    .campeao-banner { background: linear-gradient(135deg,#78350f,#d97706); border-radius: 16px; padding: 2rem; text-align: center; color: white; box-shadow: 0 8px 32px rgba(217,119,6,0.3); margin-bottom: 1rem; }
-    .campeao-titulo { font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; margin-bottom: 0.5rem; }
-    .campeao-escudo { width: 72px; height: 72px; border-radius: 50%; margin: 0.75rem auto; border: 3px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 900; }
-    .campeao-nome { font-size: 1.75rem; font-weight: 900; letter-spacing: -1px; }
-    .campeao-sub { font-size: 0.8rem; opacity: 0.7; margin-top: 0.25rem; }
-
-    /* ===== BRACKET ===== */
-    .bracket { display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 0.5rem; }
-    .bracket-fase { flex-shrink: 0; min-width: 200px; }
-    .bracket-fase-titulo { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.35); margin-bottom: 0.75rem; }
-    .bracket-jogo { background: #1a2640; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; margin-bottom: 0.75rem; }
-    .bracket-time { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.65); border-bottom: 1px solid rgba(255,255,255,0.06); gap: 0.5rem; }
-    .bracket-time:last-child { border-bottom: none; }
-    .bracket-time.vencedor { background: rgba(37,99,235,0.15); color: white; font-weight: 800; }
-    .bracket-time-gols { font-weight: 900; font-size: 0.95rem; color: white; }
-
-    /* ===== HISTÓRICO ===== */
-    .historico-select {
-      padding: 0.6rem 0.9rem;
-      background: #1a2640; border: 1px solid rgba(255,255,255,0.12);
-      color: white; border-radius: 8px; font-size: 0.88rem; font-family: inherit;
-      width: 100%; max-width: 340px; margin-bottom: 1.5rem;
+    .nav-admin:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 4px 18px rgba(37,99,235,0.5); }
+    .nav-hamburger { display: none; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.5rem; cursor: pointer; padding: 0.25rem; }
+    @media(max-width: 720px) {
+      .nav-hamburger { display: block; }
+      .nav-links { display: none; flex-direction: column; align-items: stretch; position: absolute; top: 68px; left: 0; right: 0; background: #040a1c; padding: 0.75rem 1rem 1rem; gap: 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.07); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+      .nav-links.open { display: flex; }
+      .nav-admin { margin-left: 0; }
+      .nav-inner { padding: 0 1.25rem; }
     }
 
-    /* ===== GOL NOTIF ===== */
-    #golNotifContainer { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; pointer-events: none; }
-    .gol-notif { background: linear-gradient(135deg,#166534,#16a34a); color: white; padding: 0.8rem 1.4rem; border-radius: 50px; box-shadow: 0 8px 28px rgba(22,163,74,0.45); font-weight: 800; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; animation: golEntrar 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; white-space: nowrap; pointer-events: none; }
-    .gol-notif.saindo { animation: golSair 0.35s ease-in forwards; }
-    @keyframes golEntrar { from{opacity:0;transform:translateY(-18px) scale(0.85)} to{opacity:1;transform:none} }
-    @keyframes golSair { from{opacity:1;transform:none} to{opacity:0;transform:translateY(-10px) scale(0.9)} }
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(155deg, #020710 0%, #0d1f4e 50%, #1a0e60 100%);
+      position: relative; overflow: hidden;
+      padding: 5rem 2rem 4rem;
+      min-height: 600px; display: flex; align-items: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 70% at 75% 30%, rgba(245,158,11,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 15% 70%, rgba(37,99,235,0.13) 0%, transparent 55%),
+        radial-gradient(ellipse 30% 50% at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 50%);
+    }
+    .hero-inner {
+      max-width: 1280px; margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 420px; gap: 4rem; align-items: center;
+      position: relative;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+      color: rgba(245,158,11,0.85); margin-bottom: 1.25rem;
+    }
+    .hero-eyebrow::before { content: ''; display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; flex-shrink: 0; }
+    .hero h1 {
+      font-size: clamp(2.75rem, 5.5vw, 4rem);
+      font-weight: 900; color: white;
+      letter-spacing: -2px; line-height: 1.05;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 .gold { color: var(--gold); }
+    .hero-desc {
+      font-size: 1.05rem; color: rgba(255,255,255,0.55);
+      max-width: 440px; line-height: 1.75; margin-bottom: 2rem;
+    }
+    .hero-live {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      background: rgba(220,38,38,0.18); border: 1px solid rgba(220,38,38,0.35);
+      color: #fca5a5; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.5px;
+      padding: 0.45rem 1rem; border-radius: 50px; margin-bottom: 2rem;
+    }
+    .hero-live .dot { width: 7px; height: 7px; border-radius: 50%; background: #ef4444; box-shadow: 0 0 8px #ef4444; animation: pulseDot 1.4s ease-in-out infinite; }
+    @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(0.8);opacity:0.6} }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-gold {
+      padding: 0.9rem 2rem; border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold), var(--goldd));
+      color: var(--navy); font-weight: 900; font-size: 0.95rem;
+      box-shadow: 0 4px 20px rgba(245,158,11,0.45);
+      transition: all 0.2s;
+    }
+    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.6); }
+    .btn-ghost {
+      padding: 0.9rem 2rem; border-radius: 10px;
+      border: 1.5px solid rgba(255,255,255,0.22); color: white;
+      font-weight: 700; font-size: 0.95rem; transition: all 0.2s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+    .hero-visual { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+    .hero-logo-ring {
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, rgba(245,158,11,0.18), rgba(245,158,11,0.03));
+      border: 1.5px solid rgba(245,158,11,0.25);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 80px rgba(245,158,11,0.15), inset 0 0 40px rgba(245,158,11,0.04);
+      animation: heroGlow 4s ease-in-out infinite;
+    }
+    @keyframes heroGlow { 0%,100%{box-shadow:0 0 80px rgba(245,158,11,0.15),inset 0 0 40px rgba(245,158,11,0.04)} 50%{box-shadow:0 0 120px rgba(245,158,11,0.25),inset 0 0 60px rgba(245,158,11,0.08)} }
+    .hero-logo-ring img { width: 130px; height: 130px; object-fit: contain; }
+    .hero-stats-chips { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+    .hero-chip {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 0.6rem 1rem; text-align: center;
+    }
+    .hero-chip-num { font-size: 1.35rem; font-weight: 900; color: white; letter-spacing: -0.5px; line-height: 1; }
+    .hero-chip-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.38); margin-top: 0.15rem; }
+    @media(max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+      .hero { min-height: auto; padding: 3.5rem 1.5rem 3rem; }
+    }
 
-    /* ===== LIVE BANNER ===== */
-    .live-banner { display: none; background: linear-gradient(90deg,#991b1b,#dc2626); color: white; padding: 0.45rem 1.5rem; font-size: 0.78rem; font-weight: 800; letter-spacing: 1px; text-align: center; }
-    .live-banner.show { display: block; }
-    .live-banner .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: white; margin-right: 6px; vertical-align: middle; animation: pulseRed 1.2s ease-in-out infinite; }
+    /* ===== SECTIONS ===== */
+    .sec { padding: 5rem 2rem; }
+    .sec-inner { max-width: 1280px; margin: 0 auto; }
+    .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 2.5rem; flex-wrap: wrap; }
+    .sec-eyebrow { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--gold); margin-bottom: 0.3rem; }
+    .sec-title { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 900; color: var(--navy); letter-spacing: -0.8px; line-height: 1.2; }
+    .sec-title-light { color: white; }
+    .sec-eyebrow-light { color: rgba(245,158,11,0.85); }
+    .sec-link {
+      display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap;
+      font-size: 0.85rem; font-weight: 700; color: var(--blue);
+      border: 1.5px solid rgba(37,99,235,0.25); padding: 0.45rem 1rem; border-radius: 8px;
+      transition: all 0.18s;
+    }
+    .sec-link:hover { background: rgba(37,99,235,0.06); border-color: var(--blue); }
+    .sec-link-light { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.2); }
+    .sec-link-light:hover { background: rgba(255,255,255,0.07); color: white; border-color: rgba(255,255,255,0.4); }
 
-    /* ===== PARCEIROS SECTION ===== */
-    #secao-parceiros, #secao-loja { display: none; }
-    .parceiros-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1rem; }
-    .parceiro-card { background: #1e2d50; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 1.25rem; transition: all 0.2s; }
-    .parceiro-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.3); }
-    .parceiro-logo { width: 60px; height: 60px; border-radius: 12px; object-fit: contain; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 0.85rem; display: block; }
-    .parceiro-logo-placeholder { width: 60px; height: 60px; border-radius: 12px; background: linear-gradient(135deg,#1a3a8f,#2563eb); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.85rem; }
-    .parceiro-nome { font-weight: 800; font-size: 0.9rem; color: white; margin-bottom: 0.25rem; }
-    .parceiro-cat { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #60a5fa; margin-bottom: 0.4rem; }
-    .parceiro-beneficio { font-size: 0.78rem; color: rgba(255,255,255,0.45); line-height: 1.5; margin-bottom: 0.75rem; }
-    .parceiro-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-    .btn-parceiro { font-size: 0.72rem; font-weight: 700; padding: 0.35rem 0.7rem; border-radius: 6px; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.3rem; }
-    .btn-parceiro.wa { background: rgba(37,211,102,0.12); color: #4ade80; }
-    .btn-parceiro.wa:hover { background: #25d366; color: white; }
-    .btn-parceiro.site { background: rgba(37,99,235,0.12); color: #60a5fa; }
-    .btn-parceiro.site:hover { background: #2563eb; color: white; }
-    .parceiro-filter-bar { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .parceiro-filter-btn { padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.04); cursor: pointer; transition: all 0.18s; font-family: inherit; }
-    .parceiro-filter-btn:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.75); }
-    .parceiro-filter-btn.active { background: #1a3a8f; border-color: #2563eb; color: white; }
+    /* ===== GAMES WIDGET ===== */
+    .sec-games { background: var(--bg); }
+    .games-scroll {
+      display: flex; gap: 1rem;
+      overflow-x: auto; padding: 0.25rem 0 1rem;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .games-scroll::-webkit-scrollbar { display: none; }
+    .gcard {
+      flex-shrink: 0; width: 300px; background: white;
+      border-radius: 16px; border: 1.5px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      overflow: hidden; scroll-snap-align: start;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .gcard:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); border-color: #cbd5e1; }
+    .gcard.ao_vivo { border-left: 4px solid var(--red); }
+    .gcard.ao_vivo:hover { box-shadow: 0 12px 32px rgba(220,38,38,0.12); }
+    .gcard.agendado { border-left: 4px solid var(--blue); }
+    .gcard.encerrado { opacity: 0.65; }
+    .gcard-top {
+      padding: 0.6rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.68rem; font-weight: 700; color: var(--muted);
+    }
+    .gcard-top.live-top { background: #fef2f2; border-bottom-color: #fecaca; }
+    .gbadge { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 0.18rem 0.55rem; border-radius: 5px; }
+    .gbadge-live { background: var(--red); color: white; animation: blinkB 1.5s ease-in-out infinite; }
+    @keyframes blinkB { 0%,100%{opacity:1} 50%{opacity:0.7} }
+    .gbadge-ag { background: rgba(37,99,235,0.1); color: var(--blue); }
+    .gbadge-enc { background: rgba(100,116,139,0.1); color: var(--muted); }
+    .gcard-body { padding: 1.1rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .gteam { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; flex: 1; min-width: 0; }
+    .gescudo { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: white; flex-shrink: 0; border: 2px solid rgba(0,0,0,0.06); }
+    .gnome { font-size: 0.78rem; font-weight: 700; color: var(--text); text-align: center; line-height: 1.3; max-width: 90px; }
+    .gscore-box { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; flex-shrink: 0; }
+    .gscore { font-size: 2rem; font-weight: 900; color: var(--navy); letter-spacing: -1.5px; line-height: 1; }
+    .gscore-label { font-size: 0.6rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+    .gscore-label.live { color: var(--red); }
+    .glive-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--red); margin-right: 3px; vertical-align: middle; animation: pulseDot 1.2s ease-in-out infinite; }
+    .gcard-foot {
+      padding: 0.55rem 1rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.68rem; color: var(--muted);
+    }
+    .gcard-foot a {
+      font-size: 0.7rem; font-weight: 700; color: var(--blue);
+      padding: 0.22rem 0.65rem; border-radius: 5px;
+      background: rgba(37,99,235,0.07); border: 1px solid rgba(37,99,235,0.2);
+      transition: all 0.18s;
+    }
+    .gcard-foot a:hover { background: var(--blue); color: white; }
+    .games-empty {
+      width: 300px; flex-shrink: 0; border-radius: 16px; border: 1.5px dashed var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 2.5rem; gap: 0.5rem; color: var(--muted); text-align: center;
+    }
 
-    /* ===== LOJA SECTION ===== */
-    .produtos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 1rem; }
-    .produto-card { background: #1e2d50; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: all 0.2s; }
-    .produto-card:hover { border-color: rgba(255,255,255,0.18); transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.35); }
-    .produto-foto { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: rgba(0,0,0,0.2); display: block; }
-    .produto-foto-placeholder { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg,#162040,#1e2d50); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
-    .produto-body { padding: 1rem; flex: 1; display: flex; flex-direction: column; }
-    .produto-nome { font-weight: 800; font-size: 0.92rem; color: white; margin-bottom: 0.3rem; }
-    .produto-desc { font-size: 0.78rem; color: rgba(255,255,255,0.4); line-height: 1.6; flex: 1; margin-bottom: 0.85rem; }
-    .produto-preco { font-size: 1.2rem; font-weight: 900; color: #60a5fa; margin-bottom: 0.7rem; letter-spacing: -0.3px; }
-    .btn-whatsapp { display: flex; align-items: center; justify-content: center; gap: 0.45rem; background: #25d366; color: white; font-weight: 800; font-size: 0.82rem; padding: 0.65rem; border-radius: 9px; transition: all 0.18s; }
-    .btn-whatsapp:hover { background: #1da851; box-shadow: 0 4px 14px rgba(37,211,102,0.35); }
+    /* ===== PARCEIROS ===== */
+    .sec-parceiros { background: var(--navy); }
+    .partners-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+    .pchip {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 1rem 1.4rem;
+      display: flex; align-items: center; gap: 0.85rem;
+      transition: all 0.2s; min-width: 180px;
+    }
+    .pchip:hover { background: rgba(255,255,255,0.13); border-color: rgba(255,255,255,0.22); transform: translateY(-2px); }
+    .pchip-logo { width: 44px; height: 44px; border-radius: 10px; object-fit: contain; background: white; flex-shrink: 0; padding: 4px; }
+    .pchip-placeholder { width: 44px; height: 44px; border-radius: 10px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .pchip-nome { font-size: 0.88rem; font-weight: 800; color: white; }
+    .pchip-cat { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px; color: rgba(255,255,255,0.4); margin-top: 0.15rem; }
+    .partners-empty { color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+    .partners-more { font-size: 0.85rem; color: rgba(255,255,255,0.45); margin-top: 1.25rem; }
 
-    /* ===== SPINNER ===== */
-    .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(255,255,255,0.1); border-top-color: rgba(255,255,255,0.6); border-radius: 50%; animation: spin 0.7s linear infinite; }
-    .loading-wrap { text-align: center; padding: 3rem; color: rgba(255,255,255,0.3); }
+    /* ===== PRODUTOS ===== */
+    .sec-products { background: white; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
+    .prod-card { background: var(--bg); border-radius: 16px; overflow: hidden; border: 1.5px solid var(--border); transition: all 0.22s; display: flex; flex-direction: column; }
+    .prod-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.1); border-color: #cbd5e1; }
+    .prod-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+    .prod-img-placeholder { width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, #e8edf5, #dde4f0); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
+    .prod-body { padding: 1.1rem; flex: 1; display: flex; flex-direction: column; }
+    .prod-name { font-size: 0.95rem; font-weight: 800; color: var(--text); margin-bottom: 0.3rem; }
+    .prod-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.6; flex: 1; margin-bottom: 0.85rem; }
+    .prod-price { font-size: 1.2rem; font-weight: 900; color: var(--navy); letter-spacing: -0.4px; margin-bottom: 0.75rem; }
+    .btn-wa { display: flex; align-items: center; justify-content: center; gap: 0.45rem; background: var(--green); color: white; font-weight: 800; font-size: 0.85rem; padding: 0.7rem; border-radius: 10px; transition: all 0.18s; }
+    .btn-wa:hover { background: #1da851; box-shadow: 0 4px 16px rgba(37,211,102,0.4); }
+    .products-empty { grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--muted); }
+
+    /* ===== FOOTER ===== */
+    .footer { background: #040a1c; padding: 4rem 2rem 2rem; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    .footer-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 0.85rem; }
+    .footer-logo-img { width: 32px; height: 32px; object-fit: contain; }
+    .footer-logo-name { font-size: 1rem; font-weight: 900; color: white; }
+    .footer-logo-name strong { color: var(--gold); }
+    .footer-tagline { font-size: 0.85rem; color: rgba(255,255,255,0.38); line-height: 1.7; max-width: 280px; }
+    .footer-col-title { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); margin-bottom: 1rem; }
+    .footer-link { display: block; font-size: 0.875rem; color: rgba(255,255,255,0.5); padding: 0.28rem 0; transition: color 0.18s; font-weight: 500; }
+    .footer-link:hover { color: white; }
+    .footer-admin { display: inline-flex; align-items: center; gap: 0.45rem; margin-top: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); padding: 0.5rem 0.9rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; transition: all 0.18s; }
+    .footer-admin:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1.5rem; text-align: center; }
+    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+    @media(max-width: 768px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width: 500px) { .footer-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+    /* ===== UTILS ===== */
+    .spin { display: inline-block; width: 24px; height: 24px; border: 2.5px solid rgba(0,0,0,0.1); border-top-color: var(--navy); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ===== TOAST ===== */
-    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9998; display: flex; flex-direction: column; gap: 0.5rem; }
-
-    @media(max-width:600px) {
-      .main-wrap { padding: 1.25rem 1rem 2.5rem; }
-      .topbar-logo-text { font-size: 0.85rem; }
-    }
+    .loading { text-align: center; padding: 2.5rem; color: var(--muted); }
+    @media(max-width: 640px) { .sec { padding: 3.5rem 1.25rem; } }
   </style>
 </head>
 <body>
 
-<!-- GOL NOTIF -->
-<div id="golNotifContainer"></div>
-
-<!-- TOPBAR -->
-<header class="topbar">
-  <div class="topbar-inner">
-    <div class="topbar-logo">
-      <img src="/public/logo.png" alt="Copa Med Horus" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="topbar-logo-fallback" style="display:none">🏆</div>
-      <span class="topbar-logo-text">Copa <em>Med Horus</em></span>
-    </div>
-    <div class="topbar-right">
-      <a href="/admin" class="topbar-admin">🔐 Admin</a>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <img src="/public/logo.png" alt="Copa Med Horus" class="nav-logo-img"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="nav-logo-fallback">🏆</div>
+      <span class="nav-logo-name">Copa <strong>Med Horus</strong></span>
+    </a>
+    <button class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="/" class="nav-link active">Início</a>
+      <a href="/placares.html" class="nav-link">Placares</a>
+      <a href="/parceiros.html" class="nav-link">Parceiros</a>
+      <a href="/loja.html" class="nav-link">Loja</a>
+      <a href="/admin" class="nav-admin">Área Admin</a>
     </div>
   </div>
-</header>
+</nav>
 
-<!-- SITE HERO -->
-<div class="site-hero">
-  <div class="hero-top">
-    <div class="hero-brand">
-      <div class="hero-badge-wrap">
-        <img src="/public/logo.png" alt="Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:2.5rem\\'>🏆</span>'">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Copa Universitária de Medicina</div>
+      <h1>Copa<br><span class="gold">Med Horus</span></h1>
+      <p class="hero-desc">Futebol, futsal, vôlei, basquete e mais. Acompanhe placares em tempo real, classificação, artilheiros e todos os detalhes da copa.</p>
+      <div class="hero-live" id="heroPill" style="display:none">
+        <span class="dot"></span>
+        <span id="heroPillTxt">JOGOS AO VIVO</span>
       </div>
-      <div class="hero-info">
-        <h1>Copa <em>Med Horus</em></h1>
-        <div class="hero-sub">Acompanhe tudo em tempo real</div>
+      <div class="hero-btns">
+        <a href="/placares.html" class="btn-gold">⚽ Ver Placares</a>
+        <a href="/parceiros.html" class="btn-ghost">🤝 Parceiros & Benefícios</a>
       </div>
     </div>
-    <div class="hero-live-pill" id="heroPill" style="display:none">
-      <span class="live-dot"></span>
-      <span id="heroPillText">AO VIVO</span>
+    <div class="hero-visual">
+      <div class="hero-logo-ring">
+        <img src="/public/logo.png" alt="Copa Med Horus"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <div style="display:none;font-size:5rem">🏆</div>
+      </div>
+      <div class="hero-stats-chips">
+        <div class="hero-chip"><div class="hero-chip-num" id="chip-jogos">—</div><div class="hero-chip-label">Jogos</div></div>
+        <div class="hero-chip"><div class="hero-chip-num" id="chip-times">—</div><div class="hero-chip-label">Times</div></div>
+        <div class="hero-chip"><div class="hero-chip-num" id="chip-gols">—</div><div class="hero-chip-label">Gols</div></div>
+        <div class="hero-chip"><div class="hero-chip-num" id="chip-mods">—</div><div class="hero-chip-label">Modalidades</div></div>
+      </div>
     </div>
   </div>
-  <div class="hero-stats-bar">
-    <div class="hero-stat">
-      <div class="hero-stat-icon">⚽</div>
-      <div><div class="hero-stat-num" id="hs-jogos">—</div><div class="hero-stat-label">Jogos</div></div>
+</section>
+
+<!-- JOGOS EM DESTAQUE -->
+<section class="sec sec-games">
+  <div class="sec-inner">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">Tempo Real</div>
+        <h2 class="sec-title">Jogos em Destaque</h2>
+      </div>
+      <a href="/placares.html" class="sec-link">Ver todos os jogos →</a>
     </div>
-    <div class="hero-stat">
-      <div class="hero-stat-icon">👕</div>
-      <div><div class="hero-stat-num" id="hs-times">—</div><div class="hero-stat-label">Times</div></div>
-    </div>
-    <div class="hero-stat">
-      <div class="hero-stat-icon">🥅</div>
-      <div><div class="hero-stat-num" id="hs-gols">—</div><div class="hero-stat-label">Gols</div></div>
-    </div>
-    <div class="hero-stat">
-      <div class="hero-stat-icon">🏅</div>
-      <div><div class="hero-stat-num" id="hs-mods">—</div><div class="hero-stat-label">Modalidades</div></div>
+    <div class="games-scroll" id="gamesScroll">
+      <div class="loading"><div class="spin"></div></div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- LIVE BANNER -->
-<div class="live-banner" id="liveBanner">
-  <span class="live-dot"></span> JOGOS ACONTECENDO AGORA!
-</div>
-
-<!-- TAB NAV -->
-<div class="tab-nav-wrap">
-  <nav class="tab-nav" id="mainTabNav">
-    <button class="tab-btn-main active" onclick="mostrarSecao('jogos',this)">⚽ Jogos</button>
-    <button class="tab-btn-main" onclick="mostrarSecao('classificacao',this)">📊 Classificação</button>
-    <button class="tab-btn-main" onclick="mostrarSecao('chaveamento',this)">🏆 Mata-mata</button>
-    <button class="tab-btn-main" onclick="mostrarSecao('artilheiros',this)">🥇 Artilheiros</button>
-    <button class="tab-btn-main" onclick="mostrarSecao('stats',this)">📈 Estatísticas</button>
-    <button class="tab-btn-main" onclick="mostrarSecao('encerrados',this)">✅ Resultados</button>
-    <button class="tab-btn-main" onclick="mostrarSecao('historico',this)">📋 Por Time</button>
-    <div class="tab-divider"></div>
-    <button class="tab-btn-main" onclick="mostrarSecao('parceiros',this)" style="color:rgba(255,255,255,0.55)">🤝 Parceiros</button>
-    <button class="tab-btn-main" onclick="mostrarSecao('loja',this)" style="color:rgba(255,255,255,0.55)">🛍️ Loja</button>
-  </nav>
-</div>
-
-<!-- MAIN CONTENT -->
-<div class="main-wrap">
-
-  <!-- JOGOS -->
-  <section id="secao-jogos" class="game-section">
-    <div class="mod-tabs" id="modalidadeTabs"></div>
-    <div id="bloco-ao_vivo" style="display:none">
-      <h2 class="sec-title live">● AO VIVO AGORA</h2>
-      <div class="jogos-grid" id="jogos-ao_vivo"></div>
+<!-- PARCEIROS -->
+<section class="sec sec-parceiros">
+  <div class="sec-inner">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow sec-eyebrow-light">Benefícios Exclusivos</div>
+        <h2 class="sec-title sec-title-light">Nossos Parceiros</h2>
+      </div>
+      <a href="/parceiros.html" class="sec-link sec-link-light">Ver todos →</a>
     </div>
-    <div id="bloco-agendado" style="display:none">
-      <h2 class="sec-title next">◆ PRÓXIMOS JOGOS</h2>
-      <div class="jogos-grid" id="jogos-agendado"></div>
+    <div class="partners-grid" id="partnersGrid">
+      <div class="partners-empty">Carregando...</div>
     </div>
-    <div id="jogos-empty" class="empty-state" style="display:none">
-      <div class="empty-state-icon">📭</div>
-      <h3>Nenhum jogo encontrado</h3>
-      <p>Os jogos aparecerão aqui quando forem cadastrados.</p>
-    </div>
-  </section>
+    <div id="partnersMore"></div>
+  </div>
+</section>
 
-  <!-- CLASSIFICAÇÃO -->
-  <section id="secao-classificacao" class="game-section" style="display:none">
-    <div class="mod-tabs" id="classificacaoTabs"></div>
-    <div class="grupos-grid" id="gruposContainer"></div>
-    <div id="classificacao-empty" class="empty-state" style="display:none">
-      <div class="empty-state-icon">📋</div>
-      <h3>Nenhum grupo cadastrado</h3>
-      <p>A classificação aparecerá aqui quando os grupos forem criados.</p>
+<!-- LOJA -->
+<section class="sec sec-products">
+  <div class="sec-inner">
+    <div class="sec-head">
+      <div>
+        <div class="sec-eyebrow">Produtos Oficiais</div>
+        <h2 class="sec-title">Loja da Copa</h2>
+      </div>
+      <a href="/loja.html" class="sec-link">Ver loja completa →</a>
     </div>
-  </section>
+    <div class="products-grid" id="productsGrid">
+      <div class="loading" style="grid-column:1/-1"><div class="spin"></div></div>
+    </div>
+  </div>
+</section>
 
-  <!-- CHAVEAMENTO -->
-  <section id="secao-chaveamento" class="game-section" style="display:none">
-    <div class="mod-tabs" id="chaveamentoTabs"></div>
-    <div style="overflow-x:auto;padding-bottom:0.5rem">
-      <div class="bracket" id="bracketContainer"></div>
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo-row">
+          <img src="/public/logo.png" alt="Logo" class="footer-logo-img" onerror="this.style.display='none'">
+          <span class="footer-logo-name">Copa <strong>Med Horus</strong></span>
+        </div>
+        <p class="footer-tagline">Acompanhe a copa universitária de medicina. Placares ao vivo, classificação, artilheiros e muito mais.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navegação</div>
+        <a href="/" class="footer-link">Início</a>
+        <a href="/placares.html" class="footer-link">Placares</a>
+        <a href="/parceiros.html" class="footer-link">Parceiros</a>
+        <a href="/loja.html" class="footer-link">Loja</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Sistema</div>
+        <a href="/placares.html" class="footer-link">Jogos ao vivo</a>
+        <a href="/placares.html" class="footer-link">Classificação</a>
+        <a href="/placares.html" class="footer-link">Artilheiros</a>
+        <a href="/placares.html" class="footer-link">Mata-mata</a>
+        <br>
+        <a href="/admin" class="footer-admin">🔐 Área Admin</a>
+      </div>
     </div>
-    <div id="chaveamento-empty" class="empty-state" style="display:none">
-      <div class="empty-state-icon">🏅</div>
-      <h3>Fase mata-mata ainda não iniciada</h3>
-      <p>O chaveamento aparecerá aqui quando os jogos de mata-mata forem cadastrados.</p>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Copa Med Horus. Todos os direitos reservados.</span>
     </div>
-  </section>
-
-  <!-- ARTILHEIROS -->
-  <section id="secao-artilheiros" class="game-section" style="display:none">
-    <div class="mod-tabs" id="artilheirosTabs"></div>
-    <div id="artilheirosContainer"></div>
-    <div id="artilheiros-empty" class="empty-state" style="display:none">
-      <div class="empty-state-icon">⚽</div>
-      <h3>Nenhum gol registrado</h3>
-      <p>Os artilheiros aparecerão aqui conforme os gols forem registrados.</p>
-    </div>
-  </section>
-
-  <!-- ESTATÍSTICAS -->
-  <section id="secao-stats" class="game-section" style="display:none">
-    <div class="mod-tabs" id="statsTabs"></div>
-    <div id="campeaoBanner" style="display:none;margin-bottom:1.5rem"></div>
-    <div id="statsContainer"></div>
-    <div id="stats-empty" class="empty-state" style="display:none">
-      <div class="empty-state-icon">📊</div>
-      <h3>Sem dados ainda</h3>
-      <p>As estatísticas aparecerão conforme os jogos forem encerrados.</p>
-    </div>
-  </section>
-
-  <!-- ENCERRADOS -->
-  <section id="secao-encerrados" class="game-section" style="display:none">
-    <div class="mod-tabs" id="encerradosTabs"></div>
-    <h2 class="sec-title">✓ RESULTADOS</h2>
-    <div class="jogos-grid" id="jogos-encerrado"></div>
-    <div id="encerrados-empty" class="empty-state" style="display:none">
-      <div class="empty-state-icon">🏁</div>
-      <h3>Nenhum jogo encerrado</h3>
-      <p>Os resultados aparecerão aqui quando os jogos forem encerrados.</p>
-    </div>
-  </section>
-
-  <!-- HISTÓRICO POR TIME -->
-  <section id="secao-historico" class="game-section" style="display:none">
-    <select id="historicoTimeSelect" class="historico-select" onchange="carregarHistorico()">
-      <option value="">Selecione um time...</option>
-    </select>
-    <div id="historicoContainer"></div>
-    <div id="historico-empty" class="empty-state" style="display:none">
-      <div class="empty-state-icon">📋</div>
-      <h3>Nenhum jogo encontrado</h3>
-      <p>Este time ainda não tem jogos cadastrados.</p>
-    </div>
-  </section>
-
-  <!-- PARCEIROS -->
-  <section id="secao-parceiros" class="game-section">
-    <div class="parceiro-filter-bar" id="parceiroFilterBar">
-      <button class="parceiro-filter-btn active" onclick="filtrarParceiros('')" data-cat="">Todos</button>
-    </div>
-    <div id="parceirosContainer" class="parceiros-grid">
-      <div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div></div>
-    </div>
-  </section>
-
-  <!-- LOJA -->
-  <section id="secao-loja" class="game-section">
-    <div id="produtosContainer" class="produtos-grid">
-      <div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div></div>
-    </div>
-  </section>
-
-</div><!-- /main-wrap -->
-
-<div id="toastContainer" class="toast-container"></div>
+  </div>
+</footer>
 
 <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
 <script src="/public/js/app.js"></script>
 <script>
-  const socket = io();
-  let modalidades = [];
-  let modalidadeAtiva = null;
-
-  // ===== NAVEGAÇÃO =====
-  const _secaoTitulos = {
-    jogos: 'Jogos — Copa Med Horus', classificacao: 'Classificação — Copa Med Horus',
-    chaveamento: 'Mata-mata — Copa Med Horus', artilheiros: 'Artilheiros — Copa Med Horus',
-    stats: 'Estatísticas — Copa Med Horus', encerrados: 'Resultados — Copa Med Horus',
-    historico: 'Por Time — Copa Med Horus', parceiros: 'Parceiros — Copa Med Horus',
-    loja: 'Loja Oficial — Copa Med Horus',
-  };
-
-  function mostrarSecao(secao, btn) {
-    document.querySelectorAll('[id^="secao-"]').forEach(s => s.style.display = 'none');
-    document.getElementById(`secao-${secao}`).style.display = '';
-    document.querySelectorAll('.tab-btn-main').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    document.title = _secaoTitulos[secao] || 'Copa Med Horus';
-    if (secao === 'jogos')          carregarJogos();
-    if (secao === 'classificacao')  carregarClassificacao();
-    if (secao === 'chaveamento')    carregarChaveamento();
-    if (secao === 'artilheiros')    carregarArtilheiros();
-    if (secao === 'stats')          carregarStats();
-    if (secao === 'encerrados')     carregarEncerrados();
-    if (secao === 'historico')      iniciarHistorico();
-    if (secao === 'parceiros')      carregarParceiros();
-    if (secao === 'loja')           carregarLoja();
-    // Scroll suave para o tab nav
-    document.querySelector('.tab-nav-wrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  // ===== TABS MODALIDADE =====
-  function renderTabs(containerId, onSelect) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-    const btnTodos = document.createElement('button');
-    btnTodos.className = 'mod-tab' + (modalidadeAtiva === null ? ' active' : '');
-    btnTodos.innerHTML = '🏆 Todas';
-    btnTodos.onclick = () => { modalidadeAtiva = null; onSelect(); updateModTabs(containerId, null); };
-    container.appendChild(btnTodos);
-    modalidades.forEach(m => {
-      const btn = document.createElement('button');
-      btn.className = 'mod-tab' + (modalidadeAtiva === m.id ? ' active' : '');
-      btn.innerHTML = `${m.icone} ${m.nome}`;
-      btn.onclick = () => { modalidadeAtiva = m.id; onSelect(); updateModTabs(containerId, m.id); };
-      container.appendChild(btn);
-    });
-  }
-  function updateModTabs(containerId, id) {
-    document.querySelectorAll(`#${containerId} .mod-tab`).forEach((b, i) => {
-      b.classList.toggle('active', id === null ? i === 0 : i === modalidades.findIndex(m => m.id === id) + 1);
-    });
-  }
-
-  // ===== TIMER =====
-  const liveTimers = {};
-  function calcularSegundosCard(j) {
-    let s = j.timer_decorrido || 0;
-    if (j.timer_ativo && j.timer_inicio) s += Math.floor((Date.now() - Number(j.timer_inicio)) / 1000);
-    return s;
-  }
-  function formatarTempoCard(s) {
-    return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
-  }
-  function timerFooterText(j) {
-    if (!j.periodo_atual) return '';
-    const s = Math.min(calcularSegundosCard(j), (j.duracao_periodo||45)*60);
-    return `${j.periodo_atual}T ${formatarTempoCard(s)}`;
-  }
-  function timerLabelCard(j) {
-    if (!j.periodo_atual) return '🔴 AO VIVO';
-    return `🔴 ${j.periodo_atual}T`;
-  }
-  function iniciarTimerCard(j) {
-    if (liveTimers[j.id]) { clearInterval(liveTimers[j.id]); delete liveTimers[j.id]; }
-    if (!j.timer_ativo) return;
-    const dur = (j.duracao_periodo||45)*60;
-    liveTimers[j.id] = setInterval(() => {
-      const el = document.getElementById(`card-timer-footer-${j.id}`);
-      if (!el) { clearInterval(liveTimers[j.id]); delete liveTimers[j.id]; return; }
-      const s = Math.min(calcularSegundosCard(j), dur);
-      el.textContent = `${j.periodo_atual}T ${formatarTempoCard(s)}`;
-    }, 1000);
-  }
-
-  // ===== JOGO CARD =====
-  function jogoCardHTML(j) {
-    const dataStr = j.data_jogo ? `📅 ${formatarData(j.data_jogo)}` : '';
-    const localStr = j.local_jogo ? ` · 📍 ${j.local_jogo}` : '';
-    const grupoStr = j.grupo_nome ? `Grupo ${j.grupo_nome} · ` : '';
-    const faseStr  = j.fase !== 'grupos' ? faseLabel(j.fase) + ' · ' : grupoStr;
-    const aoVivo   = j.status === 'ao_vivo';
-    const encerrado = j.status === 'encerrado';
-    const cardClass = aoVivo ? 'card-live' : encerrado ? 'card-encerrado' : '';
-
-    const escudoCasa = j.time_casa_logo
-      ? `<img src="${j.time_casa_logo}" style="width:52px;height:52px;object-fit:contain;border-radius:50%;border:2px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.05)">`
-      : escudoHTML(j.time_casa_sigla, j.time_casa_cor);
-    const escudoVis = j.time_visitante_logo
-      ? `<img src="${j.time_visitante_logo}" style="width:52px;height:52px;object-fit:contain;border-radius:50%;border:2px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.05)">`
-      : escudoHTML(j.time_visitante_sigla, j.time_visitante_cor);
-
-    const scoreLabel = aoVivo
-      ? `<span class="placar-vs live"><span class="live-score-dot"></span>AO VIVO</span>`
-      : encerrado ? `<span class="placar-vs">RESULTADO</span>`
-      : `<span class="placar-vs">AGUARDANDO</span>`;
-
-    const footerStyle = aoVivo ? 'style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center"' : '';
-
-    return `
-      <div class="jogo-card ${cardClass}" id="jogo-card-${j.id}">
-        <div class="jogo-card-header ${aoVivo ? 'ao_vivo' : ''}">
-          <span>${j.modalidade_icone||'⚽'} ${faseStr}${j.modalidade_nome}</span>
-          <span class="status-badge status-${j.status}" id="timer-label-${j.id}">${aoVivo ? timerLabelCard(j) : statusLabel(j.status)}</span>
-        </div>
-        <div class="jogo-card-body">
-          <div class="time-info">${escudoCasa}<span class="time-nome">${j.time_casa_nome}</span></div>
-          <div class="placar-box">
-            <div class="placar-nums">
-              <span class="placar-num" id="placar-casa-${j.id}">${j.status === 'agendado' ? '—' : j.gols_casa}</span>
-              <span class="placar-sep">×</span>
-              <span class="placar-num" id="placar-vis-${j.id}">${j.status === 'agendado' ? '—' : j.gols_visitante}</span>
-            </div>
-            <div id="card-prorro-${j.id}" style="font-size:0.63rem;color:rgba(255,255,255,0.4);font-weight:600;text-align:center${(j.gols_prorrogacao_casa||j.gols_prorrogacao_visitante)?'':';display:none'}">Prorr. ${j.gols_prorrogacao_casa||0}×${j.gols_prorrogacao_visitante||0}</div>
-            <div id="card-pen-${j.id}" style="font-size:0.63rem;color:rgba(255,255,255,0.4);font-weight:600;text-align:center${(j.gols_penaltis_casa||j.gols_penaltis_visitante)?'':';display:none'}">Pên. ${j.gols_penaltis_casa||0}×${j.gols_penaltis_visitante||0}</div>
-            ${scoreLabel}
-          </div>
-          <div class="time-info">${escudoVis}<span class="time-nome">${j.time_visitante_nome}</span></div>
-        </div>
-        <div class="jogo-card-footer" ${footerStyle}>
-          <span>${dataStr}${localStr}</span>
-          ${aoVivo ? `<span class="card-timer-footer" id="card-timer-footer-${j.id}">${timerFooterText(j)}</span>` : ''}
-          <div style="display:flex;align-items:center;gap:0.4rem;${aoVivo?'justify-content:flex-end':''}">
-            <button class="share-footer-btn" onclick="compartilharJogo(${j.id},event)">🔗</button>
-            <a href="/jogo.html?id=${j.id}">Ver detalhes →</a>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  // ===== JOGOS =====
-  async function carregarJogos() {
-    try {
-      let url = '/jogos';
-      if (modalidadeAtiva) url += `?modalidade_id=${modalidadeAtiva}`;
-      const jogos = await api.get(url);
-      const aoVivo = jogos.filter(j => j.status === 'ao_vivo');
-      const agendados = jogos.filter(j => j.status === 'agendado');
-      document.getElementById('liveBanner').classList.toggle('show', aoVivo.length > 0);
-      const pill = document.getElementById('heroPill');
-      if (aoVivo.length > 0) {
-        pill.style.display = 'flex';
-        document.getElementById('heroPillText').textContent = `${aoVivo.length} AO VIVO`;
-      } else { pill.style.display = 'none'; }
-      ['ao_vivo','agendado'].forEach(status => {
-        const bloco = document.getElementById(`bloco-${status}`);
-        const container = document.getElementById(`jogos-${status}`);
-        const lista = jogos.filter(j => j.status === status);
-        bloco.style.display = lista.length ? '' : 'none';
-        container.innerHTML = lista.map(jogoCardHTML).join('');
-        if (status === 'ao_vivo') lista.forEach(j => iniciarTimerCard(j));
-      });
-      const total = jogos.filter(j => j.status !== 'encerrado').length;
-      document.getElementById('jogos-empty').style.display = total === 0 ? '' : 'none';
-      renderTabs('modalidadeTabs', carregarJogos);
-    } catch (e) { console.error(e); }
-  }
-
-  // ===== ARTILHEIROS =====
-  async function carregarArtilheiros() {
-    try {
-      let url = '/artilheiros';
-      if (modalidadeAtiva) url += `?modalidade_id=${modalidadeAtiva}`;
-      const lista = await api.get(url);
-      const container = document.getElementById('artilheirosContainer');
-      const emptyEl   = document.getElementById('artilheiros-empty');
-      emptyEl.style.display = lista.length === 0 ? '' : 'none';
-      container.style.display = lista.length === 0 ? 'none' : '';
-      const posIcons = ['🥇','🥈','🥉'];
-      const posClass = ['top1','top2','top3'];
-      container.innerHTML = `
-        <div class="artilheiros-card">
-          ${lista.map((a,i) => {
-            const escudo = a.time_logo
-              ? `<img src="${a.time_logo}" style="width:34px;height:34px;object-fit:contain;border-radius:50%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1)">`
-              : `<div class="artilheiro-escudo" style="background:${a.time_cor||'#1a3a6b'}">${a.time_sigla}</div>`;
-            const pos = i < 3 ? `<div class="artilheiro-pos ${posClass[i]}">${posIcons[i]}</div>` : `<div class="artilheiro-pos">${i+1}</div>`;
-            return `<div class="artilheiros-row">${pos}${escudo}<div class="artilheiro-info"><div class="artilheiro-nome">${a.jogador}</div><div class="artilheiro-time">${a.time_nome}</div></div><div class="artilheiro-gols">${a.total_gols}<span>gol${a.total_gols>1?'s':''}</span></div></div>`;
-          }).join('')}
-        </div>`;
-      renderTabs('artilheirosTabs', carregarArtilheiros);
-    } catch(e) { console.error(e); }
-  }
-
-  // ===== ESTATÍSTICAS =====
+  // ===== HERO STATS =====
   async function carregarStats() {
     try {
-      let url = '/stats'; if (modalidadeAtiva) url += `?modalidade_id=${modalidadeAtiva}`;
-      const [stats, campeoes] = await Promise.all([
-        api.get(url),
-        api.get(`/stats/campeao${modalidadeAtiva ? '?modalidade_id='+modalidadeAtiva : ''}`)
+      const [jogos, times, art] = await Promise.all([
+        fetch('/api/jogos').then(r => r.json()).catch(() => []),
+        fetch('/api/times').then(r => r.json()).catch(() => []),
+        fetch('/api/artilheiros').then(r => r.json()).catch(() => []),
       ]);
-      const bannerEl = document.getElementById('campeaoBanner');
-      if (campeoes.length > 0) {
-        bannerEl.style.display = '';
-        bannerEl.innerHTML = campeoes.map(c => `
-          <div class="campeao-banner" style="margin-bottom:0.75rem">
-            <div class="campeao-titulo">🏆 Campeão ${c.modalidade_icone} ${c.modalidade_nome}</div>
-            <div class="campeao-escudo" style="background:${c.campeao_cor}">${c.campeao_logo ? `<img src="${c.campeao_logo}" style="width:64px;height:64px;object-fit:contain;border-radius:50%">` : c.campeao_sigla}</div>
-            <div class="campeao-nome">🥇 ${c.campeao_nome}</div>
-            <div class="campeao-sub">Vice-campeão: ${c.vice_nome} · Placar: ${c.placar}</div>
-          </div>`).join('');
-      } else { bannerEl.style.display = 'none'; }
-      const container = document.getElementById('statsContainer');
-      const emptyEl   = document.getElementById('stats-empty');
-      emptyEl.style.display = stats.length === 0 ? '' : 'none';
-      container.style.display = stats.length === 0 ? 'none' : '';
-      if (stats.length > 0) {
-        container.innerHTML = `
-          <div class="stats-card">
-            <div class="stats-header">Desempenho por Time</div>
-            <div class="stats-row" style="font-size:0.65rem;font-weight:700;color:rgba(255,255,255,0.3);background:rgba(0,0,0,0.2);text-transform:uppercase;letter-spacing:0.5px">
-              <span></span><span></span><span>Time</span><span class="stats-num">J</span><span class="stats-num">V</span><span class="stats-num stats-col-hide">E</span><span class="stats-num stats-col-hide">D</span><span class="stats-num">SG</span><span class="stats-num highlight">⚽</span>
-            </div>
-            ${stats.map((t,i) => `
-              <div class="stats-row">
-                <span class="stats-pos">${i<3?['🥇','🥈','🥉'][i]:i+1}</span>
-                <div style="width:28px;height:28px;border-radius:50%;background:${t.cor};flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:800;color:white">
-                  ${t.logo ? `<img src="${t.logo}" style="width:28px;height:28px;object-fit:contain;border-radius:50%">` : t.sigla}
-                </div>
-                <div><div style="font-weight:700;font-size:0.82rem;color:rgba(255,255,255,0.9)">${t.nome}</div>${t.amarelos||t.vermelhos?`<div style="font-size:0.68rem;color:rgba(255,255,255,0.3)">${t.amarelos?`🟨${t.amarelos}`:''} ${t.vermelhos?`🟥${t.vermelhos}`:''}</div>`:''}</div>
-                <span class="stats-num">${t.jogos}</span><span class="stats-num">${t.vitorias}</span><span class="stats-num stats-col-hide">${t.empates}</span><span class="stats-num stats-col-hide">${t.derrotas}</span><span class="stats-num">${t.saldo_gols>0?'+':''}${t.saldo_gols}</span><span class="stats-num highlight">${t.gols_marcados}</span>
-              </div>`).join('')}
-          </div>`;
+      const ao_vivo = jogos.filter(j => j.status === 'ao_vivo');
+      const mods = new Set(jogos.map(j => j.modalidade_id));
+      const totalGols = Array.isArray(art) ? art.reduce((s, g) => s + (+g.total_gols || 0), 0) : 0;
+      document.getElementById('chip-jogos').textContent = jogos.length;
+      document.getElementById('chip-times').textContent = times.length;
+      document.getElementById('chip-gols').textContent = totalGols;
+      document.getElementById('chip-mods').textContent = mods.size;
+      if (ao_vivo.length > 0) {
+        document.getElementById('heroPill').style.display = 'inline-flex';
+        document.getElementById('heroPillTxt').textContent = `${ao_vivo.length} JOGO${ao_vivo.length > 1 ? 'S' : ''} AO VIVO`;
       }
-      renderTabs('statsTabs', carregarStats);
-    } catch(e) { console.error(e); }
-  }
-
-  // ===== ENCERRADOS =====
-  async function carregarEncerrados() {
-    try {
-      let url = '/jogos?status=encerrado'; if (modalidadeAtiva) url += `&modalidade_id=${modalidadeAtiva}`;
-      const jogos = await api.get(url);
-      const container = document.getElementById('jogos-encerrado');
-      const emptyEl   = document.getElementById('encerrados-empty');
-      container.innerHTML = jogos.map(jogoCardHTML).join('');
-      emptyEl.style.display = jogos.length === 0 ? '' : 'none';
-      renderTabs('encerradosTabs', carregarEncerrados);
-    } catch(e) { console.error(e); }
-  }
-
-  // ===== HISTÓRICO =====
-  let todosTimesHistorico = [];
-  async function iniciarHistorico() {
-    if (todosTimesHistorico.length === 0) {
-      try { todosTimesHistorico = await api.get('/times'); } catch { return; }
-    }
-    const sel = document.getElementById('historicoTimeSelect');
-    if (!sel) return;
-    const val = sel.value;
-    sel.innerHTML = '<option value="">Selecione um time...</option>' +
-      todosTimesHistorico.map(t => `<option value="${t.id}" ${String(t.id)===val?'selected':''}>${t.sigla} — ${t.nome}${t.curso?' ('+t.curso+')':''}</option>`).join('');
-    if (val) carregarHistorico();
-  }
-  async function carregarHistorico() {
-    const timeId = document.getElementById('historicoTimeSelect')?.value;
-    const container = document.getElementById('historicoContainer');
-    const emptyEl   = document.getElementById('historico-empty');
-    if (!container) return;
-    container.innerHTML = ''; emptyEl.style.display = 'none';
-    if (!timeId) return;
-    try {
-      const jogos = await api.get(`/jogos?time_id=${timeId}`);
-      if (jogos.length === 0) { emptyEl.style.display = ''; return; }
-      const porModal = {};
-      for (const j of jogos) {
-        const key = j.modalidade_nome;
-        if (!porModal[key]) porModal[key] = { icone: j.modalidade_icone, jogos: [] };
-        porModal[key].jogos.push(j);
-      }
-      container.innerHTML = Object.entries(porModal).map(([mod,data]) => `
-        <div style="margin-bottom:1.5rem">
-          <h3 class="sec-title">${data.icone} ${mod}</h3>
-          <div class="jogos-grid">${data.jogos.map(j => jogoCardHTML(j)).join('')}</div>
-        </div>`).join('');
-    } catch { emptyEl.style.display = ''; }
-  }
-
-  // ===== CLASSIFICAÇÃO =====
-  async function carregarClassificacao() {
-    try {
-      let url = '/grupos'; if (modalidadeAtiva) url += `?modalidade_id=${modalidadeAtiva}`;
-      const grupos = await api.get(url);
-      const container = document.getElementById('gruposContainer');
-      document.getElementById('classificacao-empty').style.display = grupos.length === 0 ? '' : 'none';
-      container.style.display = grupos.length === 0 ? 'none' : '';
-      container.innerHTML = grupos.map(g => `
-        <div class="grupo-card">
-          <div class="grupo-card-header">${g.modalidade_icone} ${g.modalidade_nome} — Grupo ${g.nome}</div>
-          <div class="table-scroll">
-            <table class="classificacao-table">
-              <thead><tr><th>Time</th><th>J</th><th>V</th><th>E</th><th>D</th><th>GP</th><th>GC</th><th>SG</th><th>Pts</th></tr></thead>
-              <tbody>
-                ${g.classificacao.length === 0 ? `<tr><td colspan="9" style="text-align:center;color:rgba(255,255,255,0.3);padding:1rem">Sem times no grupo</td></tr>` :
-                  g.classificacao.map((t,i) => `
-                    <tr>
-                      <td><div class="time-row"><span class="pos-badge pos-${i+1}">${i+1}</span><div class="time-dot" style="background:${t.cor}"></div><span style="font-weight:700;color:rgba(255,255,255,0.9)">${t.sigla}</span><span style="color:rgba(255,255,255,0.35);font-size:0.78rem">${t.nome}</span></div></td>
-                      <td>${t.jogos}</td><td>${t.vitorias}</td><td>${t.empates}</td><td>${t.derrotas}</td><td>${t.gols_pro}</td><td>${t.gols_contra}</td><td>${t.saldo_gols>0?'+':''}${t.saldo_gols}</td><td><strong style="color:white">${t.pontos}</strong></td>
-                    </tr>`).join('')}
-              </tbody>
-            </table>
-          </div>
-        </div>`).join('');
-      renderTabs('classificacaoTabs', carregarClassificacao);
-    } catch(e) { console.error(e); }
-  }
-
-  // ===== CHAVEAMENTO =====
-  const faseOrdem = ['oitavas','quartas','semifinal','terceiro_lugar','final'];
-  async function carregarChaveamento() {
-    try {
-      const fases = await Promise.all(faseOrdem.map(f => api.get(`/jogos?fase=${f}${modalidadeAtiva?'&modalidade_id='+modalidadeAtiva:''}`)));
-      const todas = fases.flat();
-      const container = document.getElementById('bracketContainer');
-      document.getElementById('chaveamento-empty').style.display = todas.length === 0 ? '' : 'none';
-      container.style.display = todas.length === 0 ? 'none' : '';
-      container.innerHTML = faseOrdem.map((fase,fi) => {
-        const jogos = fases[fi];
-        if (!jogos.length) return '';
-        return `<div class="bracket-fase">
-          <div class="bracket-fase-titulo">${faseLabel(fase)}</div>
-          ${jogos.map(j => {
-            const cV = j.status==='encerrado'&&j.gols_casa>j.gols_visitante;
-            const vV = j.status==='encerrado'&&j.gols_visitante>j.gols_casa;
-            return `<div class="bracket-jogo">
-              <div class="bracket-time ${cV?'vencedor':''}"><span>${escudoHTML(j.time_casa_sigla,j.time_casa_cor)} ${j.time_casa_nome}</span>${j.status!=='agendado'?`<span class="bracket-time-gols">${j.gols_casa}</span>`:''}</div>
-              <div class="bracket-time ${vV?'vencedor':''}"><span>${escudoHTML(j.time_visitante_sigla,j.time_visitante_cor)} ${j.time_visitante_nome}</span>${j.status!=='agendado'?`<span class="bracket-time-gols">${j.gols_visitante}</span>`:''}</div>
-            </div>`;
-          }).join('')}
-        </div>`;
-      }).join('');
-      renderTabs('chaveamentoTabs', carregarChaveamento);
-    } catch(e) { console.error(e); }
-  }
-
-  // ===== COMPARTILHAR =====
-  function compartilharJogo(id, event) {
-    event.preventDefault(); event.stopPropagation();
-    const url = `${location.origin}/jogo.html?id=${id}`;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = event.currentTarget;
-      const orig = btn.textContent;
-      btn.textContent = '✓';
-      setTimeout(() => btn.textContent = orig, 2000);
-    }).catch(() => toast('Não foi possível copiar o link','error'));
-  }
-
-  // ===== GOL NOTIF =====
-  function mostrarNotifGol(texto) {
-    const c = document.getElementById('golNotifContainer');
-    if (!c) return;
-    const el = document.createElement('div');
-    el.className = 'gol-notif';
-    el.innerHTML = `⚽ ${texto}`;
-    c.appendChild(el);
-    setTimeout(() => { el.classList.add('saindo'); setTimeout(() => el.remove(), 350); }, 4000);
-  }
-
-  // ===== PARCEIROS =====
-  let todosParceiros = [];
-  async function carregarParceiros() {
-    const el = document.getElementById('parceirosContainer');
-    if (todosParceiros.length > 0) { renderParceiros(todosParceiros); return; }
-    el.innerHTML = `<div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div></div>`;
-    try {
-      todosParceiros = await fetch('/api/parceiros').then(r => r.json());
-      construirFiltrosParceiros();
-      renderParceiros(todosParceiros);
-    } catch(e) {
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">❌</div><h3>Erro ao carregar parceiros</h3></div>`;
-    }
-  }
-  function construirFiltrosParceiros() {
-    const cats = [...new Set(todosParceiros.map(p => p.categoria).filter(Boolean))];
-    const bar = document.getElementById('parceiroFilterBar');
-    cats.forEach(cat => {
-      if (bar.querySelector(`[data-cat="${cat}"]`)) return;
-      const btn = document.createElement('button');
-      btn.className = 'parceiro-filter-btn';
-      btn.textContent = cat; btn.dataset.cat = cat;
-      btn.onclick = () => filtrarParceiros(cat);
-      bar.appendChild(btn);
-    });
-  }
-  function filtrarParceiros(cat) {
-    document.querySelectorAll('.parceiro-filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-    renderParceiros(cat ? todosParceiros.filter(p => p.categoria === cat) : todosParceiros);
-  }
-  function renderParceiros(lista) {
-    const el = document.getElementById('parceirosContainer');
-    if (!lista.length) { el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🤝</div><h3>Nenhum parceiro encontrado</h3></div>`; return; }
-    el.innerHTML = lista.map(p => {
-      const wa = p.whatsapp ? `https://wa.me/${p.whatsapp.replace(/\D/g,'')}` : '';
-      const site = p.site && (p.site.startsWith('http') ? p.site : `https://${p.site}`);
-      return `<div class="parceiro-card">
-        ${p.logo ? `<img src="${p.logo}" alt="${p.nome}" class="parceiro-logo" loading="lazy" onerror="this.style.display='none'">` : `<div class="parceiro-logo-placeholder">🤝</div>`}
-        ${p.categoria ? `<div class="parceiro-cat">${p.categoria}</div>` : ''}
-        <div class="parceiro-nome">${p.nome}</div>
-        ${p.beneficio ? `<div class="parceiro-beneficio">🎁 ${p.beneficio}</div>` : ''}
-        ${wa||site ? `<div class="parceiro-btns">
-          ${wa ? `<a href="${wa}" target="_blank" class="btn-parceiro wa">💬 WhatsApp</a>` : ''}
-          ${site ? `<a href="${site}" target="_blank" class="btn-parceiro site">🌐 Site</a>` : ''}
-        </div>` : ''}
-      </div>`;
-    }).join('');
-  }
-
-  // ===== LOJA =====
-  let produtosCarregados = false;
-  async function carregarLoja() {
-    if (produtosCarregados) return;
-    const el = document.getElementById('produtosContainer');
-    try {
-      const produtos = await fetch('/api/produtos').then(r => r.json());
-      produtosCarregados = true;
-      if (!produtos.length) { el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🛍️</div><h3>Nenhum produto disponível ainda</h3><p>Em breve teremos produtos exclusivos!</p></div>`; return; }
-      el.innerHTML = produtos.map(p => {
-        const preco = p.preco ? `R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}` : '';
-        const msg = encodeURIComponent(p.whatsapp_msg || `Olá! Tenho interesse no produto: ${p.nome}`);
-        const waNum = p.whatsapp ? p.whatsapp.replace(/\D/g,'') : '';
-        const waLink = waNum ? `https://wa.me/${waNum}?text=${msg}` : '';
-        return `<div class="produto-card">
-          ${p.foto ? `<img src="${p.foto}" alt="${p.nome}" class="produto-foto" loading="lazy">` : `<div class="produto-foto-placeholder">🛍️</div>`}
-          <div class="produto-body">
-            <div class="produto-nome">${p.nome}</div>
-            ${p.descricao ? `<div class="produto-desc">${p.descricao}</div>` : '<div class="produto-desc"></div>'}
-            ${preco ? `<div class="produto-preco">${preco}</div>` : ''}
-            ${waLink ? `<a href="${waLink}" target="_blank" class="btn-whatsapp">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.083.535 4.042 1.47 5.745L0 24l6.395-1.44A11.935 11.935 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.587-.503-5.078-1.38l-.364-.214-3.772.849.864-3.681-.235-.378A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-              Pedir pelo WhatsApp
-            </a>` : ''}
-          </div>
-        </div>`;
-      }).join('');
-    } catch(e) {
-      el.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">❌</div><h3>Erro ao carregar produtos</h3></div>`;
-    }
-  }
-
-  // ===== HERO STATS =====
-  async function carregarHeroStats() {
-    try {
-      const [jogosR, timesR, artR] = await Promise.all([
-        fetch('/api/jogos').then(r=>r.json()).catch(()=>[]),
-        fetch('/api/times').then(r=>r.json()).catch(()=>[]),
-        fetch('/api/artilheiros').then(r=>r.json()).catch(()=>[]),
-      ]);
-      const mods = new Set(jogosR.map(j => j.modalidade_id));
-      document.getElementById('hs-jogos').textContent = jogosR.length;
-      document.getElementById('hs-times').textContent = timesR.length;
-      document.getElementById('hs-gols').textContent = Array.isArray(artR) ? artR.reduce((s,g) => s + (+g.total_gols||0), 0) : '—';
-      document.getElementById('hs-mods').textContent = mods.size;
     } catch(e) {}
   }
 
-  // ===== SOCKET =====
-  socket.on('placar_atualizado', (jogo) => {
-    const casaEl = document.getElementById(`placar-casa-${jogo.id}`);
-    const visEl  = document.getElementById(`placar-vis-${jogo.id}`);
-    const golCasa = casaEl && casaEl.textContent !== '—' && Number(jogo.gols_casa) > Number(casaEl.textContent);
-    const golVis  = visEl  && visEl.textContent  !== '—' && Number(jogo.gols_visitante) > Number(visEl.textContent);
-    if (casaEl) casaEl.textContent = jogo.gols_casa;
-    if (visEl)  visEl.textContent  = jogo.gols_visitante;
-    const prorrEl = document.getElementById(`card-prorro-${jogo.id}`);
-    if (prorrEl) { const t = jogo.gols_prorrogacao_casa||jogo.gols_prorrogacao_visitante; prorrEl.textContent = `Prorr. ${jogo.gols_prorrogacao_casa||0}×${jogo.gols_prorrogacao_visitante||0}`; prorrEl.style.display = t ? '' : 'none'; }
-    const penEl = document.getElementById(`card-pen-${jogo.id}`);
-    if (penEl)  { const t = jogo.gols_penaltis_casa||jogo.gols_penaltis_visitante; penEl.textContent = `Pên. ${jogo.gols_penaltis_casa||0}×${jogo.gols_penaltis_visitante||0}`; penEl.style.display = t ? '' : 'none'; }
-    if (golCasa) mostrarNotifGol(`GOL! ${jogo.time_casa_nome} — ${jogo.gols_casa} × ${jogo.gols_visitante}`);
-    if (golVis)  mostrarNotifGol(`GOL! ${jogo.time_visitante_nome} — ${jogo.gols_casa} × ${jogo.gols_visitante}`);
-    const card = document.getElementById(`jogo-card-${jogo.id}`);
-    if (card) {
-      const badge = card.querySelector('.status-badge');
-      if (badge) { badge.className = `status-badge status-${jogo.status}`; badge.textContent = jogo.status==='ao_vivo'?timerLabelCard(jogo):statusLabel(jogo.status); }
-      if (jogo.status === 'ao_vivo') iniciarTimerCard(jogo);
-    }
-  });
-  socket.on('timer_atualizado', (td) => {
-    const badge  = document.getElementById(`timer-label-${td.id}`);
-    const footer = document.getElementById(`card-timer-footer-${td.id}`);
-    if (!badge && !footer) return;
-    const j = {...td};
-    if (badge)  badge.textContent  = timerLabelCard(j);
-    if (footer) footer.textContent = timerFooterText(j);
-    iniciarTimerCard(j);
-  });
-  const _encerradoTimers = {};
-  socket.on('jogo_atualizado', (jogo) => {
-    if (jogo?.fase==='final' && jogo?.status==='encerrado') {
-      const s = document.getElementById('secao-stats');
-      if (s && s.style.display !== 'none') carregarStats();
-    }
-    const secaoAtiva = document.querySelector('[id^="secao-"]:not([style*="display: none"])');
-    if (secaoAtiva?.id === 'secao-jogos') {
-      if (jogo?.status === 'encerrado') {
-        if (!_encerradoTimers[jogo.id]) _encerradoTimers[jogo.id] = setTimeout(() => { delete _encerradoTimers[jogo.id]; carregarJogos(); }, 3*60*1000);
-      } else carregarJogos();
-    }
-    if (secaoAtiva?.id === 'secao-classificacao') carregarClassificacao();
-  });
-
-  // ===== INIT =====
-  async function init() {
+  // ===== JOGOS DESTAQUE =====
+  async function carregarJogos() {
     try {
-      modalidades = await api.get('/modalidades');
-      await carregarJogos();
-      carregarHeroStats();
-    } catch(e) { console.error(e); }
-  }
-  init();
-</script>
+      const jogos = await fetch('/api/jogos').then(r => r.json());
+      const ao_vivo   = jogos.filter(j => j.status === 'ao_vivo');
+      const agendados = jogos.filter(j => j.status === 'agendado');
+      const encerrados = jogos.filter(j => j.status === 'encerrado').slice(0, 3);
+      const lista = [...ao_vivo, ...agendados, ...encerrados].slice(0, 10);
 
-<script>
-// ===== PUSH NOTIFICATIONS =====
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g,'+').replace(/_/g,'/');
-  return Uint8Array.from([...atob(base64)].map(c => c.charCodeAt(0)));
-}
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/public/sw.js').catch(()=>{});
-}
-async function initPush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  try {
-    const reg = await navigator.serviceWorker.ready;
-    if (Notification.permission === 'granted') { await assinarPush(reg); return; }
-    if (Notification.permission === 'denied') return;
-    mostrarBannerPush(reg);
-  } catch(e) { console.warn('Push init erro:', e); }
-}
-function mostrarBannerPush(reg) {
-  if (document.getElementById('pushBanner')) return;
-  const banner = document.createElement('div');
-  banner.id = 'pushBanner';
-  banner.innerHTML = `<div style="position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:#1e3a8a;color:white;padding:0.75rem 1.25rem;border-radius:50px;display:flex;align-items:center;gap:0.75rem;box-shadow:0 8px 32px rgba(0,0,0,0.45);font-family:inherit;font-size:0.85rem;font-weight:600;z-index:9998;white-space:nowrap"><span>🔔 Ativar notificações de gol?</span><button id="pushSim" style="background:white;color:#1e3a8a;border:none;border-radius:50px;padding:0.3rem 0.85rem;font-weight:800;cursor:pointer;font-size:0.82rem;font-family:inherit">Sim</button><button id="pushNao" style="background:rgba(255,255,255,0.15);color:white;border:none;border-radius:50px;padding:0.3rem 0.7rem;cursor:pointer;font-size:0.82rem;font-family:inherit">Não</button></div>`;
-  document.body.appendChild(banner);
-  document.getElementById('pushSim').onclick = async () => { banner.remove(); const p = await Notification.requestPermission(); if (p === 'granted') await assinarPush(reg); };
-  document.getElementById('pushNao').onclick = () => banner.remove();
-}
-async function assinarPush(reg) {
-  try {
-    const resp = await fetch('/api/push/vapid-public-key');
-    const { publicKey } = await resp.json();
-    const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(publicKey) });
-    const k = sub.getKey('p256dh'); const a = sub.getKey('auth');
-    await fetch('/api/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ endpoint: sub.endpoint, p256dh: btoa(String.fromCharCode(...new Uint8Array(k))), auth: btoa(String.fromCharCode(...new Uint8Array(a))) }) });
-  } catch(e) { console.warn('Push subscribe erro:', e); }
-}
-setTimeout(initPush, 3000);
+      const el = document.getElementById('gamesScroll');
+      if (!lista.length) {
+        el.innerHTML = `<div class="games-empty"><div style="font-size:2.5rem">📅</div><p style="margin-top:0.5rem;font-size:0.88rem">Nenhum jogo agendado</p></div>`;
+        return;
+      }
+      el.innerHTML = lista.map(j => {
+        const isLive = j.status === 'ao_vivo';
+        const isAg   = j.status === 'agendado';
+        const dataStr = j.data_jogo ? formatarData(j.data_jogo) : (j.local_jogo ? '📍 '+j.local_jogo : '');
+        const badge = isLive
+          ? `<span class="gbadge gbadge-live">🔴 AO VIVO</span>`
+          : isAg ? `<span class="gbadge gbadge-ag">📅 Agendado</span>`
+          :        `<span class="gbadge gbadge-enc">✅ Encerrado</span>`;
+
+        const esc = (sigla, cor, logo) => logo
+          ? `<img src="${logo}" style="width:44px;height:44px;object-fit:contain;border-radius:50%;background:white;border:2px solid rgba(0,0,0,0.06)" onerror="this.style.display='none'">`
+          : escudoHTML(sigla, cor);
+
+        const scoreArea = isAg
+          ? `<div class="gscore-box"><span class="gscore-label" style="font-size:0.75rem;letter-spacing:0.5px">vs</span></div>`
+          : `<div class="gscore-box">
+               <div style="display:flex;align-items:center">
+                 ${isLive ? '<span class="glive-dot"></span>' : ''}
+                 <span class="gscore" id="h-placar-${j.id}">${j.gols_casa} × ${j.gols_visitante}</span>
+               </div>
+               <span class="gscore-label ${isLive ? 'live' : ''}">${isLive ? 'AO VIVO' : 'FT'}</span>
+             </div>`;
+
+        return `
+          <a href="/jogo.html?id=${j.id}" class="gcard ${j.status}">
+            <div class="gcard-top ${isLive ? 'live-top' : ''}">
+              <span>${j.modalidade_icone || '⚽'} ${j.modalidade_nome}</span>
+              ${badge}
+            </div>
+            <div class="gcard-body">
+              <div class="gteam">${esc(j.time_casa_sigla,j.time_casa_cor,j.time_casa_logo)}<span class="gnome">${j.time_casa_nome}</span></div>
+              ${scoreArea}
+              <div class="gteam">${esc(j.time_visitante_sigla,j.time_visitante_cor,j.time_visitante_logo)}<span class="gnome">${j.time_visitante_nome}</span></div>
+            </div>
+            <div class="gcard-foot">
+              <span>${dataStr}</span>
+              <a href="/jogo.html?id=${j.id}">Ver →</a>
+            </div>
+          </a>`;
+      }).join('');
+
+      // Atualizar placares via Socket
+      const socket = io();
+      socket.on('placar_atualizado', (jogo) => {
+        const el = document.getElementById(`h-placar-${jogo.id}`);
+        if (el) el.textContent = `${jogo.gols_casa} × ${jogo.gols_visitante}`;
+      });
+    } catch(e) {}
+  }
+
+  // ===== PARCEIROS =====
+  async function carregarParceiros() {
+    try {
+      const lista = await fetch('/api/parceiros').then(r => r.json());
+      const el = document.getElementById('partnersGrid');
+      const top = lista.slice(0, 6);
+      if (!top.length) { el.innerHTML = `<div class="partners-empty">Nenhum parceiro cadastrado ainda.</div>`; return; }
+      el.innerHTML = top.map(p => `
+        <a href="/parceiros.html" class="pchip">
+          ${p.logo
+            ? `<img src="${p.logo}" alt="${p.nome}" class="pchip-logo" onerror="this.style.display='none'">`
+            : `<div class="pchip-placeholder">🤝</div>`}
+          <div>
+            <div class="pchip-nome">${p.nome}</div>
+            ${p.categoria ? `<div class="pchip-cat">${p.categoria}</div>` : ''}
+          </div>
+        </a>`).join('');
+      if (lista.length > 6) {
+        document.getElementById('partnersMore').innerHTML =
+          `<p class="partners-more">+ ${lista.length - 6} outros parceiros · <a href="/parceiros.html" style="color:rgba(255,255,255,0.65);font-weight:700;text-decoration:underline">ver todos</a></p>`;
+      }
+    } catch(e) {}
+  }
+
+  // ===== PRODUTOS =====
+  async function carregarProdutos() {
+    try {
+      const lista = await fetch('/api/produtos').then(r => r.json());
+      const el = document.getElementById('productsGrid');
+      const top = lista.slice(0, 4);
+      if (!top.length) { el.innerHTML = `<div class="products-empty">Nenhum produto disponível ainda.</div>`; return; }
+      el.innerHTML = top.map(p => {
+        const preco = p.preco ? `R$ ${parseFloat(p.preco).toFixed(2).replace('.',',')}` : '';
+        const msg   = encodeURIComponent(p.whatsapp_msg || `Olá! Tenho interesse: ${p.nome}`);
+        const waNum = p.whatsapp ? p.whatsapp.replace(/\D/g,'') : '';
+        const waLink = waNum ? `https://wa.me/${waNum}?text=${msg}` : '';
+        return `
+          <div class="prod-card">
+            ${p.foto ? `<img src="${p.foto}" alt="${p.nome}" class="prod-img" loading="lazy">` : `<div class="prod-img-placeholder">🛍️</div>`}
+            <div class="prod-body">
+              <div class="prod-name">${p.nome}</div>
+              ${p.descricao ? `<div class="prod-desc">${p.descricao}</div>` : '<div class="prod-desc"></div>'}
+              ${preco ? `<div class="prod-price">${preco}</div>` : ''}
+              ${waLink ? `<a href="${waLink}" target="_blank" class="btn-wa">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.083.535 4.042 1.47 5.745L0 24l6.395-1.44A11.935 11.935 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.853 0-3.587-.503-5.078-1.38l-.364-.214-3.772.849.864-3.681-.235-.378A9.935 9.935 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                Pedir pelo WhatsApp
+              </a>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    } catch(e) {}
+  }
+
+  carregarStats();
+  carregarJogos();
+  carregarParceiros();
+  carregarProdutos();
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/public/sw.js').catch(()=>{});
 </script>
 </body>
 </html>
