@@ -173,9 +173,76 @@
       .hero-placar { gap: 0.5rem; }
       .hero-time { min-width: 80px; gap: 0.5rem; }
     }
+
+    /* ===== NOTIFICAÇÃO DE GOL IN-PAGE ===== */
+    .gol-notif {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .gol-notif.show { opacity: 1; }
+    .gol-notif-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(4px);
+    }
+    .gol-notif-box {
+      position: relative;
+      text-align: center;
+      animation: golPop 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes golPop {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .gol-notif-emoji { font-size: 4rem; display: block; margin-bottom: 0.25rem; }
+    .gol-notif-title {
+      font-size: clamp(3rem, 12vw, 6rem);
+      font-weight: 900;
+      color: #f5c200;
+      letter-spacing: -2px;
+      line-height: 1;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      margin-bottom: 0.5rem;
+    }
+    .gol-notif-jogador {
+      font-size: clamp(1.1rem, 4vw, 1.8rem);
+      font-weight: 700;
+      color: white;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      padding: 0.4rem 1.5rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    .gol-notif-time {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.55);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
   </style>
 </head>
 <body>
+<!-- Overlay de gol -->
+<div class="gol-notif" id="golNotif">
+  <div class="gol-notif-bg"></div>
+  <div class="gol-notif-box">
+    <span class="gol-notif-emoji">⚽</span>
+    <div class="gol-notif-title">GOL!</div>
+    <div class="gol-notif-jogador" id="golNotifJogador"></div>
+    <div class="gol-notif-time" id="golNotifTime"></div>
+  </div>
+</div>
 
 <div class="jogo-hero" id="jogoHero">
   <button class="back-btn" onclick="history.back()">← Voltar</button>
@@ -357,7 +424,7 @@
         <div style="width:12px;height:16px;border-radius:2px;background:${c.tipo === 'vermelho' ? '#dc2626' : '#f59e0b'};flex-shrink:0"></div>
         <span style="font-weight:700;font-size:0.75rem;color:var(--text-muted);min-width:32px">${c.time_sigla}</span>
         <span style="font-weight:500;flex:1">${c.jogador}</span>
-        ${c.minuto ? `<span style="color:var(--text-muted);font-size:0.78rem;font-weight:600">${c.minuto}'</span>` : ''}
+        ${c.minuto || c.periodo ? `<span style="color:var(--text-muted);font-size:0.78rem;font-weight:600">${c.periodo ? c.periodo + 'T ' : ''}${c.minuto ? c.minuto + "'" : ''}</span>` : ''}
       </div>
     `).join('');
   }
@@ -378,13 +445,34 @@
         <div style="width:8px;height:8px;border-radius:50%;background:${g.time_cor};flex-shrink:0"></div>
         <span style="font-weight:700;font-size:0.75rem;color:var(--text-muted);min-width:32px">${g.time_sigla}</span>
         <span style="font-weight:500;flex:1">${g.jogador}</span>
-        ${g.minuto ? `<span style="color:var(--text-muted);font-size:0.78rem;font-weight:600">${g.minuto}'</span>` : ''}
+        ${g.minuto || g.periodo ? `<span style="color:var(--text-muted);font-size:0.78rem;font-weight:600">${g.periodo ? g.periodo + 'T ' : ''}${g.minuto ? g.minuto + "'" : ''}</span>` : ''}
       </div>
     `).join('');
   }
 
+  let golCount = 0;
+
+  function mostrarGolNotif(gol) {
+    const el     = document.getElementById('golNotif');
+    const nJog   = document.getElementById('golNotifJogador');
+    const nTime  = document.getElementById('golNotifTime');
+    if (!el) return;
+    nJog.textContent  = `${gol.time_sigla} · ${gol.jogador}`;
+    const tempoStr = gol.minuto ? `${gol.periodo ? gol.periodo + 'T ' : ''}${gol.minuto}'` : (gol.periodo ? gol.periodo + 'T' : '');
+    nTime.textContent = tempoStr || '';
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
   socket.on('gols_atualizados', (data) => {
     if (String(data.jogo_id) !== String(jogoId)) return;
+    const novoTotal = (data.gols || []).length;
+    if (novoTotal > golCount && golCount > 0) {
+      // Pega o gol mais recente (último da lista)
+      const ultimo = data.gols[data.gols.length - 1];
+      if (ultimo) mostrarGolNotif(ultimo);
+    }
+    golCount = novoTotal;
     renderGolsPublic(data.gols);
   });
 
@@ -402,6 +490,7 @@
         api.get(`/jogos/${jogoId}/gols`),
         api.get(`/jogos/${jogoId}/cartoes`)
       ]);
+      golCount = gols.length; // inicializa sem disparar notif
       renderGolsPublic(gols);
       renderCartoesPublic(cartoes);
     } catch (err) {

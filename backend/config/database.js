@@ -235,6 +235,19 @@ async function initDB() {
       if (existing.length === 0) await conn.query(col.sql);
     }
 
+    // Adicionar coluna periodo em gols e cartoes
+    for (const { table, col } of [
+      { table: 'gols',    col: 'periodo' },
+      { table: 'cartoes', col: 'periodo' },
+    ]) {
+      const [ex] = await conn.query(
+        `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+        [table, col]
+      );
+      if (ex.length === 0) await conn.query(`ALTER TABLE ${table} ADD COLUMN periodo TINYINT DEFAULT NULL`);
+    }
+
     console.log('✅ Banco de dados inicializado com sucesso!');
   } catch (err) {
     console.error('❌ Erro ao inicializar banco:', err);

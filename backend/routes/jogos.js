@@ -378,18 +378,24 @@ router.get('/:id/gols', async (req, res) => {
 
 // Registrar gol (admin)
 router.post('/:id/gols', authMiddleware, async (req, res) => {
-  const { jogador, time_id, minuto } = req.body;
+  const { jogador, time_id, minuto, periodo } = req.body;
   if (!jogador || !time_id) return res.status(400).json({ erro: 'Jogador e time são obrigatórios' });
   try {
+    // Auto-detectar período atual do jogo se não informado
+    let periodoFinal = periodo != null ? periodo : null;
+    if (periodoFinal == null) {
+      const [[j]] = await pool.query('SELECT periodo_atual FROM jogos WHERE id=?', [req.params.id]);
+      if (j && j.periodo_atual > 0) periodoFinal = j.periodo_atual;
+    }
     const [result] = await pool.query(
-      'INSERT INTO gols (jogo_id, time_id, jogador, minuto) VALUES (?, ?, ?, ?)',
-      [req.params.id, time_id, jogador.trim(), minuto || null]
+      'INSERT INTO gols (jogo_id, time_id, jogador, minuto, periodo) VALUES (?, ?, ?, ?, ?)',
+      [req.params.id, time_id, jogador.trim(), minuto || null, periodoFinal]
     );
     const [allGols] = await pool.query(`
       SELECT g.*, t.nome as time_nome, t.sigla as time_sigla, t.cor as time_cor
       FROM gols g JOIN times t ON g.time_id = t.id
       WHERE g.jogo_id = ?
-      ORDER BY g.minuto ASC, g.criado_em ASC
+      ORDER BY g.periodo ASC, g.minuto ASC, g.criado_em ASC
     `, [req.params.id]);
     const io = req.app.get('io');
     if (io) io.emit('gols_atualizados', { jogo_id: Number(req.params.id), gols: allGols });
@@ -406,7 +412,7 @@ router.post('/:id/gols', authMiddleware, async (req, res) => {
     if (jogoInfo.length > 0) {
       const ji = jogoInfo[0];
       const gol = allGols.find(g => g.id === result.insertId);
-      const minStr = gol?.minuto ? ` (${gol.minuto}')` : '';
+      const minStr = gol?.minuto ? ` (${gol.periodo ? gol.periodo + 'T ' : ''}${gol.minuto}')` : '';
       pushRoute.sendToAll({
         title: `⚽ GOL! ${gol?.time_sigla || ''}${minStr}`,
         body: `${jogador} — ${ji.casa_sigla} ${ji.gols_casa} × ${ji.gols_visitante} ${ji.vis_sigla}`,
@@ -458,18 +464,23 @@ router.get('/:id/cartoes', async (req, res) => {
 
 // Registrar cartão (admin)
 router.post('/:id/cartoes', authMiddleware, async (req, res) => {
-  const { jogador, time_id, tipo, minuto } = req.body;
+  const { jogador, time_id, tipo, minuto, periodo } = req.body;
   if (!jogador || !time_id || !tipo) return res.status(400).json({ erro: 'Jogador, time e tipo são obrigatórios' });
   try {
+    let periodoFinal = periodo != null ? periodo : null;
+    if (periodoFinal == null) {
+      const [[j]] = await pool.query('SELECT periodo_atual FROM jogos WHERE id=?', [req.params.id]);
+      if (j && j.periodo_atual > 0) periodoFinal = j.periodo_atual;
+    }
     const [result] = await pool.query(
-      'INSERT INTO cartoes (jogo_id, time_id, jogador, tipo, minuto) VALUES (?, ?, ?, ?, ?)',
-      [req.params.id, time_id, jogador.trim(), tipo, minuto || null]
+      'INSERT INTO cartoes (jogo_id, time_id, jogador, tipo, minuto, periodo) VALUES (?, ?, ?, ?, ?, ?)',
+      [req.params.id, time_id, jogador.trim(), tipo, minuto || null, periodoFinal]
     );
     const [allCartoes] = await pool.query(`
       SELECT c.*, t.nome as time_nome, t.sigla as time_sigla, t.cor as time_cor
       FROM cartoes c JOIN times t ON c.time_id = t.id
       WHERE c.jogo_id = ?
-      ORDER BY c.minuto ASC, c.criado_em ASC
+      ORDER BY c.periodo ASC, c.minuto ASC, c.criado_em ASC
     `, [req.params.id]);
     const io = req.app.get('io');
     if (io) io.emit('cartoes_atualizados', { jogo_id: Number(req.params.id), cartoes: allCartoes });

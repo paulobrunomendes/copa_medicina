@@ -2379,15 +2379,17 @@ function renderCartoesList(cartoes) {
     el.innerHTML = '<div class="gols-empty">Nenhum cartão registrado</div>';
     return;
   }
-  el.innerHTML = cartoes.map(c => `
+  el.innerHTML = cartoes.map(c => {
+    const tempoStr = c.minuto ? `${c.periodo ? c.periodo + 'T ' : ''}${c.minuto}'` : (c.periodo ? c.periodo + 'T' : '');
+    return `
     <div class="gol-item">
       <div class="cartao-icon ${c.tipo}"></div>
       <span class="gol-sigla">${c.time_sigla}</span>
       <span class="gol-jogador">${c.jogador}</span>
-      ${c.minuto ? `<span class="gol-min">${c.minuto}'</span>` : ''}
+      ${tempoStr ? `<span class="gol-min">${tempoStr}</span>` : ''}
       <button class="gol-del" onclick="removerCartao(${c.id})" title="Remover">×</button>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 async function adicionarCartao() {
@@ -2430,15 +2432,17 @@ function renderGolsList(gols) {
     el.innerHTML = '<div class="gols-empty">Nenhum gol registrado</div>';
     return;
   }
-  el.innerHTML = gols.map(g => `
+  el.innerHTML = gols.map(g => {
+    const tempoStr = g.minuto ? `${g.periodo ? g.periodo + 'T ' : ''}${g.minuto}'` : (g.periodo ? g.periodo + 'T' : '');
+    return `
     <div class="gol-item">
       <div class="gol-dot" style="background:${g.time_cor}"></div>
       <span class="gol-sigla">${g.time_sigla}</span>
       <span class="gol-jogador">${g.jogador}</span>
-      ${g.minuto ? `<span class="gol-min">${g.minuto}'</span>` : ''}
+      ${tempoStr ? `<span class="gol-min">${tempoStr}</span>` : ''}
       <button class="gol-del" onclick="removerGol(${g.id})" title="Remover">×</button>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 async function adicionarGol() {
