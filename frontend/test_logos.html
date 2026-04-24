@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Teste de Logos</title>
+<style>
+body { background:#111; color:#fff; font-family:sans-serif; padding:2rem; }
+.grid { display:flex; flex-wrap:wrap; gap:1.5rem; margin-top:1rem; }
+.item { text-align:center; }
+img { width:80px; height:80px; object-fit:contain; background:#fff; border-radius:50%; border:3px solid #fff; display:block; }
+.ok { color:#4ade80; font-size:0.8rem; margin-top:4px; }
+.err { color:#f87171; font-size:0.8rem; margin-top:4px; }
+pre { background:#222; padding:1rem; border-radius:8px; font-size:0.75rem; overflow:auto; max-height:300px; }
+</style>
+</head>
+<body>
+<h2>Teste de Logos — Copa Med Horus</h2>
+<p id="status">Carregando dados...</p>
+<div class="grid" id="grid"></div>
+<h3 style="margin-top:2rem">Dados brutos da API (primeiro jogo):</h3>
+<pre id="raw"></pre>
+
+<script>
+async function run() {
+  const res = await fetch('/api/jogos');
+  const jogos = await res.json();
+  document.getElementById('status').textContent = `${jogos.length} jogos carregados`;
+
+  // Extrair times únicos
+  const times = {};
+  for (const j of jogos) {
+    if (j.time_casa_id && !times[j.time_casa_id]) {
+      times[j.time_casa_id] = { nome: j.time_casa_nome, sigla: j.time_casa_sigla, logo: j.time_casa_logo, cor: j.time_casa_cor };
+    }
+    if (j.time_visitante_id && !times[j.time_visitante_id]) {
+      times[j.time_visitante_id] = { nome: j.time_visitante_nome, sigla: j.time_visitante_sigla, logo: j.time_visitante_logo, cor: j.time_visitante_cor };
+    }
+  }
+
+  const grid = document.getElementById('grid');
+  for (const [id, t] of Object.entries(times)) {
+    const div = document.createElement('div');
+    div.className = 'item';
+    const statusEl = document.createElement('div');
+    statusEl.id = `status-${id}`;
+    statusEl.className = 'err';
+    statusEl.textContent = 'carregando...';
+
+    if (t.logo) {
+      const img = document.createElement('img');
+      img.src = t.logo;
+      img.alt = t.sigla;
+      img.onload = () => { statusEl.className = 'ok'; statusEl.textContent = '✓ OK: ' + t.logo; };
+      img.onerror = () => { statusEl.className = 'err'; statusEl.textContent = '✗ FALHOU: ' + t.logo; };
+      div.appendChild(img);
+    } else {
+      const circle = document.createElement('div');
+      circle.style.cssText = `width:80px;height:80px;border-radius:50%;background:${t.cor||'#1a3a6b'};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:white`;
+      circle.textContent = t.sigla;
+      div.appendChild(circle);
+      statusEl.className = 'err';
+      statusEl.textContent = '⚠ SEM LOGO no banco';
+    }
+
+    const name = document.createElement('div');
+    name.style.cssText = 'font-size:0.85rem;margin-top:6px;font-weight:700';
+    name.textContent = t.nome;
+    div.appendChild(name);
+    div.appendChild(statusEl);
+    grid.appendChild(div);
+  }
+
+  // Mostrar dados brutos
+  if (jogos.length > 0) {
+    const j = jogos[0];
+    document.getElementById('raw').textContent = JSON.stringify({
+      time_casa_nome: j.time_casa_nome,
+      time_casa_logo: j.time_casa_logo,
+      time_visitante_nome: j.time_visitante_nome,
+      time_visitante_logo: j.time_visitante_logo,
+    }, null, 2);
+  }
+}
+run().catch(e => {
+  document.getElementById('status').textContent = 'ERRO: ' + e.message;
+  console.error(e);
+});
+</script>
+</body>
+</html>

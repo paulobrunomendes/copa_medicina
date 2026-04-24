@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regulamento — Copa Med Horus</title>
+  <link rel="icon" href="/public/logo-icon.png" type="image/png">
+  <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/public/logo-icon.png">
+  <link rel="manifest" href="/public/manifest.json">
+  <meta name="theme-color" content="#111111">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #F5C200; --gold-light: #ffe94d;
+      --text: #0f172a; --text-muted: #64748b;
+      --border: #e2e8f0; --bg: #f1f5f9;
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { text-decoration: none; color: inherit; }
+
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 200; background: rgba(10,10,10,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 24px rgba(0,0,0,0.6); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 1.5rem; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-logo-img { height: 38px; width: auto; object-fit: contain; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link { padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: rgba(255,255,255,0.7); transition: all 0.18s; white-space: nowrap; }
+    .nav-link:hover { color: white; background: rgba(255,255,255,0.08); }
+    .nav-link.active { color: white; background: rgba(255,255,255,0.12); }
+    .nav-link.admin-link { background: var(--gold); color: #111; font-weight: 800; margin-left: 0.5rem; box-shadow: 0 2px 8px rgba(245,194,0,0.35); }
+    .nav-link.admin-link:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .nav-toggle { display: none; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.4rem; cursor: pointer; padding: 0.25rem; }
+    @media(max-width: 860px) {
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; align-items: flex-start; position: absolute; top: 64px; left: 0; right: 0; background: #0a0a0a; padding: 1rem 1.5rem; gap: 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+      .nav-links.open { display: flex; } .nav-link { width: 100%; } .nav-toggle { display: block; }
+    }
+
+    /* PAGE HEADER */
+    .page-header {
+      background: #111 url('/public/court-bg.webp') center/cover no-repeat;
+      position: relative; padding: 3rem 2rem 2.5rem;
+      border-bottom: 2px solid rgba(245,194,0,0.15);
+    }
+    .page-header::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.84); }
+    .page-header-inner { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; }
+    .page-header h1 { font-size: clamp(1.8rem,4vw,2.5rem); font-weight: 900; color: white; letter-spacing: -0.8px; margin-bottom: 0.3rem; }
+    .page-header p { font-size: 0.95rem; color: rgba(255,255,255,0.5); }
+
+    /* CONTENT */
+    .container { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    .reg-card {
+      background: white; border-radius: 16px; border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 2rem;
+    }
+    .reg-empty { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+    .reg-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .reg-content { line-height: 1.8; }
+    .reg-content h1, .reg-content h2, .reg-content h3 { color: #0f172a; margin: 1.5rem 0 0.5rem; }
+    .reg-content p { margin-bottom: 0.75rem; }
+    .reg-content ul, .reg-content ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    .reg-content li { margin-bottom: 0.25rem; }
+    .reg-content strong { font-weight: 700; }
+
+    /* FOOTER */
+    .footer { background: #0a0a0a; color: rgba(255,255,255,0.35); text-align: center; padding: 2rem 1rem; font-size: 0.8rem; margin-top: 4rem; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <img src="/public/logo-icon.png" alt="Copa Med Horus" class="nav-logo-img" onerror="this.style.display='none'">
+      <span style="font-weight:900;color:white;font-size:1rem">Copa <strong style="color:var(--gold)">Med Horus</strong></span>
+    </a>
+    <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="/" class="nav-link">Início</a>
+      <a href="/noticias.html" class="nav-link">📰 Notícias</a>
+      <a href="/placares.html" class="nav-link">⚽ Jogos</a>
+      <a href="/chaveamento.html" class="nav-link">🏆 Chaveamento</a>
+      <a href="/regulamento.html" class="nav-link active">📋 Regulamento</a>
+      <a href="/parceiros.html" class="nav-link">🤝 Parceiros</a>
+      <a href="/loja.html" class="nav-link">🛍️ Loja</a>
+      <a href="/admin" class="nav-link admin-link">🔐 Admin</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>📋 Regulamento</h1>
+    <p>Regras e normas da Copa Med Horus</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="reg-card" id="regCard">
+    <div class="loading" style="text-align:center;padding:3rem;color:#64748b">Carregando...</div>
+  </div>
+</div>
+
+<footer class="footer">
+  Copa Med Horus · Todos os direitos reservados
+</footer>
+
+<script>
+  async function carregarRegulamento() {
+    const card = document.getElementById('regCard');
+    try {
+      const data = await fetch('/api/config/regulamento').then(r => r.json());
+      if (!data.valor || data.valor.trim() === '') {
+        card.innerHTML = `
+          <div class="reg-empty">
+            <div class="reg-empty-icon">📋</div>
+            <p style="font-weight:600;color:#0f172a;margin-bottom:0.5rem">Regulamento em breve</p>
+            <p>O regulamento da Copa Med Horus será publicado em breve.</p>
+          </div>`;
+      } else {
+        card.innerHTML = `<div class="reg-content">${data.valor}</div>`;
+      }
+    } catch(e) {
+      card.innerHTML = '<div class="reg-empty"><div class="reg-empty-icon">⚠️</div><p>Erro ao carregar regulamento.</p></div>';
+    }
+  }
+  carregarRegulamento();
+</script>
+</body>
+</html>

@@ -4,15 +4,17 @@ const { pool } = require('../config/database');
 const authMiddleware = require('../middleware/auth');
 
 function toCSV(headers, rows) {
+  const SEP = ';'; // ponto e vírgula para Excel brasileiro
   const escape = (v) => {
     if (v === null || v === undefined) return '';
     const s = String(v);
-    if (s.includes(',') || s.includes('"') || s.includes('\n')) return `"${s.replace(/"/g, '""')}"`;
+    if (s.includes(SEP) || s.includes('"') || s.includes('\n')) return `"${s.replace(/"/g, '""')}"`;
     return s;
   };
-  const lines = [headers.join(',')];
-  for (const row of rows) lines.push(row.map(escape).join(','));
-  return '\uFEFF' + lines.join('\r\n'); // BOM para Excel reconhecer UTF-8
+  const lines = [headers.join(SEP)];
+  for (const row of rows) lines.push(row.map(escape).join(SEP));
+  // BOM em Buffer para garantir UTF-8 no Excel
+  return Buffer.concat([Buffer.from('\uFEFF', 'utf8'), Buffer.from(lines.join('\r\n'), 'utf8')]);
 }
 
 // Exportar classificação geral
@@ -136,6 +138,54 @@ router.get('/backup', authMiddleware, async (req, res) => {
     res.send(json);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao gerar backup' });
+  }
+});
+
+// Backup SQL
+router.get('/backup-sql', authMiddleware, async (req, res) => {
+  try {
+    const tabelas = ['modalidades','times','grupos','grupos_times','jogos','gols','cartoes',
+                     'parciais','auditoria_jogos','configuracoes','noticias','parceiros','produtos'];
+    const linhas = [
+      '-- Copa Med Horus — Backup SQL',
+      `-- Gerado em: ${new Date().toISOString()}`,
+      'SET FOREIGN_KEY_CHECKS=0;',
+      '',
+    ];
+
+    for (const tabela of tabelas) {
+      try {
+        const [cols] = await pool.query(
+          `SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? ORDER BY ORDINAL_POSITION`, [tabela]
+        );
+        const colNames = cols.map(c => c.COLUMN_NAME);
+        const [rows] = await pool.query(`SELECT * FROM \`${tabela}\``);
+
+        linhas.push(`-- ${tabela} (${rows.length} registros)`);
+        if (rows.length > 0) {
+          linhas.push(`DELETE FROM \`${tabela}\`;`);
+          for (const row of rows) {
+            const vals = colNames.map(col => {
+              const v = row[col];
+              if (v === null || v === undefined) return 'NULL';
+              if (typeof v === 'number' || typeof v === 'bigint') return String(v);
+              if (v instanceof Date) return `'${v.toISOString().slice(0,19).replace('T',' ')}'`;
+              return `'${String(v).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+            });
+            linhas.push(`INSERT INTO \`${tabela}\` (\`${colNames.join('`,`')}\`) VALUES (${vals.join(',')});`);
+          }
+        }
+        linhas.push('');
+      } catch(e) { linhas.push(`-- ERRO ao exportar ${tabela}: ${e.message}`, ''); }
+    }
+
+    linhas.push('SET FOREIGN_KEY_CHECKS=1;');
+    const filename = `backup_copa_${new Date().toISOString().slice(0,10)}.sql`;
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(linhas.join('\n'));
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao gerar backup SQL' });
   }
 });
 

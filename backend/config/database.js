@@ -248,6 +248,61 @@ async function initDB() {
       if (ex.length === 0) await conn.query(`ALTER TABLE ${table} ADD COLUMN periodo TINYINT DEFAULT NULL`);
     }
 
+    // Colunas de MVP no jogos
+    for (const { name, sql } of [
+      { name: 'mvp_jogador', sql: "ALTER TABLE jogos ADD COLUMN mvp_jogador VARCHAR(100) DEFAULT NULL" },
+      { name: 'mvp_time_id', sql: "ALTER TABLE jogos ADD COLUMN mvp_time_id INT DEFAULT NULL" },
+    ]) {
+      const [ex] = await conn.query(
+        `SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='jogos' AND COLUMN_NAME=?`, [name]
+      );
+      if (ex.length === 0) await conn.query(sql);
+    }
+
+    // Novas tabelas: configuracoes, parciais, auditoria_jogos
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS configuracoes (
+        chave VARCHAR(100) PRIMARY KEY,
+        valor LONGTEXT,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS parciais (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        jogo_id INT NOT NULL,
+        numero TINYINT NOT NULL,
+        label VARCHAR(20) DEFAULT NULL,
+        gols_casa INT DEFAULT 0,
+        gols_visitante INT DEFAULT 0,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (jogo_id) REFERENCES jogos(id) ON DELETE CASCADE
+      )
+    `);
+
+    await conn.query(`
+      CREATE TABLE IF NOT EXISTS auditoria_jogos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        jogo_id INT NOT NULL,
+        admin_nome VARCHAR(100),
+        acao VARCHAR(100) NOT NULL,
+        detalhe TEXT,
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (jogo_id) REFERENCES jogos(id) ON DELETE CASCADE
+      )
+    `);
+
+    // Adicionar coluna tipo em modalidades (basquete usa sistema diferente)
+    const [tipoCol] = await conn.query(
+      `SELECT COLUMN_NAME FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'modalidades' AND COLUMN_NAME = 'tipo'`
+    );
+    if (tipoCol.length === 0) {
+      await conn.query(`ALTER TABLE modalidades ADD COLUMN tipo VARCHAR(30) DEFAULT 'padrao'`);
+      await conn.query(`UPDATE modalidades SET tipo='basquete' WHERE nome LIKE '%asquet%'`);
+    }
+
     console.log('✅ Banco de dados inicializado com sucesso!');
   } catch (err) {
     console.error('❌ Erro ao inicializar banco:', err);

@@ -388,6 +388,8 @@
       <a href="/" class="site-nav-link">Início</a>
       <a href="/noticias.html" class="site-nav-link">Notícias</a>
       <a href="/placares.html" class="site-nav-link active">Jogos</a>
+      <a href="/chaveamento.html" class="site-nav-link">Chaveamento</a>
+      <a href="/regulamento.html" class="site-nav-link">Regulamento</a>
       <a href="/parceiros.html" class="site-nav-link">Parceiros</a>
       <a href="/loja.html" class="site-nav-link">Loja</a>
       <a href="/admin" class="site-nav-admin">Área Admin</a>
@@ -451,7 +453,6 @@
 
   <!-- SEÇÃO: ARTILHEIROS -->
   <section id="secao-artilheiros" style="display:none">
-    <div class="modalidade-tabs" id="artilheirosTabs"></div>
     <div id="artilheirosContainer"></div>
     <div id="artilheiros-empty" class="empty-state" style="display:none">
       <div class="empty-state-icon">⚽</div>
@@ -646,11 +647,12 @@
 
     const cardClass = aoVivo ? 'card-live' : encerrado ? 'card-encerrado' : '';
 
+    console.log('[debug] jogo', j.id, j.time_casa_nome, 'logo_casa=', j.time_casa_logo, '|', j.time_visitante_nome, 'logo_vis=', j.time_visitante_logo);
     const escudoCasa = j.time_casa_logo
-      ? `<img src="${j.time_casa_logo}" style="width:60px;height:60px;object-fit:contain;border-radius:50%;border:3px solid rgba(255,255,255,0.7);background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2)">`
+      ? `<img src="${j.time_casa_logo}" alt="${j.time_casa_sigla}" onerror="console.error('LOGO FALHOU:',this.src);this.style.display='none'" style="width:60px;height:60px;object-fit:contain;border-radius:50%;border:3px solid rgba(255,255,255,0.7);background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2)">`
       : escudoHTML(j.time_casa_sigla, j.time_casa_cor);
     const escudoVis = j.time_visitante_logo
-      ? `<img src="${j.time_visitante_logo}" style="width:60px;height:60px;object-fit:contain;border-radius:50%;border:3px solid rgba(255,255,255,0.7);background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2)">`
+      ? `<img src="${j.time_visitante_logo}" alt="${j.time_visitante_sigla}" onerror="console.error('LOGO FALHOU:',this.src);this.style.display='none'" style="width:60px;height:60px;object-fit:contain;border-radius:50%;border:3px solid rgba(255,255,255,0.7);background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.2)">`
       : escudoHTML(j.time_visitante_sigla, j.time_visitante_cor);
 
     const scoreLabel = aoVivo
@@ -734,11 +736,34 @@
   }
 
   // ===== ARTILHEIROS =====
+  function renderListaArtilheiros(lista) {
+    const posIcons = ['🥇', '🥈', '🥉'];
+    const posClass = ['top1', 'top2', 'top3'];
+    return lista.map((a, i) => {
+      const escudo = a.time_logo
+        ? `<img src="${a.time_logo}" style="width:36px;height:36px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid rgba(0,0,0,0.08)">`
+        : `<div class="artilheiro-escudo" style="background:${a.time_cor || '#1a3a6b'}">${a.time_sigla}</div>`;
+      const pos = i < 3
+        ? `<div class="artilheiro-pos ${posClass[i]}">${posIcons[i]}</div>`
+        : `<div class="artilheiro-pos">${i + 1}</div>`;
+      return `
+        <div class="artilheiros-row">
+          ${pos}
+          ${escudo}
+          <div class="artilheiro-info">
+            <div class="artilheiro-nome">${a.jogador}</div>
+            <div class="artilheiro-time">${a.time_nome}</div>
+          </div>
+          <div class="artilheiro-gols">
+            ${a.total_gols} <span>gol${a.total_gols > 1 ? 's' : ''}</span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
   async function carregarArtilheiros() {
     try {
-      let url = '/artilheiros';
-      if (modalidadeAtiva) url += `?modalidade_id=${modalidadeAtiva}`;
-      const lista = await api.get(url);
+      const lista = await api.get('/artilheiros');
 
       const container = document.getElementById('artilheirosContainer');
       const emptyEl   = document.getElementById('artilheiros-empty');
@@ -746,36 +771,25 @@
       emptyEl.style.display = lista.length === 0 ? '' : 'none';
       container.style.display = lista.length === 0 ? 'none' : '';
 
-      const posIcons = ['🥇', '🥈', '🥉'];
-      const posClass = ['top1', 'top2', 'top3'];
+      const grupos = {};
+      const ordem = [];
+      for (const a of lista) {
+        const key = a.modalidade_id;
+        if (!grupos[key]) {
+          grupos[key] = { nome: a.modalidade_nome, icone: a.modalidade_icone, itens: [] };
+          ordem.push(key);
+        }
+        grupos[key].itens.push(a);
+      }
 
-      container.innerHTML = `
-        <div class="artilheiros-card">
-          ${lista.map((a, i) => {
-            const escudo = a.time_logo
-              ? `<img src="${a.time_logo}" style="width:36px;height:36px;object-fit:contain;border-radius:50%;background:#fff;border:2px solid rgba(0,0,0,0.08)">`
-              : `<div class="artilheiro-escudo" style="background:${a.time_cor || '#1a3a6b'}">${a.time_sigla}</div>`;
-            const pos = i < 3
-              ? `<div class="artilheiro-pos ${posClass[i]}">${posIcons[i]}</div>`
-              : `<div class="artilheiro-pos">${i + 1}</div>`;
-            return `
-              <div class="artilheiros-row">
-                ${pos}
-                ${escudo}
-                <div class="artilheiro-info">
-                  <div class="artilheiro-nome">${a.jogador}</div>
-                  <div class="artilheiro-time">${a.time_nome}</div>
-                </div>
-                <div class="artilheiro-gols">
-                  ${a.total_gols} <span>gol${a.total_gols > 1 ? 's' : ''}</span>
-                </div>
-              </div>
-            `;
-          }).join('')}
+      container.innerHTML = ordem.map(key => `
+        <div style="margin-bottom:1.75rem">
+          <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);padding:0.5rem 0 0.75rem;display:flex;align-items:center;gap:0.4rem;border-bottom:2px solid var(--border-color,#e2e8f0);margin-bottom:0.25rem">
+            ${grupos[key].icone} ${grupos[key].nome}
+          </div>
+          <div class="artilheiros-card">${renderListaArtilheiros(grupos[key].itens)}</div>
         </div>
-      `;
-
-      renderTabs('artilheirosTabs', carregarArtilheiros);
+      `).join('');
     } catch (err) {
       console.error('Erro ao carregar artilheiros:', err);
     }
@@ -929,9 +943,29 @@
   // ===== CLASSIFICAÇÃO =====
   async function carregarClassificacao() {
     try {
-      let url = '/grupos';
-      if (modalidadeAtiva) url += `?modalidade_id=${modalidadeAtiva}`;
-      const grupos = await api.get(url);
+      // Busca todos os grupos para saber quais modalidades têm fase de grupos
+      const todosGrupos = await api.get('/grupos');
+      const modComGrupos = [...new Map(todosGrupos.map(g => [g.modalidade_id, { id: g.modalidade_id, nome: g.modalidade_nome, icone: g.modalidade_icone }])).values()];
+
+      // Renderiza tabs apenas com modalidades que possuem grupos
+      const tabsEl = document.getElementById('classificacaoTabs');
+      tabsEl.innerHTML = '';
+      const btnTodos = document.createElement('button');
+      btnTodos.className = 'tab-btn' + (modalidadeAtiva === null ? ' active' : '');
+      btnTodos.innerHTML = '🏆 Todas';
+      btnTodos.onclick = () => { modalidadeAtiva = null; carregarClassificacao(); };
+      tabsEl.appendChild(btnTodos);
+      modComGrupos.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (modalidadeAtiva === m.id ? ' active' : '');
+        btn.innerHTML = `${m.icone} ${m.nome}`;
+        btn.onclick = () => { modalidadeAtiva = m.id; carregarClassificacao(); };
+        tabsEl.appendChild(btn);
+      });
+
+      const grupos = modalidadeAtiva
+        ? todosGrupos.filter(g => g.modalidade_id === modalidadeAtiva)
+        : todosGrupos;
 
       const container = document.getElementById('gruposContainer');
       document.getElementById('classificacao-empty').style.display = grupos.length === 0 ? '' : 'none';
@@ -987,7 +1021,6 @@
         </div>
       `).join('');
 
-      renderTabs('classificacaoTabs', carregarClassificacao);
     } catch (err) {
       console.error('Erro ao carregar classificação:', err);
     }

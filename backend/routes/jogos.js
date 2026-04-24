@@ -144,6 +144,14 @@ router.put('/:id/placar', authMiddleware, async (req, res) => {
 
     await pool.query(updateSql, updateVals);
 
+    // Auto-log auditoria
+    const gc = gols_casa ?? jogoAnterior.gols_casa;
+    const gv = gols_visitante ?? jogoAnterior.gols_visitante;
+    await pool.query(
+      'INSERT INTO auditoria_jogos (jogo_id, admin_nome, acao, detalhe) VALUES (?, ?, ?, ?)',
+      [jogoId, req.admin?.nome || 'Admin', 'Placar atualizado', `Casa ${gc} × ${gv} Visitante${status ? ' — ' + status : ''}`]
+    ).catch(() => {});
+
     // Push para ao_vivo
     if (status === 'ao_vivo' && jogoAnterior.status !== 'ao_vivo') {
       const [ji] = await pool.query(
@@ -400,6 +408,14 @@ router.post('/:id/gols', authMiddleware, async (req, res) => {
     const io = req.app.get('io');
     if (io) io.emit('gols_atualizados', { jogo_id: Number(req.params.id), gols: allGols });
 
+    // Auto-log auditoria
+    const [timeSigla] = await pool.query('SELECT sigla FROM times WHERE id = ?', [time_id]);
+    const sigla = timeSigla.length > 0 ? timeSigla[0].sigla : '';
+    await pool.query(
+      'INSERT INTO auditoria_jogos (jogo_id, admin_nome, acao, detalhe) VALUES (?, ?, ?, ?)',
+      [req.params.id, req.admin?.nome || 'Admin', 'Gol registrado', `${jogador} (${sigla})`]
+    ).catch(() => {});
+
     // Buscar info do jogo para a notificação
     const [jogoInfo] = await pool.query(
       `SELECT j.gols_casa, j.gols_visitante,
@@ -440,6 +456,10 @@ router.delete('/:id/gols/:golId', authMiddleware, async (req, res) => {
     `, [req.params.id]);
     const io = req.app.get('io');
     if (io) io.emit('gols_atualizados', { jogo_id: Number(req.params.id), gols: allGols });
+    await pool.query(
+      'INSERT INTO auditoria_jogos (jogo_id, admin_nome, acao, detalhe) VALUES (?, ?, ?, ?)',
+      [req.params.id, req.admin?.nome || 'Admin', 'Gol removido', `ID ${req.params.golId}`]
+    ).catch(() => {});
     res.json({ mensagem: 'Gol removido' });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao remover gol' });
@@ -485,6 +505,12 @@ router.post('/:id/cartoes', authMiddleware, async (req, res) => {
     const io = req.app.get('io');
     if (io) io.emit('cartoes_atualizados', { jogo_id: Number(req.params.id), cartoes: allCartoes });
 
+    // Auto-log auditoria
+    await pool.query(
+      'INSERT INTO auditoria_jogos (jogo_id, admin_nome, acao, detalhe) VALUES (?, ?, ?, ?)',
+      [req.params.id, req.admin?.nome || 'Admin', 'Cartão registrado', `${tipo} — ${jogador}`]
+    ).catch(() => {});
+
     // Push para cartão vermelho
     if (tipo === 'vermelho') {
       const [jogoInfo] = await pool.query(
@@ -529,6 +555,179 @@ router.delete('/:id/cartoes/:cartaoId', authMiddleware, async (req, res) => {
   }
 });
 
+// ===== MVP =====
+router.put('/:id/mvp', authMiddleware, async (req, res) => {
+  const { mvp_jogador, mvp_time_id } = req.body;
+  try {
+    await pool.query('UPDATE jogos SET mvp_jogador=?, mvp_time_id=? WHERE id=?',
+      [mvp_jogador || null, mvp_time_id || null, req.params.id]);
+    const io = req.app.get('io');
+    if (io) io.emit('mvp_atualizado', { jogo_id: Number(req.params.id), mvp_jogador, mvp_time_id });
+    res.json({ mensagem: 'MVP atualizado' });
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao atualizar MVP' });
+  }
+});
+
+// ===== SÚMULA HTML (para impressão/PDF) =====
+router.get('/:id/sumula', async (req, res) => {
+  try {
+    const [[jogo]] = await pool.query(`
+      SELECT j.*,
+        tc.nome as time_casa_nome, tc.sigla as time_casa_sigla, tc.cor as time_casa_cor, tc.logo as time_casa_logo,
+        tv.nome as time_visitante_nome, tv.sigla as time_visitante_sigla, tv.cor as time_visitante_cor, tv.logo as time_visitante_logo,
+        m.nome as modalidade_nome, m.icone as modalidade_icone,
+        mvt.nome as mvp_time_nome, mvt.sigla as mvp_time_sigla
+      FROM jogos j
+      JOIN times tc ON j.time_casa_id = tc.id
+      JOIN times tv ON j.time_visitante_id = tv.id
+      JOIN modalidades m ON j.modalidade_id = m.id
+      LEFT JOIN times mvt ON j.mvp_time_id = mvt.id
+      WHERE j.id = ?`, [req.params.id]);
+
+    if (!jogo) return res.status(404).send('<p>Jogo não encontrado</p>');
+
+    const [gols]    = await pool.query(`SELECT g.*, t.nome as time_nome, t.sigla FROM gols g JOIN times t ON g.time_id=t.id WHERE g.jogo_id=? ORDER BY g.periodo ASC, g.minuto ASC`, [req.params.id]);
+    const [cartoes] = await pool.query(`SELECT c.*, t.nome as time_nome, t.sigla FROM cartoes c JOIN times t ON c.time_id=t.id WHERE c.jogo_id=? ORDER BY c.periodo ASC, c.minuto ASC`, [req.params.id]);
+    const [parciais]= await pool.query(`SELECT * FROM parciais WHERE jogo_id=? ORDER BY numero ASC`, [req.params.id]);
+
+    const dataStr = jogo.data_jogo ? new Date(jogo.data_jogo).toLocaleString('pt-BR') : 'A definir';
+    const faseMap = { grupos:'Grupos', oitavas:'Oitavas de Final', quartas:'Quartas de Final', semifinal:'Semifinal', terceiro_lugar:'3º Lugar', final:'Final' };
+    const statusMap = { agendado:'Agendado', ao_vivo:'Ao Vivo', encerrado:'Encerrado' };
+
+    const golsHtml = gols.map(g => {
+      const t = g.minuto ? `${g.periodo ? g.periodo+'T ' : ''}${g.minuto}'` : (g.periodo ? g.periodo+'T' : '—');
+      return `<tr><td>${g.jogador}</td><td>${g.sigla}</td><td>${t}</td></tr>`;
+    }).join('') || '<tr><td colspan="3" style="color:#888">Nenhum gol registrado</td></tr>';
+
+    const cartoesHtml = cartoes.map(c => {
+      const t = c.minuto ? `${c.periodo ? c.periodo+'T ' : ''}${c.minuto}'` : '—';
+      const cor = c.tipo === 'vermelho' ? '#dc2626' : '#f59e0b';
+      return `<tr><td>${c.jogador}</td><td>${c.sigla}</td><td><span style="background:${cor};color:white;padding:1px 7px;border-radius:3px;font-size:11px">${c.tipo}</span></td><td>${t}</td></tr>`;
+    }).join('') || '<tr><td colspan="4" style="color:#888">Nenhum cartão registrado</td></tr>';
+
+    const parciaisHtml = parciais.length ? `
+      <h3>Parciais</h3>
+      <table><thead><tr><th>Período</th><th>${jogo.time_casa_sigla}</th><th>${jogo.time_visitante_sigla}</th></tr></thead>
+      <tbody>${parciais.map(p => `<tr><td>${p.label || p.numero+'º'}</td><td>${p.gols_casa}</td><td>${p.gols_visitante}</td></tr>`).join('')}</tbody></table>` : '';
+
+    const mvpHtml = jogo.mvp_jogador ? `<p><strong>🏅 MVP:</strong> ${jogo.mvp_jogador}${jogo.mvp_time_nome ? ` (${jogo.mvp_time_nome})` : ''}</p>` : '';
+
+    const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Súmula — ${jogo.time_casa_sigla} × ${jogo.time_visitante_sigla}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 13px; color: #111; padding: 24px; max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 20px; text-align: center; margin-bottom: 4px; }
+  h2 { font-size: 14px; color: #555; text-align: center; margin-bottom: 16px; font-weight: normal; }
+  h3 { font-size: 13px; font-weight: 700; margin: 16px 0 6px; border-bottom: 1px solid #ccc; padding-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .placar { text-align: center; font-size: 36px; font-weight: 900; margin: 12px 0; letter-spacing: -1px; }
+  .meta { display: flex; gap: 16px; justify-content: center; font-size: 12px; color: #555; margin-bottom: 16px; flex-wrap: wrap; }
+  .meta span { background: #f1f5f9; padding: 3px 10px; border-radius: 100px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  th { background: #f1f5f9; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 5px 8px; text-align: left; }
+  td { padding: 5px 8px; border-bottom: 1px solid #f1f5f9; }
+  .footer { margin-top: 24px; text-align: center; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 12px; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+<h1>${jogo.modalidade_icone} ${jogo.modalidade_nome} — ${faseMap[jogo.fase] || jogo.fase}</h1>
+<h2>Copa Med Horus · ${dataStr}${jogo.local_jogo ? ' · ' + jogo.local_jogo : ''}</h2>
+<div class="placar">${jogo.time_casa_sigla} ${jogo.gols_casa} × ${jogo.gols_visitante} ${jogo.time_visitante_sigla}</div>
+<div class="meta">
+  <span>${jogo.time_casa_nome}</span>
+  <span>×</span>
+  <span>${jogo.time_visitante_nome}</span>
+</div>
+<div class="meta">
+  <span>Status: ${statusMap[jogo.status] || jogo.status}</span>
+  ${jogo.gols_prorrogacao_casa || jogo.gols_prorrogacao_visitante ? `<span>Prorrogação: ${jogo.gols_prorrogacao_casa}×${jogo.gols_prorrogacao_visitante}</span>` : ''}
+  ${jogo.gols_penaltis_casa || jogo.gols_penaltis_visitante ? `<span>Pênaltis: ${jogo.gols_penaltis_casa}×${jogo.gols_penaltis_visitante}</span>` : ''}
+</div>
+${mvpHtml}
+${parciaisHtml}
+<h3>Gols</h3>
+<table><thead><tr><th>Jogador</th><th>Time</th><th>Tempo</th></tr></thead><tbody>${golsHtml}</tbody></table>
+<h3>Cartões</h3>
+<table><thead><tr><th>Jogador</th><th>Time</th><th>Tipo</th><th>Tempo</th></tr></thead><tbody>${cartoesHtml}</tbody></table>
+${jogo.observacoes ? `<h3>Observações</h3><p>${jogo.observacoes}</p>` : ''}
+<div class="footer">Gerado em ${new Date().toLocaleString('pt-BR')} · Copa Med Horus</div>
+<script>window.onload = () => window.print();</script>
+</body></html>`;
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.send(html);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('<p>Erro ao gerar súmula</p>');
+  }
+});
+
+// ===== PARCIAIS =====
+
+// Listar parciais (público)
+router.get('/:id/parciais', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM parciais WHERE jogo_id = ? ORDER BY numero ASC',
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar parciais' });
+  }
+});
+
+// Adicionar parcial (admin)
+router.post('/:id/parciais', authMiddleware, async (req, res) => {
+  const { numero, label, gols_casa, gols_visitante } = req.body;
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO parciais (jogo_id, numero, label, gols_casa, gols_visitante) VALUES (?, ?, ?, ?, ?)',
+      [req.params.id, numero, label || null, gols_casa || 0, gols_visitante || 0]
+    );
+    const [all] = await pool.query('SELECT * FROM parciais WHERE jogo_id = ? ORDER BY numero ASC', [req.params.id]);
+    const io = req.app.get('io');
+    if (io) io.emit('parciais_atualizados', { jogo_id: Number(req.params.id), parciais: all });
+    const [[novo]] = await pool.query('SELECT * FROM parciais WHERE id = ?', [result.insertId]);
+    res.status(201).json(novo);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao adicionar parcial' });
+  }
+});
+
+// Remover parcial (admin)
+router.delete('/:id/parciais/:pid', authMiddleware, async (req, res) => {
+  try {
+    await pool.query('DELETE FROM parciais WHERE id = ? AND jogo_id = ?', [req.params.pid, req.params.id]);
+    const [all] = await pool.query('SELECT * FROM parciais WHERE jogo_id = ? ORDER BY numero ASC', [req.params.id]);
+    const io = req.app.get('io');
+    if (io) io.emit('parciais_atualizados', { jogo_id: Number(req.params.id), parciais: all });
+    res.json({ mensagem: 'Parcial removido' });
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao remover parcial' });
+  }
+});
+
+// ===== HISTÓRICO =====
+
+// Listar histórico (público)
+router.get('/:id/historico', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT * FROM auditoria_jogos WHERE jogo_id = ? ORDER BY criado_em DESC LIMIT 50',
+      [req.params.id]
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ erro: 'Erro ao buscar histórico' });
+  }
+});
+
 // Função auxiliar para atualizar classificação no grupo
 // Recalcula classificação do grupo do zero com base em todos os jogos encerrados
 async function recalcularClassificacao(grupoId) {
@@ -540,6 +739,13 @@ async function recalcularClassificacao(grupoId) {
     WHERE grupo_id=?
   `, [grupoId]);
 
+  // Busca o tipo da modalidade do grupo
+  const [[grupo]] = await pool.query(
+    `SELECT m.tipo FROM grupos g JOIN modalidades m ON g.modalidade_id = m.id WHERE g.id = ?`,
+    [grupoId]
+  );
+  const isBasquete = grupo && grupo.tipo === 'basquete';
+
   // Busca todos os jogos encerrados do grupo
   const [jogosGrupo] = await pool.query(
     `SELECT * FROM jogos WHERE grupo_id=? AND status='encerrado' AND fase='grupos'`,
@@ -550,6 +756,17 @@ async function recalcularClassificacao(grupoId) {
     const gc = jogo.gols_casa, gv = jogo.gols_visitante;
     const casaVenceu = gc > gv, visVenceu = gv > gc, empate = gc === gv;
 
+    // Basquete: vitória=2pts, derrota=1pt, sem empate
+    // Demais: vitória=3pts, empate=1pt, derrota=0pts
+    const ptsCasa = isBasquete
+      ? (casaVenceu ? 2 : 1)
+      : (casaVenceu ? 3 : empate ? 1 : 0);
+    const ptsVis = isBasquete
+      ? (visVenceu ? 2 : 1)
+      : (visVenceu ? 3 : empate ? 1 : 0);
+    const empateCasa = isBasquete ? 0 : (empate ? 1 : 0);
+    const empateVis = isBasquete ? 0 : (empate ? 1 : 0);
+
     await pool.query(`
       INSERT INTO grupos_times (grupo_id, time_id, pontos, jogos, vitorias, empates, derrotas, gols_pro, gols_contra, saldo_gols)
       VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
@@ -558,8 +775,7 @@ async function recalcularClassificacao(grupoId) {
         vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
         gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
     `, [grupoId, jogo.time_casa_id,
-      casaVenceu ? 3 : empate ? 1 : 0,
-      casaVenceu ? 1 : 0, empate ? 1 : 0, visVenceu ? 1 : 0,
+      ptsCasa, casaVenceu ? 1 : 0, empateCasa, visVenceu ? 1 : 0,
       gc, gv, gc - gv]);
 
     await pool.query(`
@@ -570,8 +786,7 @@ async function recalcularClassificacao(grupoId) {
         vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
         gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
     `, [grupoId, jogo.time_visitante_id,
-      visVenceu ? 3 : empate ? 1 : 0,
-      visVenceu ? 1 : 0, empate ? 1 : 0, casaVenceu ? 1 : 0,
+      ptsVis, visVenceu ? 1 : 0, empateVis, casaVenceu ? 1 : 0,
       gv, gc, gv - gc]);
   }
 }

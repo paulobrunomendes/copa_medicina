@@ -15,14 +15,14 @@ router.get('/', async (req, res) => {
 
 // Criar modalidade (admin)
 router.post('/', authMiddleware, async (req, res) => {
-  const { nome, icone } = req.body;
+  const { nome, icone, tipo } = req.body;
   if (!nome) return res.status(400).json({ erro: 'Nome é obrigatório' });
   try {
     const [result] = await pool.query(
-      'INSERT INTO modalidades (nome, icone) VALUES (?, ?)',
-      [nome, icone || '🏆']
+      'INSERT INTO modalidades (nome, icone, tipo) VALUES (?, ?, ?)',
+      [nome, icone || '🏆', tipo || 'padrao']
     );
-    res.status(201).json({ id: result.insertId, nome, icone });
+    res.status(201).json({ id: result.insertId, nome, icone, tipo: tipo || 'padrao' });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao criar modalidade' });
   }
@@ -30,11 +30,11 @@ router.post('/', authMiddleware, async (req, res) => {
 
 // Editar modalidade (admin)
 router.put('/:id', authMiddleware, async (req, res) => {
-  const { nome, icone } = req.body;
+  const { nome, icone, tipo } = req.body;
   if (!nome) return res.status(400).json({ erro: 'Nome é obrigatório' });
   try {
-    await pool.query('UPDATE modalidades SET nome=?, icone=? WHERE id=?', [nome, icone || '🏆', req.params.id]);
-    res.json({ id: Number(req.params.id), nome, icone });
+    await pool.query('UPDATE modalidades SET nome=?, icone=?, tipo=? WHERE id=?', [nome, icone || '🏆', tipo || 'padrao', req.params.id]);
+    res.json({ id: Number(req.params.id), nome, icone, tipo: tipo || 'padrao' });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao editar modalidade' });
   }

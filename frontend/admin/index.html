@@ -672,6 +672,10 @@
         <div class="s-icon">🛍️</div>
         Produtos
       </div>
+      <div class="sidebar-item" onclick="mostrarPainel('regulamento', this)">
+        <div class="s-icon">📋</div>
+        Regulamento
+      </div>
       <div class="sidebar-section-label">Sistema</div>
       <div class="sidebar-item" onclick="mostrarPainel('admins', this)">
         <div class="s-icon">👤</div>
@@ -853,6 +857,36 @@
           </div>
           <div id="golsList" class="gols-list">
             <div class="gols-empty">Nenhum gol registrado</div>
+          </div>
+        </div>
+
+        <!-- MVP + Súmula -->
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem;padding:1rem;background:rgba(245,194,0,0.06);border:1px solid rgba(245,194,0,0.15);border-radius:12px">
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem">🏅 MVP da Partida</div>
+            <input class="form-input" id="mvpJogador" placeholder="Nome do jogador" style="margin-bottom:0.4rem">
+            <select class="form-select" id="mvpTime">
+              <option value="">Time (opcional)</option>
+            </select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem">
+            <button class="btn btn-primary" onclick="salvarMvp()">💾 Salvar MVP</button>
+            <button class="btn btn-secondary" onclick="abrirSumula()" style="white-space:nowrap">🖨 Súmula PDF</button>
+          </div>
+        </div>
+
+        <!-- Parciais -->
+        <div class="artilheiros-section">
+          <div class="artilheiros-header">📊 Parciais / Sets</div>
+          <div class="artilheiros-add">
+            <input class="form-input" id="parcialLabel" placeholder="Label (ex: 1T, Set 1)" style="width:110px;flex-shrink:0">
+            <input class="form-input" id="parcialNumero" type="number" placeholder="Nº" min="1" max="20" style="width:60px;flex-shrink:0">
+            <input class="form-input" id="parcialCasa" type="number" placeholder="Casa" min="0" max="200" style="width:70px;flex-shrink:0">
+            <input class="form-input" id="parcialVis" type="number" placeholder="Visit." min="0" max="200" style="width:70px;flex-shrink:0">
+            <button class="btn btn-primary" onclick="adicionarParcial()">+ Parcial</button>
+          </div>
+          <div id="parciaisList" class="gols-list">
+            <div class="gols-empty">Nenhum parcial registrado</div>
           </div>
         </div>
 
@@ -1048,7 +1082,10 @@
           <div style="font-weight:700;font-size:1rem;margin-bottom:0.25rem">💾 Backup do Banco de Dados</div>
           <div style="font-size:0.82rem;color:var(--text-muted)">Exporta todos os dados (jogos, times, grupos, artilheiros, notícias etc.) em formato JSON.</div>
         </div>
-        <button class="btn btn-primary" onclick="baixarBackup()">⬇ Baixar Backup JSON</button>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="baixarBackup()">⬇ Backup JSON</button>
+          <button class="btn btn-secondary" onclick="baixarBackupSQL()">⬇ Backup SQL</button>
+        </div>
       </div>
 
       <!-- CSV -->
@@ -1104,6 +1141,22 @@
         <button class="btn btn-primary" onclick="abrirModalProduto()">+ Novo Produto</button>
       </div>
       <div id="produtosAdminList"></div>
+    </div>
+
+    <!-- PAINEL: REGULAMENTO -->
+    <div id="painel-regulamento" style="display:none">
+      <div class="section-header"><h2>📋 Regulamento</h2></div>
+      <div class="admin-card" style="max-width:860px">
+        <div class="form-group">
+          <label class="form-label">Conteúdo do Regulamento (suporta HTML básico)</label>
+          <textarea class="form-input" id="regulamentoTexto" rows="20" style="font-family:monospace;font-size:0.85rem;resize:vertical" placeholder="Cole ou digite o regulamento aqui. Suporta HTML: <h2>, <p>, <ul>, <li>, <strong>, etc."></textarea>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="salvarRegulamento()">💾 Salvar Regulamento</button>
+          <button class="btn btn-secondary" onclick="previewRegulamento()">👁 Preview</button>
+        </div>
+        <div id="regulamentoPreview" style="display:none;margin-top:1.5rem;padding:1.25rem;border:1px solid var(--border);border-radius:10px;background:#f8fafc;line-height:1.8"></div>
+      </div>
     </div>
 
     <!-- PAINEL: TROCAR SENHA -->
@@ -1177,7 +1230,7 @@ const _panelTitles = {
   placar: 'Placar ao Vivo', jogos: 'Gerenciar Jogos', times: 'Times',
   grupos: 'Grupos', modalidades: 'Modalidades', admins: 'Administradores',
   matamata: 'Mata-mata', senha: 'Trocar Senha', exportar: 'Exportar CSV',
-  parceiros: 'Parceiros', produtos: 'Produtos', noticias: 'Notícias'
+  parceiros: 'Parceiros', produtos: 'Produtos', noticias: 'Notícias', regulamento: 'Regulamento'
 };
 function mostrarPainel(nome, el) {
   document.querySelectorAll('[id^="painel-"]').forEach(p => p.style.display = 'none');
@@ -1206,6 +1259,7 @@ function mostrarPainel(nome, el) {
   if (nome === 'parceiros') carregarParceirosAdmin();
   if (nome === 'produtos') carregarProdutosAdmin();
   if (nome === 'noticias') carregarNoticiasAdmin();
+  if (nome === 'regulamento') carregarRegulamentoAdmin();
   carregarDashboard();
 }
 
@@ -1316,6 +1370,16 @@ async function selecionarJogoLive() {
 
   carregarGols(j.id);
   carregarCartoes(j.id);
+  carregarParciais(j.id);
+
+  // Preencher MVP se já existir
+  const mvpJ = document.getElementById('mvpJogador');
+  const mvpT = document.getElementById('mvpTime');
+  if (mvpJ) mvpJ.value = j.mvp_jogador || '';
+  if (mvpT) {
+    mvpT.innerHTML = '<option value="">Time (opcional)</option>' + timesOpts;
+    if (j.mvp_time_id) mvpT.value = j.mvp_time_id;
+  }
 }
 
 // ===== TIMER =====
@@ -2065,6 +2129,22 @@ async function baixarBackup() {
     setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
     toast('Backup baixado!', 'success');
   } catch(e) { toast(e.message || 'Erro ao baixar backup', 'error'); }
+}
+
+async function baixarBackupSQL() {
+  const token = localStorage.getItem('copa_token') || '';
+  try {
+    const r = await fetch('/api/exportar/backup-sql', { headers: { 'Authorization': `Bearer ${token}` } });
+    if (!r.ok) throw new Error('Erro ao gerar backup SQL');
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup_copa_${new Date().toISOString().slice(0,10)}.sql`;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    toast('Backup SQL baixado!', 'success');
+  } catch(e) { toast(e.message || 'Erro ao baixar backup SQL', 'error'); }
 }
 
 // ===== EXPORTAR CSV =====
@@ -2931,6 +3011,99 @@ async function deletarNoticia(id) {
   if (!confirm('Remover esta notícia?')) return;
   try { await api.del(`/noticias/${id}`); toast('Notícia removida'); carregarNoticiasAdmin(); }
   catch(e) { toast('Erro ao remover','error'); }
+}
+
+// ===== MVP =====
+async function salvarMvp() {
+  if (!placarAtual.id) return toast('Selecione um jogo primeiro', 'warning');
+  const mvp_jogador = (document.getElementById('mvpJogador').value || '').trim();
+  const mvp_time_id = document.getElementById('mvpTime').value || null;
+  try {
+    await api.put(`/jogos/${placarAtual.id}/mvp`, { mvp_jogador, mvp_time_id });
+    toast('MVP salvo!', 'success');
+  } catch(e) { toast('Erro ao salvar MVP', 'error'); }
+}
+
+function abrirSumula() {
+  if (!placarAtual.id) return toast('Selecione um jogo primeiro', 'warning');
+  window.open(`/api/jogos/${placarAtual.id}/sumula`, '_blank');
+}
+
+// ===== REGULAMENTO =====
+async function carregarRegulamentoAdmin() {
+  try {
+    const data = await api.get('/config/regulamento');
+    const ta = document.getElementById('regulamentoTexto');
+    if (ta) ta.value = data.valor || '';
+  } catch(e) {}
+}
+
+async function salvarRegulamento() {
+  const valor = (document.getElementById('regulamentoTexto').value || '').trim();
+  try {
+    await api.put('/config/regulamento', { valor });
+    toast('Regulamento salvo!', 'success');
+  } catch(e) { toast('Erro ao salvar regulamento', 'error'); }
+}
+
+function previewRegulamento() {
+  const val = document.getElementById('regulamentoTexto').value || '';
+  const prev = document.getElementById('regulamentoPreview');
+  if (!prev) return;
+  if (prev.style.display === 'none' || !prev.style.display) {
+    prev.innerHTML = val || '<em style="color:#94a3b8">Nenhum conteúdo para exibir</em>';
+    prev.style.display = '';
+  } else {
+    prev.style.display = 'none';
+  }
+}
+
+// ===== PARCIAIS =====
+async function carregarParciais(jogoId) {
+  try {
+    const parciais = await api.get(`/jogos/${jogoId}/parciais`);
+    renderParciaisList(parciais);
+  } catch(e) {}
+}
+
+function renderParciaisList(parciais) {
+  const el = document.getElementById('parciaisList');
+  if (!el) return;
+  if (!parciais || parciais.length === 0) {
+    el.innerHTML = '<div class="gols-empty">Nenhum parcial registrado</div>';
+    return;
+  }
+  el.innerHTML = parciais.map(p => `
+    <div class="gol-item">
+      <span class="gol-sigla">${p.label || p.numero + 'º'}</span>
+      <span class="gol-jogador">${p.gols_casa} × ${p.gols_visitante}</span>
+      <button class="gol-del" onclick="removerParcial(${p.id})" title="Remover">×</button>
+    </div>`).join('');
+}
+
+async function adicionarParcial() {
+  if (!placarAtual.id) return toast('Selecione um jogo primeiro', 'warning');
+  const label   = (document.getElementById('parcialLabel').value || '').trim();
+  const numero  = parseInt(document.getElementById('parcialNumero').value) || 1;
+  const gcasa   = parseInt(document.getElementById('parcialCasa').value) || 0;
+  const gvis    = parseInt(document.getElementById('parcialVis').value) || 0;
+  try {
+    await api.post(`/jogos/${placarAtual.id}/parciais`, { numero, label, gols_casa: gcasa, gols_visitante: gvis });
+    document.getElementById('parcialLabel').value = '';
+    document.getElementById('parcialNumero').value = '';
+    document.getElementById('parcialCasa').value = '';
+    document.getElementById('parcialVis').value = '';
+    await carregarParciais(placarAtual.id);
+    toast('Parcial adicionado!', 'success');
+  } catch(e) { toast('Erro ao adicionar parcial', 'error'); }
+}
+
+async function removerParcial(pid) {
+  if (!placarAtual.id) return;
+  try {
+    await api.del(`/jogos/${placarAtual.id}/parciais/${pid}`);
+    await carregarParciais(placarAtual.id);
+  } catch(e) { toast('Erro ao remover parcial', 'error'); }
 }
 
 // ===== LIGHTBOX =====

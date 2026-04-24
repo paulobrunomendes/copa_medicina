@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chaveamento — Copa Med Horus</title>
+  <link rel="icon" href="/public/logo-icon.png" type="image/png">
+  <link rel="icon" href="/public/favicon.ico" sizes="48x48" type="image/x-icon">
+  <link rel="apple-touch-icon" href="/public/logo-icon.png">
+  <link rel="manifest" href="/public/manifest.json">
+  <meta name="theme-color" content="#111111">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #F5C200; --gold-light: #ffe94d;
+      --text: #0f172a; --text-muted: #64748b;
+      --border: rgba(255,255,255,0.08); --bg: #111;
+    }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: #e2e8f0; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    a { text-decoration: none; color: inherit; }
+
+    /* NAVBAR */
+    .navbar { position: sticky; top: 0; z-index: 200; background: rgba(10,10,10,0.97); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 24px rgba(0,0,0,0.6); }
+    .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 1.5rem; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .nav-logo-img { height: 38px; width: auto; object-fit: contain; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link { padding: 0.45rem 0.85rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; color: rgba(255,255,255,0.7); transition: all 0.18s; white-space: nowrap; }
+    .nav-link:hover { color: white; background: rgba(255,255,255,0.08); }
+    .nav-link.active { color: white; background: rgba(255,255,255,0.12); }
+    .nav-link.admin-link { background: var(--gold); color: #111; font-weight: 800; margin-left: 0.5rem; box-shadow: 0 2px 8px rgba(245,194,0,0.35); }
+    .nav-link.admin-link:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .nav-toggle { display: none; background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.4rem; cursor: pointer; padding: 0.25rem; }
+    @media(max-width: 860px) {
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; align-items: flex-start; position: absolute; top: 64px; left: 0; right: 0; background: #0a0a0a; padding: 1rem 1.5rem; gap: 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+      .nav-links.open { display: flex; } .nav-link { width: 100%; }
+    }
+
+    /* PAGE HEADER */
+    .page-header {
+      background: #111 url('/public/court-bg.webp') center/cover no-repeat;
+      position: relative; padding: 3rem 2rem 2.5rem;
+      border-bottom: 2px solid rgba(245,194,0,0.15);
+    }
+    .page-header::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.84); }
+    .page-header-inner { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; }
+    .page-header h1 { font-size: clamp(1.8rem,4vw,2.5rem); font-weight: 900; color: white; letter-spacing: -0.8px; margin-bottom: 0.3rem; }
+    .page-header p { font-size: 0.95rem; color: rgba(255,255,255,0.5); }
+
+    /* FILTERS */
+    .filters-bar { background: #1a1a1a; border-bottom: 1px solid rgba(255,255,255,0.08); padding: 1rem 1.5rem; }
+    .filters-inner { max-width: 1400px; margin: 0 auto; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .filter-select {
+      background: #252525; border: 1px solid rgba(255,255,255,0.12); color: white;
+      padding: 0.5rem 1rem; border-radius: 10px; font-family: inherit; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; outline: none; transition: border-color 0.18s;
+    }
+    .filter-select:hover, .filter-select:focus { border-color: var(--gold); }
+
+    /* BRACKET */
+    .bracket-wrap { overflow-x: auto; padding: 2rem 1.5rem; }
+    .bracket { display: flex; gap: 0; min-width: max-content; align-items: flex-start; }
+    .bracket-fase {
+      display: flex; flex-direction: column; gap: 0; min-width: 200px;
+    }
+    .bracket-fase-header {
+      font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+      color: var(--gold); padding: 0 0.5rem 1rem; text-align: center;
+    }
+    .bracket-slots { display: flex; flex-direction: column; gap: 0; }
+
+    /* SLOT — contém um jogo e as linhas conectoras */
+    .bracket-slot {
+      display: flex; align-items: center;
+      position: relative;
+    }
+    .bracket-slot-inner { padding: 0.5rem; }
+
+    /* Linhas conectoras entre fases */
+    .bracket-slot::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      top: 50%;
+      width: 1px;
+      height: 50%;
+      border-right: 2px solid rgba(255,255,255,0.1);
+    }
+    .bracket-slot:nth-child(odd)::after {
+      top: 50%; height: 50%;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+      border-right: 2px solid rgba(255,255,255,0.1);
+    }
+    .bracket-slot:nth-child(even)::after {
+      top: 0; height: 50%;
+      border-right: 2px solid rgba(255,255,255,0.1);
+    }
+
+    /* JOGO CARD NO BRACKET */
+    .bk-card {
+      background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 0.65rem 0.85rem;
+      width: 190px; cursor: pointer; transition: all 0.18s;
+      display: block;
+    }
+    .bk-card:hover { border-color: rgba(245,194,0,0.4); background: #222; }
+    .bk-card.live { border-color: rgba(220,38,38,0.5); }
+    .bk-card.encerrado { opacity: 0.75; }
+    .bk-team { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
+    .bk-team:first-of-type { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .bk-escudo { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 800; color: white; flex-shrink: 0; }
+    .bk-nome { font-size: 0.78rem; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bk-gol { font-size: 0.9rem; font-weight: 900; min-width: 18px; text-align: center; }
+    .bk-vencedor .bk-nome { color: var(--gold); }
+    .bk-vencedor .bk-gol { color: var(--gold); }
+    .bk-status { font-size: 0.6rem; font-weight: 700; text-align: center; padding-top: 0.3rem; opacity: 0.5; letter-spacing: 0.5px; }
+    .bk-status.live { color: #fca5a5; opacity: 1; animation: livePulse 2s ease-in-out infinite; }
+    @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+    /* Connector line between phases */
+    .bracket-connector { width: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+    .connector-line { flex: 1; border-right: 2px solid rgba(255,255,255,0.1); width: 12px; }
+    .connector-h { width: 12px; height: 2px; background: rgba(255,255,255,0.1); }
+
+    .empty-state { text-align: center; padding: 5rem 2rem; color: rgba(255,255,255,0.3); }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .loading { text-align: center; padding: 4rem; color: rgba(255,255,255,0.4); }
+    .spin { display: inline-block; width: 28px; height: 28px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .mod-section { margin-bottom: 3rem; }
+    .mod-title { font-size: 1rem; font-weight: 800; color: white; padding: 1.5rem 1.5rem 0; display: flex; align-items: center; gap: 0.5rem; }
+
+    .footer { background: #0a0a0a; color: rgba(255,255,255,0.25); text-align: center; padding: 2rem 1rem; font-size: 0.8rem; margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <img src="/public/logo-icon.png" alt="Copa Med Horus" class="nav-logo-img" onerror="this.style.display='none'">
+      <span style="font-weight:900;color:white;font-size:1rem">Copa <strong style="color:var(--gold)">Med Horus</strong></span>
+    </a>
+    <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="/" class="nav-link">Início</a>
+      <a href="/noticias.html" class="nav-link">📰 Notícias</a>
+      <a href="/placares.html" class="nav-link">⚽ Jogos</a>
+      <a href="/chaveamento.html" class="nav-link active">🏆 Chaveamento</a>
+      <a href="/regulamento.html" class="nav-link">📋 Regulamento</a>
+      <a href="/parceiros.html" class="nav-link">🤝 Parceiros</a>
+      <a href="/loja.html" class="nav-link">🛍️ Loja</a>
+      <a href="/admin" class="nav-link admin-link">🔐 Admin</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>🏆 Chaveamento</h1>
+    <p>Mata-mata da Copa Med Horus</p>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <div class="filters-inner">
+    <select class="filter-select" id="filtroModalidade" onchange="renderChaveamento()">
+      <option value="">Todas as Modalidades</option>
+    </select>
+  </div>
+</div>
+
+<div id="mainContent">
+  <div class="loading" style="padding:5rem"><div class="spin"></div></div>
+</div>
+
+<footer class="footer">Copa Med Horus · Todos os direitos reservados</footer>
+
+<script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+<script>
+  const socket = io();
+  let todosJogos = [];
+  let modalidades = [];
+
+  const FASES_ORDEM = ['oitavas','quartas','semifinal','terceiro_lugar','final'];
+  const FASES_LABEL = { oitavas:'Oitavas de Final', quartas:'Quartas de Final', semifinal:'Semifinal', terceiro_lugar:'3º Lugar', final:'Final' };
+
+  function escudo(logo, sigla, cor, size=24) {
+    if (logo) return `<img src="${logo}" alt="${sigla}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:contain;background:white;padding:2px;" onerror="this.outerHTML='<div class=\\'bk-escudo\\' style=\\'background:${cor}\\'>${sigla}</div>'">`;
+    return `<div class="bk-escudo" style="background:${cor}">${sigla}</div>`;
+  }
+
+  function vencedor(j) {
+    if (j.status !== 'encerrado') return null;
+    if (j.gols_penaltis_casa > j.gols_penaltis_visitante) return 'casa';
+    if (j.gols_penaltis_visitante > j.gols_penaltis_casa) return 'visitante';
+    if (j.gols_casa > j.gols_visitante) return 'casa';
+    if (j.gols_visitante > j.gols_casa) return 'visitante';
+    return null;
+  }
+
+  function renderBkCard(j) {
+    if (!j) {
+      return `<div class="bk-card" style="opacity:0.3;cursor:default">
+        <div class="bk-team"><div class="bk-escudo" style="background:#333"></div><div class="bk-nome" style="color:rgba(255,255,255,0.3)">A definir</div></div>
+        <div class="bk-team"><div class="bk-escudo" style="background:#333"></div><div class="bk-nome" style="color:rgba(255,255,255,0.3)">A definir</div></div>
+      </div>`;
+    }
+    const v = vencedor(j);
+    const casaClass = v === 'casa' ? ' bk-vencedor' : '';
+    const visClass  = v === 'visitante' ? ' bk-vencedor' : '';
+    const casaGol   = j.status !== 'agendado' ? j.gols_casa : '';
+    const visGol    = j.status !== 'agendado' ? j.gols_visitante : '';
+    const statusTxt = j.status === 'ao_vivo' ? '● AO VIVO' : j.status === 'encerrado' ? 'Encerrado' : '';
+    const statusCls = j.status === 'ao_vivo' ? ' live' : '';
+    return `<a class="bk-card${j.status === 'ao_vivo' ? ' live' : j.status === 'encerrado' ? ' encerrado' : ''}" href="/jogo.html?id=${j.id}" id="bk-${j.id}">
+      <div class="bk-team${casaClass}">
+        ${escudo(j.time_casa_logo, j.time_casa_sigla, j.time_casa_cor)}
+        <div class="bk-nome">${j.time_casa_sigla}</div>
+        <div class="bk-gol">${casaGol}</div>
+      </div>
+      <div class="bk-team${visClass}">
+        ${escudo(j.time_visitante_logo, j.time_visitante_sigla, j.time_visitante_cor)}
+        <div class="bk-nome">${j.time_visitante_sigla}</div>
+        <div class="bk-gol">${visGol}</div>
+      </div>
+      ${statusTxt ? `<div class="bk-status${statusCls}">${statusTxt}</div>` : ''}
+    </a>`;
+  }
+
+  function renderFase(jogos) {
+    if (jogos.length === 0) return '';
+    return jogos.map(j => `
+      <div class="bracket-slot">
+        <div class="bracket-slot-inner">${renderBkCard(j)}</div>
+      </div>`).join('');
+  }
+
+  function renderBracketMod(mod, jogosDoMod) {
+    const fasesPresentes = FASES_ORDEM.filter(f => jogosDoMod.some(j => j.fase === f));
+    if (fasesPresentes.length === 0) return '';
+
+    const fasesHTML = fasesPresentes.map(fase => {
+      const jogos = jogosDoMod.filter(j => j.fase === fase);
+      return `
+        <div class="bracket-fase">
+          <div class="bracket-fase-header">${FASES_LABEL[fase]}</div>
+          <div class="bracket-slots">${renderFase(jogos)}</div>
+        </div>`;
+    }).join('<div style="width:2rem;flex-shrink:0"></div>');
+
+    return `
+      <div class="mod-section" id="mod-${mod.id}">
+        <div class="mod-title">${mod.icone} ${mod.nome}</div>
+        <div class="bracket-wrap">
+          <div class="bracket">${fasesHTML}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderChaveamento() {
+    const filtroMod = document.getElementById('filtroModalidade').value;
+    const fasesFiltro = ['oitavas','quartas','semifinal','terceiro_lugar','final'];
+    const jogosKO = todosJogos.filter(j => fasesFiltro.includes(j.fase));
+
+    const modsAtivas = modalidades.filter(m =>
+      (!filtroMod || String(m.id) === filtroMod) &&
+      jogosKO.some(j => j.modalidade_id === m.id)
+    );
+
+    if (modsAtivas.length === 0) {
+      document.getElementById('mainContent').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">🏆</div>
+          <p>Nenhum jogo de mata-mata cadastrado ainda.</p>
+        </div>`;
+      return;
+    }
+
+    document.getElementById('mainContent').innerHTML = modsAtivas.map(m =>
+      renderBracketMod(m, jogosKO.filter(j => j.modalidade_id === m.id))
+    ).join('');
+  }
+
+  socket.on('placar_atualizado', (j) => {
+    const idx = todosJogos.findIndex(x => x.id === j.id);
+    if (idx !== -1) {
+      todosJogos[idx] = j;
+      const el = document.getElementById(`bk-${j.id}`);
+      if (el) el.outerHTML = renderBkCard(j);
+    }
+  });
+
+  async function init() {
+    try {
+      const [jogos, mods] = await Promise.all([
+        fetch('/api/jogos').then(r => r.json()),
+        fetch('/api/modalidades').then(r => r.json()),
+      ]);
+      todosJogos = Array.isArray(jogos) ? jogos : [];
+      modalidades = Array.isArray(mods) ? mods : [];
+      const sel = document.getElementById('filtroModalidade');
+      for (const m of modalidades) {
+        const o = document.createElement('option');
+        o.value = m.id; o.textContent = `${m.icone} ${m.nome}`;
+        sel.appendChild(o);
+      }
+      renderChaveamento();
+    } catch(e) {
+      document.getElementById('mainContent').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Erro ao carregar chaveamento.</p></div>';
+    }
+  }
+  init();
+</script>
+</body>
+</html>

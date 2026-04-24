@@ -89,6 +89,13 @@ router.post('/:id/recalcular', authMiddleware, async (req, res) => {
       [grupoId]
     );
 
+    // Verifica se é basquete
+    const [[grupo]] = await pool.query(
+      `SELECT m.tipo FROM grupos g JOIN modalidades m ON g.modalidade_id = m.id WHERE g.id = ?`,
+      [grupoId]
+    );
+    const isBasquete = grupo && grupo.tipo === 'basquete';
+
     const [jogosGrupo] = await pool.query(
       `SELECT * FROM jogos WHERE grupo_id=? AND status='encerrado' AND fase='grupos'`,
       [grupoId]
@@ -98,6 +105,13 @@ router.post('/:id/recalcular', authMiddleware, async (req, res) => {
       const gc = jogo.gols_casa, gv = jogo.gols_visitante;
       const casaVenceu = gc > gv, visVenceu = gv > gc, empate = gc === gv;
 
+      // Basquete: vitória=2pts, derrota=1pt, sem empate
+      // Demais: vitória=3pts, empate=1pt, derrota=0pts
+      const ptsCasa = isBasquete ? (casaVenceu ? 2 : 1) : (casaVenceu ? 3 : empate ? 1 : 0);
+      const ptsVis  = isBasquete ? (visVenceu  ? 2 : 1) : (visVenceu  ? 3 : empate ? 1 : 0);
+      const empateCasa = isBasquete ? 0 : (empate ? 1 : 0);
+      const empateVis  = isBasquete ? 0 : (empate ? 1 : 0);
+
       await pool.query(`
         INSERT INTO grupos_times (grupo_id, time_id, pontos, jogos, vitorias, empates, derrotas, gols_pro, gols_contra, saldo_gols)
         VALUES (?, ?, ?, 1, ?, ?, ?, ?, ?, ?)
@@ -106,8 +120,7 @@ router.post('/:id/recalcular', authMiddleware, async (req, res) => {
           vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
           gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
       `, [grupoId, jogo.time_casa_id,
-        casaVenceu ? 3 : empate ? 1 : 0,
-        casaVenceu ? 1 : 0, empate ? 1 : 0, visVenceu ? 1 : 0,
+        ptsCasa, casaVenceu ? 1 : 0, empateCasa, visVenceu ? 1 : 0,
         gc, gv, gc - gv]);
 
       await pool.query(`
@@ -118,8 +131,7 @@ router.post('/:id/recalcular', authMiddleware, async (req, res) => {
           vitorias=vitorias+VALUES(vitorias), empates=empates+VALUES(empates), derrotas=derrotas+VALUES(derrotas),
           gols_pro=gols_pro+VALUES(gols_pro), gols_contra=gols_contra+VALUES(gols_contra), saldo_gols=saldo_gols+VALUES(saldo_gols)
       `, [grupoId, jogo.time_visitante_id,
-        visVenceu ? 3 : empate ? 1 : 0,
-        visVenceu ? 1 : 0, empate ? 1 : 0, casaVenceu ? 1 : 0,
+        ptsVis, visVenceu ? 1 : 0, empateVis, casaVenceu ? 1 : 0,
         gv, gc, gv - gc]);
     }
 
