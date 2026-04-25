@@ -1053,14 +1053,21 @@
             ${jogos.map(j => {
               const casaVence = j.status === 'encerrado' && j.gols_casa > j.gols_visitante;
               const visVence = j.status === 'encerrado' && j.gols_visitante > j.gols_casa;
+              const logoCSS = 'width:28px;height:28px;object-fit:contain;border-radius:50%;background:#fff;vertical-align:middle;margin-right:6px;border:1.5px solid rgba(0,0,0,0.08)';
+              const escCasa = j.time_casa_logo
+                ? `<img src="${j.time_casa_logo}" style="${logoCSS}" onerror="this.style.display='none'">`
+                : escudoHTML(j.time_casa_sigla, j.time_casa_cor);
+              const escVis = j.time_visitante_logo
+                ? `<img src="${j.time_visitante_logo}" style="${logoCSS}" onerror="this.style.display='none'">`
+                : escudoHTML(j.time_visitante_sigla, j.time_visitante_cor);
               return `
                 <div class="bracket-jogo">
                   <div class="bracket-time ${casaVence ? 'vencedor' : ''}">
-                    <span>${escudoHTML(j.time_casa_sigla, j.time_casa_cor)} ${j.time_casa_nome}</span>
+                    <span>${escCasa} ${j.time_casa_nome}</span>
                     ${j.status !== 'agendado' ? `<span class="bracket-time-gols">${j.gols_casa}</span>` : ''}
                   </div>
                   <div class="bracket-time ${visVence ? 'vencedor' : ''}">
-                    <span>${escudoHTML(j.time_visitante_sigla, j.time_visitante_cor)} ${j.time_visitante_nome}</span>
+                    <span>${escVis} ${j.time_visitante_nome}</span>
                     ${j.status !== 'agendado' ? `<span class="bracket-time-gols">${j.gols_visitante}</span>` : ''}
                   </div>
                 </div>
