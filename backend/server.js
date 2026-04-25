@@ -140,10 +140,17 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3001;
 
 initDB().then(() => {
-  server.listen(PORT, () => {
+  server.listen(PORT, '0.0.0.0', () => {
+    const os = require('os');
+    const ifaces = os.networkInterfaces();
+    let localIP = 'localhost';
+    Object.values(ifaces).flat().forEach(i => {
+      if (i.family === 'IPv4' && !i.internal) localIP = i.address;
+    });
     console.log(`\n🏆 Copa Medicina — Servidor rodando!`);
     console.log(`📡 API:      http://localhost:${PORT}/api`);
-    console.log(`🌐 Frontend: http://localhost:${PORT}`);
+    console.log(`🌐 Local:    http://localhost:${PORT}`);
+    console.log(`🌐 Rede:     http://${localIP}:${PORT}`);
     console.log(`📋 Logs:     ${logFile}`);
     console.log(`\n⚡ Pressione Ctrl+C para parar\n`);
   });
