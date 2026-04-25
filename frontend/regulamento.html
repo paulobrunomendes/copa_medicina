@@ -97,9 +97,38 @@
   </div>
 </div>
 
-<div class="container">
-  <div class="reg-card" id="regCard">
-    <div class="loading" style="text-align:center;padding:3rem;color:#64748b">Carregando...</div>
+<style>
+  .pdf-actions { max-width: 860px; margin: 1.5rem auto 0; padding: 0 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .pdf-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem; border-radius: 10px; font-size: 0.875rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.18s; }
+  .pdf-btn-primary { background: var(--gold); color: #111; box-shadow: 0 2px 8px rgba(245,194,0,0.35); }
+  .pdf-btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .pdf-btn-secondary { background: white; color: #0f172a; border: 1.5px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .pdf-btn-secondary:hover { background: var(--bg); transform: translateY(-1px); }
+  .pdf-container { max-width: 860px; margin: 1rem auto 0; padding: 0 1.5rem 3rem; }
+  .pdf-embed-wrap { background: white; border-radius: 16px; border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+  .pdf-embed { width: 100%; height: 82vh; border: none; display: block; }
+  .pdf-fallback { display: none; text-align: center; padding: 3rem 2rem; }
+  @media(max-width: 600px) { .pdf-embed { height: 70vh; } }
+</style>
+
+<div class="pdf-actions">
+  <a href="/public/regulamento.pdf" download class="pdf-btn pdf-btn-primary">⬇️ Baixar PDF</a>
+  <a href="/public/regulamento.pdf" target="_blank" class="pdf-btn pdf-btn-secondary">↗️ Abrir em nova aba</a>
+</div>
+
+<div class="pdf-container">
+  <div class="pdf-embed-wrap">
+    <iframe
+      class="pdf-embed"
+      src="/public/regulamento.pdf"
+      id="pdfFrame"
+      title="Regulamento Copa Med Horus">
+    </iframe>
+    <div class="pdf-fallback" id="pdfFallback">
+      <div style="font-size:3rem;margin-bottom:1rem">📋</div>
+      <p style="font-weight:700;margin-bottom:0.5rem">Seu navegador não suporta visualização de PDF</p>
+      <a href="/public/regulamento.pdf" download class="pdf-btn pdf-btn-primary" style="display:inline-flex;margin-top:0.75rem">⬇️ Baixar Regulamento</a>
+    </div>
   </div>
 </div>
 
@@ -108,25 +137,11 @@
 </footer>
 
 <script>
-  async function carregarRegulamento() {
-    const card = document.getElementById('regCard');
-    try {
-      const data = await fetch('/api/config/regulamento').then(r => r.json());
-      if (!data.valor || data.valor.trim() === '') {
-        card.innerHTML = `
-          <div class="reg-empty">
-            <div class="reg-empty-icon">📋</div>
-            <p style="font-weight:600;color:#0f172a;margin-bottom:0.5rem">Regulamento em breve</p>
-            <p>O regulamento da Copa Med Horus será publicado em breve.</p>
-          </div>`;
-      } else {
-        card.innerHTML = `<div class="reg-content">${data.valor}</div>`;
-      }
-    } catch(e) {
-      card.innerHTML = '<div class="reg-empty"><div class="reg-empty-icon">⚠️</div><p>Erro ao carregar regulamento.</p></div>';
-    }
-  }
-  carregarRegulamento();
+  // Se o iframe falhar (alguns mobile browsers), mostrar fallback
+  document.getElementById('pdfFrame').onerror = function() {
+    this.style.display = 'none';
+    document.getElementById('pdfFallback').style.display = 'block';
+  };
 </script>
 </body>
 </html>
