@@ -419,18 +419,23 @@ router.post('/:id/gols', authMiddleware, async (req, res) => {
     // Buscar info do jogo para a notificação
     const [jogoInfo] = await pool.query(
       `SELECT j.gols_casa, j.gols_visitante,
-              tc.sigla as casa_sigla, tv.sigla as vis_sigla
+              tc.sigla as casa_sigla, tv.sigla as vis_sigla,
+              m.nome as modalidade_nome
        FROM jogos j
        JOIN times tc ON j.time_casa_id = tc.id
        JOIN times tv ON j.time_visitante_id = tv.id
+       JOIN modalidades m ON j.modalidade_id = m.id
        WHERE j.id = ?`, [req.params.id]
     );
     if (jogoInfo.length > 0) {
       const ji = jogoInfo[0];
       const gol = allGols.find(g => g.id === result.insertId);
       const minStr = gol?.minuto ? ` (${gol.periodo ? gol.periodo + 'T ' : ''}${gol.minuto}')` : '';
+      const modalLower = (ji.modalidade_nome || '').toLowerCase();
+      const isPonto = modalLower.includes('basquete') || modalLower.includes('vôlei') || modalLower.includes('volei');
+      const eventoLabel = isPonto ? '🏀 PONTO!' : '⚽ GOL!';
       pushRoute.sendToAll({
-        title: `⚽ GOL! ${gol?.time_sigla || ''}${minStr}`,
+        title: `${eventoLabel} ${gol?.time_sigla || ''}${minStr}`,
         body: `${jogador} — ${ji.casa_sigla} ${ji.gols_casa} × ${ji.gols_visitante} ${ji.vis_sigla}`,
         url: `/jogo.html?id=${req.params.id}`,
         tag: `gol-${req.params.id}`,

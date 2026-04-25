@@ -1330,6 +1330,7 @@ async function selecionarJogoLive() {
   sessionStorage.setItem('copa_jogo_id', id);
   const j = await api.get(`/jogos/${id}`);
   placarAtual = { id: j.id, gols_casa: j.gols_casa, gols_visitante: j.gols_visitante, status: j.status,
+    time_casa_id: j.time_casa_id, time_visitante_id: j.time_visitante_id,
     periodo_atual: j.periodo_atual || 0, timer_ativo: j.timer_ativo || 0,
     timer_inicio: j.timer_inicio || null, timer_decorrido: j.timer_decorrido || 0,
     duracao_periodo: j.duracao_periodo || 45, num_periodos: j.num_periodos || 2 };
@@ -2520,7 +2521,7 @@ function renderGolsList(gols) {
       <span class="gol-sigla">${g.time_sigla}</span>
       <span class="gol-jogador">${g.jogador}</span>
       ${tempoStr ? `<span class="gol-min">${tempoStr}</span>` : ''}
-      <button class="gol-del" onclick="removerGol(${g.id})" title="Remover">×</button>
+      <button class="gol-del" onclick="removerGol(${g.id}, ${g.time_id})" title="Remover">×</button>
     </div>`;
   }).join('');
 }
@@ -2536,16 +2537,23 @@ async function adicionarGol() {
     await api.post(`/jogos/${placarAtual.id}/gols`, { jogador, time_id, minuto: minuto || null });
     document.getElementById('golJogador').value = '';
     document.getElementById('golMinuto').value  = '';
+    const tidNum = parseInt(time_id);
+    if (tidNum === placarAtual.time_casa_id) ajustarGol('casa', 1);
+    else if (tidNum === placarAtual.time_visitante_id) ajustarGol('visitante', 1);
+    await salvarPlacar();
     await carregarGols(placarAtual.id);
-    toast('Gol registrado!', 'success');
   } catch (e) { toast('Erro ao registrar gol', 'error'); }
 }
 
-async function removerGol(golId) {
+async function removerGol(golId, time_id) {
   if (!placarAtual.id) return;
   try {
     await api.del(`/jogos/${placarAtual.id}/gols/${golId}`);
     await carregarGols(placarAtual.id);
+    const tidNum = parseInt(time_id);
+    if (tidNum === placarAtual.time_casa_id) ajustarGol('casa', -1);
+    else if (tidNum === placarAtual.time_visitante_id) ajustarGol('visitante', -1);
+    await salvarPlacar();
   } catch (e) { toast('Erro ao remover gol', 'error'); }
 }
 
