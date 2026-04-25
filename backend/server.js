@@ -10,9 +10,11 @@ const { initDB, pool } = require('./config/database');
 const app = express();
 const server = http.createServer(app);
 
+const corsOrigin = (origin, cb) => cb(null, true);
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || '*',
+    origin: corsOrigin,
     methods: ['GET', 'POST']
   }
 });
@@ -38,7 +40,7 @@ console.error = (...args) => {
 app.set('io', io);
 
 // Middlewares
-app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
+app.use(cors({ origin: corsOrigin }));
 app.use(express.json());
 
 // ===== OG TAGS DINÂMICAS para jogo.html =====
