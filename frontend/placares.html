@@ -1084,18 +1084,45 @@
   }
 
   // ===== COMPARTILHAR JOGO =====
-  function compartilharJogo(id, event) {
+  async function compartilharJogo(id, event) {
     event.preventDefault();
     event.stopPropagation();
+    const btn = event.currentTarget;
+
+    // Busca dados do jogo para montar texto rico
+    let titulo = 'Copa Med Horus — Placar ao vivo';
+    let texto  = 'Acompanhe o placar em tempo real!';
+    try {
+      const j = await api.get(`/jogos/${id}`);
+      const placar = j.status === 'agendado'
+        ? 'Aguardando início'
+        : `${j.gols_casa} × ${j.gols_visitante}`;
+      titulo = `${j.time_casa_nome} ${placar} ${j.time_visitante_nome}`;
+      texto  = `🏆 Copa Med Horus | ${j.modalidade_nome}\n${titulo}\nAcompanhe ao vivo:`;
+    } catch(_) {}
+
     const url = `${location.origin}/jogo.html?id=${id}`;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = event.currentTarget;
-      const orig = btn.textContent;
-      btn.textContent = '✓ Copiado!';
+
+    // Tenta compartilhamento nativo (mobile — WhatsApp, Instagram, etc.)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Copa Med Horus', text: texto, url });
+        return;
+      } catch(e) {
+        if (e.name === 'AbortError') return; // usuário cancelou
+      }
+    }
+
+    // Fallback: copia link para área de transferência
+    try {
+      await navigator.clipboard.writeText(url);
+      const orig = btn.innerHTML;
+      btn.innerHTML = '✓ Copiado!';
       btn.style.color = 'var(--green)';
-      btn.style.borderColor = 'var(--green)';
-      setTimeout(() => { btn.textContent = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
-    }).catch(() => toast('Não foi possível copiar o link', 'error'));
+      setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2000);
+    } catch(_) {
+      toast('Não foi possível copiar o link', 'error');
+    }
   }
 
   // ===== NOTIFICAÇÃO DE GOL =====
