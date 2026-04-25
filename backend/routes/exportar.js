@@ -121,7 +121,7 @@ router.get('/jogos', authMiddleware, async (req, res) => {
 // Backup completo do banco em JSON
 router.get('/backup', authMiddleware, async (req, res) => {
   try {
-    const tabelas = ['modalidades', 'grupos', 'times', 'grupos_times', 'jogos', 'gols', 'artilheiros', 'noticias', 'parceiros', 'produtos', 'admins'];
+    const tabelas = ['modalidades', 'grupos', 'times', 'grupos_times', 'jogos', 'gols', 'cartoes', 'parciais', 'auditoria_jogos', 'configuracoes', 'noticias', 'parceiros', 'produtos', 'push_subscriptions', 'admins'];
     const backup = { gerado_em: new Date().toISOString(), tabelas: {} };
     for (const tabela of tabelas) {
       try {
