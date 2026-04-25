@@ -1,11 +1,14 @@
 {
   "name": "Copa Med Horus",
-  "short_name": "Copa",
+  "short_name": "CopaHorus",
   "description": "Acompanhe os placares da Copa Med Horus em tempo real",
-  "start_url": "/",
+  "start_url": "/placares.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "categories": ["sports"],
   "icons": [
     {
       "src": "/public/favicon.png",
@@ -15,7 +18,8 @@
     {
       "src": "/public/favicon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/public/favicon-512.png",

@@ -127,3 +127,65 @@ function corParaInicial(cor) {
 function escudoHTML(sigla, cor) {
   return `<div class="time-escudo" style="background:${cor || '#1a3a6b'}">${sigla}</div>`;
 }
+
+// ===== PWA — PROMPT DE INSTALAÇÃO =====
+(function() {
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    // Só mostra se não foi dispensado antes
+    if (localStorage.getItem('pwa_dismissed')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'pwa-banner';
+    banner.style.cssText = `
+      position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+      background:#111;color:white;border:1.5px solid rgba(245,194,0,0.5);
+      border-radius:14px;padding:0.85rem 1.25rem;
+      display:flex;align-items:center;gap:0.85rem;
+      box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:9999;
+      max-width:360px;width:calc(100% - 2rem);font-family:inherit;
+      animation:slideUp 0.3s ease;
+    `;
+    banner.innerHTML = `
+      <img src="/public/favicon-192.png" style="width:40px;height:40px;border-radius:10px;flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;font-size:0.9rem">Instalar Copa Med Horus</div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:1px">Acesso rápido na tela inicial</div>
+      </div>
+      <button id="pwa-install-btn" style="background:#F5C200;color:#111;border:none;border-radius:8px;padding:0.45rem 0.9rem;font-weight:800;font-size:0.8rem;cursor:pointer;white-space:nowrap">Instalar</button>
+      <button id="pwa-dismiss-btn" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.2rem;cursor:pointer;padding:0;line-height:1">×</button>
+    `;
+
+    if (!document.getElementById('pwa-slide-style')) {
+      const s = document.createElement('style');
+      s.id = 'pwa-slide-style';
+      s.textContent = '@keyframes slideUp{from{transform:translateX(-50%) translateY(100px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}';
+      document.head.appendChild(s);
+    }
+
+    document.body.appendChild(banner);
+
+    document.getElementById('pwa-install-btn').onclick = async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      banner.remove();
+      if (outcome === 'accepted') localStorage.setItem('pwa_dismissed', '1');
+    };
+
+    document.getElementById('pwa-dismiss-btn').onclick = () => {
+      banner.remove();
+      localStorage.setItem('pwa_dismissed', '1');
+    };
+  });
+
+  window.addEventListener('appinstalled', () => {
+    localStorage.setItem('pwa_dismissed', '1');
+    document.getElementById('pwa-banner')?.remove();
+  });
+})();
